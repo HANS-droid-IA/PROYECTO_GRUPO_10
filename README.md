@@ -166,8 +166,7 @@ El análisis completo, con diagramas, código y evidencias, está en
 
 | Integrante | Código |
 |---|---|
-| `<NOMBRE 1>` | `<CÓDIGO>` |
-| `<NOMBRE 2>` | `<CÓDIGO>` |
-| `<NOMBRE 3>` | `<CÓDIGO>` |
+| Alvarado Canchihuaman, Hans Piero | U24306153 |
+| Sayas Reginaldo, Zinedine Claver | U24319637 |
 
-Docente: `<NOMBRE DEL DOCENTE>`
+**Docente:** America Ingrid Acuña Gomez
