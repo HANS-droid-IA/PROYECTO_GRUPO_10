@@ -123,10 +123,11 @@ for t, tam, neg in (('UNIVERSIDAD', 12, False), ('BASE DE DATOS II – PROYECTO 
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     r = p.add_run(t); r.font.size = Pt(tam); r.bold = neg; r.font.color.rgb = AZUL
-for _ in range(8):
+for _ in range(6):
     doc.add_paragraph()
 p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-p.add_run('Grupo: <INTEGRANTES DEL GRUPO>\nDocente: <NOMBRE DEL DOCENTE>\nLima, noviembre de 2026').font.size = Pt(11)
+p.add_run('Grupo 10\nAlvarado Canchihuaman, Hans Piero (U24306153)\nSayas Reginaldo, Zinedine Claver (U24319637)\n\n'
+          'Docente: America Ingrid Acuña Gomez\nLima, noviembre de 2026').font.size = Pt(11)
 doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
 
 # ===================================================================== 1
