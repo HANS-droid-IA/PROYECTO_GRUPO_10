@@ -1,0 +1,47 @@
+olva_admin@localhost:5440/olva_lima> psql -h localhost -p 5440 -U olva_admin -d olva_lima -f dd_q4.sql
+
+Q4. JOIN NO co-localizado: tracking de un envío (envío en un nodo, eventos
+    repartidos en los 3). Se ejecuta en paralelo asíncrono en los nodos.
+                                                                   QUERY PLAN                                                                    
+-------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop
+   Output: ev.fecha_hora, ev.tipo_evento, ev.id_hub, ev.nodo
+   ->  Append
+         ->  Index Scan using envio_nro_tracking_key on operacion.envio e_1
+               Output: e_1.id_envio
+               Index Cond: (e_1.nro_tracking = 'OLV2600000078'::bpchar)
+         ->  Async Foreign Scan on global.envio_norte e_2
+               Output: e_2.id_envio
+               Remote SQL: SELECT id_envio FROM operacion.envio WHERE ((nro_tracking = 'OLV2600000078'))
+         ->  Async Foreign Scan on global.envio_sur e_3
+               Output: e_3.id_envio
+               Remote SQL: SELECT id_envio FROM operacion.envio WHERE ((nro_tracking = 'OLV2600000078'))
+   ->  Append
+         ->  Bitmap Heap Scan on operacion.evento_tracking ev_1
+               Output: ev_1.fecha_hora, ev_1.tipo_evento, ev_1.id_hub, ev_1.nodo, ev_1.id_envio
+               Recheck Cond: (ev_1.id_envio = e.id_envio)
+               ->  Bitmap Index Scan on ix_evento_envio
+                     Index Cond: (ev_1.id_envio = e.id_envio)
+         ->  Async Foreign Scan on global.evento_tracking_norte ev_2
+               Output: ev_2.fecha_hora, ev_2.tipo_evento, ev_2.id_hub, ev_2.nodo, ev_2.id_envio
+               Remote SQL: SELECT id_envio, tipo_evento, id_hub, fecha_hora, nodo FROM operacion.evento_tracking WHERE ((id_envio = $1::bigint))
+         ->  Async Foreign Scan on global.evento_tracking_sur ev_3
+               Output: ev_3.fecha_hora, ev_3.tipo_evento, ev_3.id_hub, ev_3.nodo, ev_3.id_envio
+               Remote SQL: SELECT id_envio, tipo_evento, id_hub, fecha_hora, nodo FROM operacion.evento_tracking WHERE ((id_envio = $1::bigint))
+
+     fecha_hora      |  tipo_evento  |    hub    | nodo_que_almacena_el_evento 
+---------------------+---------------+-----------+-----------------------------
+ 2026-04-01 13:43:07 | ADMISION      | AG-IQT-01 | NORTE
+ 2026-04-01 20:11:08 | SALIDA_HUB    | AG-IQT-01 | NORTE
+ 2026-04-01 21:07:28 | LLEGADA_HUB   | HR-IQT    | NORTE
+ 2026-04-01 21:54:48 | CLASIFICACION | HR-IQT    | NORTE
+ 2026-04-02 08:14:41 | SALIDA_HUB    | HR-IQT    | NORTE
+ 2026-04-02 11:48:30 | LLEGADA_HUB   | HC-LIM    | LIMA
+ 2026-04-02 13:16:38 | CLASIFICACION | HC-LIM    | LIMA
+ 2026-04-02 17:33:41 | SALIDA_HUB    | HC-LIM    | LIMA
+ 2026-04-02 20:46:11 | LLEGADA_HUB   | HR-AQP    | SUR
+ 2026-04-02 23:01:41 | CLASIFICACION | HR-AQP    | SUR
+ 2026-04-03 06:33:13 | SALIDA_HUB    | HR-AQP    | SUR
+ 2026-04-03 07:21:04 | LLEGADA_HUB   | AG-AQP-03 | SUR
+ 2026-04-03 08:30:00 | EN_REPARTO    | AG-AQP-03 | SUR
+ 2026-04-03 09:37:00 | ENTREGA       | AG-AQP-03 | SUR

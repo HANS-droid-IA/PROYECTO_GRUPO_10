@@ -1,0 +1,12 @@
+Time: 7.057 ms
+Time: 2.725 ms
+>> VF1: cliente_fiscal (completo, solo en Lima)
+Time: 44.814 ms
+>> VF2 + HF: cliente_contacto -> nodo de la ciudad del cliente
+Time: 118.606 ms
+>> HF primaria: envio -> nodo de la agencia de origen
+Time: 2186.441 ms (00:02.186)
+>> HF derivada: paquete -> mismo nodo que su envío (semijoin con envio)
+Time: 894.765 ms
+>> HF primaria: evento_tracking -> nodo del hub donde ocurre el escaneo
+Time: 11085.900 ms (00:11.086)

@@ -1,0 +1,34 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_c07.sql
+
+SET search_path = operacion, maestro, public;
+WITH por_cliente AS (
+    SELECT c.id_cliente, c.nombre_razon_social, ci.nombre AS ciudad,
+           COUNT(*)                                                           AS envios,
+           SUM(e.monto_total)                                                 AS facturado,
+           ROUND(100.0 * AVG((e.fecha_entrega <= e.fecha_compromiso)::INT)
+                 FILTER (WHERE e.estado_actual = 'ENTREGADO'), 1)             AS pct_a_tiempo
+      FROM envio e
+      JOIN cliente c USING (id_cliente)
+      JOIN ciudad ci ON ci.id_ciudad = c.id_ciudad
+     WHERE c.tipo_cliente = 'EMPRESA'
+     GROUP BY 1, 2, 3
+)
+SELECT RANK() OVER (ORDER BY facturado DESC)                         AS puesto,
+       nombre_razon_social, ciudad, envios, facturado,
+       ROUND(100.0 * facturado / SUM(facturado) OVER (), 2)          AS pct_facturacion_empresas,
+       pct_a_tiempo
+  FROM por_cliente
+ ORDER BY facturado DESC
+ LIMIT 10;
+ puesto |        nombre_razon_social         |  ciudad  | envios | facturado | pct_facturacion_empresas | pct_a_tiempo 
+--------+------------------------------------+----------+--------+-----------+--------------------------+--------------
+      1 | Negociaciones Inca S.A.            | Huancayo |    886 |  25411.80 |                     3.77 |         89.5
+      2 | Distribuidora San Martín E.I.R.L.  | Huancayo |    707 |  21049.80 |                     3.12 |         91.0
+      3 | Textil Los Andes S.R.L.            | Cusco    |    601 |  17551.90 |                     2.60 |         80.7
+      4 | Representaciones Santa Rosa S.R.L. | Lima     |    513 |  12853.70 |                     1.90 |         93.1
+      5 | Representaciones Inti E.I.R.L.     | Lima     |    466 |  11788.00 |                     1.75 |         95.5
+      6 | Importaciones Los Andes E.I.R.L.   | Iquitos  |    300 |  10925.00 |                     1.62 |         83.0
+      7 | Agroexportadora Moche S.A.C.       | Lima     |    380 |   9858.40 |                     1.46 |         93.8
+      8 | Corporación Mistiana E.I.R.L.      | Lima     |    385 |   9198.30 |                     1.36 |         95.6
+      9 | Negociaciones Andina S.A.          | Lima     |    301 |   8196.30 |                     1.21 |         92.4
+     10 | Distribuidora Costa Azul S.R.L.    | Lima     |    297 |   8049.40 |                     1.19 |         92.7

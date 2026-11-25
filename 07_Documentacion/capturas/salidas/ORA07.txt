@@ -1,0 +1,25 @@
+SQL> -- sqlplus olva@//localhost:1521/FREEPDB1 @ora07_o6_o7.sql
+
+=== O6. Línea de tiempo de un envío con LAG (funciones analíticas, igual que PG) ===
+
+FECHA	    TIPO_EVENTO      HUB	 DESDE_ANTERIOR
+----------- ---------------- ----------- ---------------------------------------------------------------------------
+01/04 12:52 ADMISION	     AG-LIM-ATE
+01/04 21:49 SALIDA_HUB	     AG-LIM-ATE  +0 08:56:41
+01/04 22:46 LLEGADA_HUB      HC-LIM	 +0 00:56:39
+02/04 05:31 CLASIFICACION    HC-LIM	 +0 06:45:40
+02/04 17:31 SALIDA_HUB	     HC-LIM	 +0 12:00:04
+02/04 18:21 LLEGADA_HUB      AG-LIM-MIR  +0 00:49:39
+03/04 08:30 EN_REPARTO	     AG-LIM-MIR  +0 14:08:28
+03/04 16:12 ENTREGA	     AG-LIM-MIR  +0 07:42:00
+=== O7. Funciones del paquete invocadas desde SQL ===
+
+EXPRESS_LIMA_ORIENTE_2_5KG ESTANDAR_LIMA_SUR_12KG
+-------------------------- ----------------------
+			45		     45.5
+
+ESTADO_SLA		   ENVIOS
+---------------------- ----------
+ENTREGADO_A_TIEMPO	      908
+ENTREGADO_CON_RETRASO	       74
+DEVUELTO		       18

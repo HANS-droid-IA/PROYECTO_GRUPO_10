@@ -1,0 +1,18 @@
+
+-- Q7. Datos con caducidad (TTL): la alerta se borra sola al vencer
+olva_admin@cqlsh:olva_tracking (Lima)> INSERT INTO alertas_sla (hub, fecha_alerta, nro_tracking, nivel, mensaje)
+                                       VALUES ('HC-LIM', toTimestamp(now()), 'OLV2600029865', 'AVISO', 'Compromiso vence en 1 h') USING TTL 3600;
+
+olva_admin@cqlsh:olva_tracking (Lima)> SELECT nro_tracking, nivel, mensaje, TTL(mensaje) AS segundos_restantes FROM alertas_sla WHERE hub = 'HC-LIM' LIMIT 2;
+ nro_tracking  | nivel | mensaje                 | segundos_restantes
+---------------+-------+-------------------------+--------------------
+ OLV2600029865 | AVISO | Compromiso vence en 1 h |               3599
+ OLV2600029865 | AVISO | Compromiso vence en 1 h |               3565
+
+(2 rows)
+
+
+
+-- Q8. Lo que Cassandra rechaza por diseño: filtrar sin la clave de partición
+olva_admin@cqlsh:olva_tracking (Lima)> SELECT * FROM eventos_por_envio WHERE tipo_evento = 'DEVOLUCION' LIMIT 5;
+InvalidRequest: Error from server: code=2200 [Invalid query] message="Cannot execute this query as it might involve data filtering and thus may have unpredictable performance. If you want to execute this query despite the performance unpredictability, use ALLOW FILTERING"

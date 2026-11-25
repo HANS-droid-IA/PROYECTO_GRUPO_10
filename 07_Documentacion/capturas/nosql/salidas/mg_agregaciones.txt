@@ -1,0 +1,40 @@
+olva_admin@mongosh:olva_tracking> load('04_agregaciones.js')
+=== A1. Cumplimiento de SLA por servicio ($match, $group, $cond, $project) ===
+entregados | servicio                 | pct_sla | horas_promedio
+-----------+--------------------------+---------+---------------
+2947       | Sobre / Documentos Aéreo | 86.60   | 48.20         
+7580       | Express Aéreo            | 86.90   | 48.40         
+12739      | Estándar Terrestre       | 91.90   | 52.20         
+5592       | Económico Terrestre      | 98.90   | 52.40         
+(4 documentos)
+
+=== A2. Cuello de botella: permanencia en el Hub Central por hora de llegada ($unwind, $setWindowFields, $dateDiff) ===
+hora_llegada | envios | permanencia_prom_h | max_h | mas_de_12h
+-------------+--------+--------------------+-------+-----------
+0            | 213    | 13.20              | 26.60 | 95        
+1            | 373    | 12.50              | 25.50 | 183       
+6            | 462    | 13.20              | 20.20 | 253       
+7            | 466    | 12.40              | 19.90 | 255       
+13           | 1881   | 11.10              | 19.90 | 767       
+14           | 6316   | 10.80              | 21.60 | 2574      
+19           | 280    | 13.50              | 30.50 | 129       
+20           | 10344  | 14.60              | 30.70 | 3665      
+21           | 2030   | 14.70              | 29.80 | 704       
+22           | 810    | 14.10              | 28    | 290       
+(24 documentos; se muestran 10 franjas horarias)
+
+=== A4. Ocupación del Hub Central vs su capacidad por hora del día ($lookup a hubs) ===
+hora | llegadas_prom | pico | capacidad | ocupacion_pct
+-----+---------------+------+-----------+--------------
+6    | 6.60          | 15   | 50        | 13           
+7    | 6.10          | 19   | 50        | 12           
+11   | 7.30          | 24   | 50        | 15           
+13   | 11.50         | 43   | 50        | 23           
+14   | 33.40         | 79   | 50        | 67           
+15   | 5.20          | 27   | 50        | 10           
+16   | 5.80          | 27   | 50        | 12           
+20   | 54.80         | 145  | 50        | 110          
+21   | 11.60         | 46   | 50        | 23           
+22   | 7.40          | 35   | 50        | 15           
+23   | 7.10          | 45   | 50        | 14           
+(11 documentos)

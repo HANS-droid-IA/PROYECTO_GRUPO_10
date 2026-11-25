@@ -1,0 +1,22 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg05_validacion_carga.sql
+
+           tabla           | filas  
+---------------------------+--------
+ maestro.region            |      5
+ maestro.ciudad            |     17
+ maestro.hub               |     38
+ maestro.tipo_servicio     |      4
+ maestro.tarifa            |    100
+ maestro.ruta              |     98
+ maestro.vehiculo          |    141
+ maestro.empleado          |    285
+ maestro.cliente           |   3000
+ operacion.destinatario    |  26413
+ operacion.envio           |  29966
+ operacion.paquete         |  40714
+ operacion.comprobante     |  29966
+ operacion.despacho        |  22729
+ operacion.despacho_envio  |  82894
+ operacion.evento_tracking | 315101
+ operacion.intento_entrega |  33557
+ operacion.incidencia      |   1904

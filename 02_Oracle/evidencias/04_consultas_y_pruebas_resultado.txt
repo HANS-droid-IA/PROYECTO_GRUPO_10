@@ -1,0 +1,198 @@
+
+Session altered.
+
+
+Session altered.
+
+=== O1. Envíos por estado (consulta básica) ===
+
+ESTADO_ACTUAL	    ENVIOS TICKET_PROM
+--------------- ---------- -----------
+ENTREGADO	       982	  27.8
+DEVUELTO		18	 22.32
+
+=== O2. Cumplimiento de SLA por servicio (JOIN + CASE) ===
+
+SERVICIO	     ENTREGADOS PCT_A_TIEMPO HORAS_PROM
+-------------------- ---------- ------------ ----------
+ECONOMICO_TERRESTRE	    184 	99.5	   49.4
+ESTANDAR_TERRESTRE	    425 	94.1	   51.5
+EXPRESS_AEREO		    272 	86.8	   47.8
+SOBRE_AEREO		    101 	88.1	   47.7
+
+=== O3. [ORACLE] Red logística jerárquica con CONNECT BY (PG: WITH RECURSIVE) ===
+
+RED					 TIPO		      NIVEL RUTA_JERARQUICA
+---------------------------------------- --------------- ---------- ---------------------------------------------
+HC-LIM					 HUB_CENTRAL		  1 /HC-LIM
+  AG-CAL-01				 AGENCIA		  2 /HC-LIM/AG-CAL-01
+  AG-ICA-01				 AGENCIA		  2 /HC-LIM/AG-ICA-01
+  AG-LIM-ATE				 AGENCIA		  2 /HC-LIM/AG-LIM-ATE
+  AG-LIM-MIR				 AGENCIA		  2 /HC-LIM/AG-LIM-MIR
+  AG-LIM-OLI				 AGENCIA		  2 /HC-LIM/AG-LIM-OLI
+  AG-LIM-SIS				 AGENCIA		  2 /HC-LIM/AG-LIM-SIS
+  AG-LIM-SJL				 AGENCIA		  2 /HC-LIM/AG-LIM-SJL
+  AG-LIM-SUR				 AGENCIA		  2 /HC-LIM/AG-LIM-SUR
+  AG-PCL-01				 AGENCIA		  2 /HC-LIM/AG-PCL-01
+  HR-AQP				 HUB_REGIONAL		  2 /HC-LIM/HR-AQP
+    AG-AQP-01				 AGENCIA		  3 /HC-LIM/HR-AQP/AG-AQP-01
+    AG-AQP-02				 AGENCIA		  3 /HC-LIM/HR-AQP/AG-AQP-02
+    AG-AQP-03				 AGENCIA		  3 /HC-LIM/HR-AQP/AG-AQP-03
+    AG-TCQ-01				 AGENCIA		  3 /HC-LIM/HR-AQP/AG-TCQ-01
+  HR-CIX				 HUB_REGIONAL		  2 /HC-LIM/HR-CIX
+  HR-CUZ				 HUB_REGIONAL		  2 /HC-LIM/HR-CUZ
+  HR-HYO				 HUB_REGIONAL		  2 /HC-LIM/HR-HYO
+  HR-IQT				 HUB_REGIONAL		  2 /HC-LIM/HR-IQT
+  HR-JUL				 HUB_REGIONAL		  2 /HC-LIM/HR-JUL
+  HR-PIU				 HUB_REGIONAL		  2 /HC-LIM/HR-PIU
+  HR-TRU				 HUB_REGIONAL		  2 /HC-LIM/HR-TRU
+
+22 rows selected.
+
+=== O4. [ORACLE] Agencias por hub con LISTAGG (PG: STRING_AGG) ===
+
+HUB	    N_AGENCIAS AGENCIAS
+----------- ---------- ------------------------------------------------------------------------------------------
+HC-LIM		     9 AG-CAL-01, AG-ICA-01, AG-LIM-ATE, AG-LIM-MIR, AG-LIM-OLI, AG-LIM-SIS, AG-LIM-SJL, AG-LIM-S
+		       UR, AG-PCL-01
+
+HR-AQP		     4 AG-AQP-01, AG-AQP-02, AG-AQP-03, AG-TCQ-01
+HR-CIX		     3 AG-CIX-01, AG-CIX-02, AG-TPP-01
+HR-HYO		     3 AG-AYA-01, AG-HYO-01, AG-HYO-02
+HR-TRU		     3 AG-CAJ-01, AG-TRU-01, AG-TRU-02
+HR-JUL		     2 AG-JUL-01, AG-PUN-01
+HR-PIU		     2 AG-PIU-01, AG-PIU-02
+HR-CUZ		     2 AG-CUZ-01, AG-CUZ-02
+HR-IQT		     1 AG-IQT-01
+
+9 rows selected.
+
+=== O5. Top 5 clientes por facturación: FETCH FIRST (estándar) vs ROWNUM (clásico Oracle) ===
+
+NOMBRE_RAZON_SOCIAL			 ENVIOS  FACTURADO
+------------------------------------ ---------- ----------
+Distribuidora San Martín E.I.R.L.            26      850.8
+Negociaciones Inca S.A. 		     24      738.4
+Representaciones Santa Rosa S.R.L.	     22      623.7
+Textil Los Andes S.R.L. 		     18      556.7
+Importaciones Los Andes E.I.R.L.	     14      507.5
+
+
+NOMBRE_RAZON_SOCIAL		      FACTURADO
+------------------------------------ ----------
+Distribuidora San Martín E.I.R.L.         850.8
+Negociaciones Inca S.A. 		  738.4
+Representaciones Santa Rosa S.R.L.	  623.7
+Textil Los Andes S.R.L. 		  556.7
+Importaciones Los Andes E.I.R.L.	  507.5
+
+=== O6. Línea de tiempo de un envío con LAG (funciones analíticas, igual que PG) ===
+
+FECHA	    TIPO_EVENTO      HUB	 DESDE_ANTERIOR
+----------- ---------------- ----------- ---------------------------------------------------------------------------
+01/04 12:52 ADMISION	     AG-LIM-ATE
+01/04 21:49 SALIDA_HUB	     AG-LIM-ATE  +0 08:56:41
+01/04 22:46 LLEGADA_HUB      HC-LIM	 +0 00:56:39
+02/04 05:31 CLASIFICACION    HC-LIM	 +0 06:45:40
+02/04 17:31 SALIDA_HUB	     HC-LIM	 +0 12:00:04
+02/04 18:21 LLEGADA_HUB      AG-LIM-MIR  +0 00:49:39
+03/04 08:30 EN_REPARTO	     AG-LIM-MIR  +0 14:08:28
+03/04 16:12 ENTREGA	     AG-LIM-MIR  +0 07:42:00
+
+8 rows selected.
+
+=== O7. Funciones del paquete invocadas desde SQL ===
+
+EXPRESS_LIMA_ORIENTE_2_5KG ESTANDAR_LIMA_SUR_12KG
+-------------------------- ----------------------
+			45		     45.5
+
+
+ESTADO_SLA		   ENVIOS
+---------------------- ----------
+ENTREGADO_A_TIEMPO	      908
+ENTREGADO_CON_RETRASO	       74
+DEVUELTO		       18
+
+=== O8. [ORACLE] La cadena vacía es NULL (en PostgreSQL '' y NULL son distintos) ===
+
+RESULTADO
+----------------------------------------
+En Oracle: '' IS NULL = TRUE
+
+
+NVL COALESCE
+--- --------
+NVL COALESCE
+
+=== O9. [ORACLE] MERGE: upsert de tarifa (PG: INSERT ... ON CONFLICT DO UPDATE) ===
+
+1 row merged.
+
+
+TARIFA_OCTUBRE TARIFA_NOVIEMBRE
+-------------- ----------------
+	    45		     48
+
+
+Rollback complete.
+
+=== P1. Prueba del paquete + trigger: nuevo envío y escaneos ===
+
+1 row created.
+
+
+PL/SQL procedure successfully completed.
+
+
+NRO_TRACKING  ESTADO_ACTUAL   MONTO_TOTAL
+------------- --------------- -----------
+OLV2699999999 ADMITIDO		       39
+
+--- error esperado: transición inválida (ENTREGA desde ADMITIDO)
+BEGIN pkg_tracking.sp_registrar_escaneo('OLV2699999999', 'ENTREGA', 10); END;
+
+*
+ERROR at line 1:
+ORA-20010: Transición inválida: envío OLV2699999999 en estado ADMITIDO no admite evento ENTREGA
+ORA-06512: at "OLVA.PKG_TRACKING", line 94
+ORA-06512: at "OLVA.PKG_TRACKING", line 82
+ORA-06512: at line 1
+
+
+--- error esperado: tracking inexistente
+BEGIN pkg_tracking.sp_registrar_escaneo('OLV0000000000', 'ADMISION', 10); END;
+
+*
+ERROR at line 1:
+ORA-20011: Tracking OLV0000000000 no existe
+ORA-06512: at "OLVA.PKG_TRACKING", line 91
+ORA-06512: at line 1
+
+
+--- error esperado: peso excede el máximo del servicio
+SELECT pkg_tracking.fn_calcular_tarifa(2, 1, 4, 3) FROM dual
+       *
+ERROR at line 1:
+ORA-20002: Peso 3 kg excede el máximo del servicio (.5 kg)
+ORA-06512: at "OLVA.PKG_TRACKING", line 19
+ORA-06512: at line 1
+
+
+=== P2. [ORACLE] Transacción autónoma: se hace ROLLBACK, pero el log de errores persiste ===
+
+Rollback complete.
+
+
+ENVIO_PRUEBA_TRAS_ROLLBACK
+--------------------------
+			 0
+
+
+ORIGEN				     MENSAJE
+------------------------------------ --------------------------------------------------------------------------------
+pkg_tracking.sp_registrar_escaneo    ORA-20010: Transición inválida: envío OLV2699999999 en estado ADMITIDO no admite
+				      evento ENTREGA
+
+pkg_tracking.sp_registrar_escaneo    Tracking inexistente: OLV0000000000
+

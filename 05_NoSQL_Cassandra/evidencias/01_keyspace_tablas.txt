@@ -1,0 +1,36 @@
+
+
+
+alertas_sla        envios_por_cliente  estado_envio       eventos_por_hub_dia
+contador_escaneos  escaneos_hub_hora   eventos_por_envio  hubs               
+
+
+
+
+CREATE TABLE olva_tracking.eventos_por_hub_dia (
+    hub text,
+    dia date,
+    fecha_hora timestamp,
+    id_evento bigint,
+    nro_tracking text,
+    servicio text,
+    tipo_evento text,
+    PRIMARY KEY ((hub, dia), fecha_hora, id_evento)
+) WITH CLUSTERING ORDER BY (fecha_hora DESC, id_evento ASC)
+    AND additional_write_policy = '99p'
+    AND bloom_filter_fp_chance = 0.01
+    AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'}
+    AND cdc = false
+    AND comment = 'Q2 - escaneos por hub y día (serie de tiempo)'
+    AND compaction = {'class': 'org.apache.cassandra.db.compaction.TimeWindowCompactionStrategy', 'compaction_window_size': '1', 'compaction_window_unit': 'DAYS', 'max_threshold': '32', 'min_threshold': '4'}
+    AND compression = {'chunk_length_in_kb': '16', 'class': 'org.apache.cassandra.io.compress.LZ4Compressor'}
+    AND memtable = 'default'
+    AND crc_check_chance = 1.0
+    AND default_time_to_live = 0
+    AND extensions = {}
+    AND gc_grace_seconds = 864000
+    AND max_index_interval = 2048
+    AND memtable_flush_period_in_ms = 0
+    AND min_index_interval = 128
+    AND read_repair = 'BLOCKING'
+    AND speculative_retry = '99p';

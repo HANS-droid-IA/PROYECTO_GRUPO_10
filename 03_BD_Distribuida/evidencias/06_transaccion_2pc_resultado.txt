@@ -1,0 +1,163 @@
+=== Preparación del escenario (limpieza idempotente + datos de demostración) ===
+You are now connected to database "olva_norte" as user "olva_admin" on host "pg_norte" (address "172.18.0.2") at port "5432".
+DELETE 0
+You are now connected to database "olva_sur" as user "olva_admin" on host "pg_sur" (address "172.18.0.4") at port "5432".
+DELETE 0
+You are now connected to database "olva_lima" as user "olva_admin" via socket in "/var/run/postgresql" at port "5432".
+DELETE 0
+DELETE 0
+psql:06_transaccion_2pc.sql:51: NOTICE:  table "log_2pc" does not exist, skipping
+DROP TABLE
+CREATE TABLE
+INSERT 0 2
+INSERT 0 2
+ nro_tracking  | nodo_del_envio | estado_actual 
+---------------+----------------+---------------
+ OLV2699990001 | LIMA           | EN_TRANSITO
+ OLV2699990002 | NORTE          | EN_TRANSITO
+
+
+================ CASO 1: 2PC exitoso (todos votan SÍ) ================
+INSERT 0 1
+--- FASE 1 en SUR: insertar eventos de llegada y PREPARE
+You are now connected to database "olva_sur" as user "olva_admin" on host "pg_sur" (address "172.18.0.4") at port "5432".
+BEGIN
+INSERT 0 2
+PREPARE TRANSACTION
+--- FASE 1 en LIMA: actualizar estado del envío 1 (solo si está EN_TRANSITO) y PREPARE
+You are now connected to database "olva_lima" as user "olva_admin" via socket in "/var/run/postgresql" at port "5432".
+BEGIN
+DO
+PREPARE TRANSACTION
+--- FASE 1 en NORTE: actualizar estado del envío 2 y PREPARE
+You are now connected to database "olva_norte" as user "olva_admin" on host "pg_norte" (address "172.18.0.2") at port "5432".
+BEGIN
+DO
+PREPARE TRANSACTION
+--- Estado intermedio: transacciones preparadas (en duda) en cada nodo
+You are now connected to database "olva_sur" as user "olva_admin" on host "pg_sur" (address "172.18.0.4") at port "5432".
+ nodo |        gid         |      preparada      
+------+--------------------+---------------------
+ SUR  | gtx_arribo_001_sur | 2026-10-08 21:56:02
+
+You are now connected to database "olva_norte" as user "olva_admin" on host "pg_norte" (address "172.18.0.2") at port "5432".
+ nodo  |         gid          |      preparada      
+-------+----------------------+---------------------
+ NORTE | gtx_arribo_001_norte | 2026-10-08 21:56:03
+
+You are now connected to database "olva_lima" as user "olva_admin" via socket in "/var/run/postgresql" at port "5432".
+ nodo |         gid         |      preparada      
+------+---------------------+---------------------
+ LIMA | gtx_arribo_001_lima | 2026-10-08 21:56:02
+
+--- Mientras están preparadas, los cambios NO son visibles para nadie:
+ nro_tracking  | nodo  | estado_actual 
+---------------+-------+---------------
+ OLV2699990001 | LIMA  | EN_TRANSITO
+ OLV2699990002 | NORTE | EN_TRANSITO
+
+Votos -> SUR= 1  LIMA= 1  NORTE= 1
+INSERT 0 1
+--- FASE 2: decisión COMMIT -> COMMIT PREPARED en cada nodo
+You are now connected to database "olva_sur" as user "olva_admin" on host "pg_sur" (address "172.18.0.4") at port "5432".
+COMMIT PREPARED
+You are now connected to database "olva_lima" as user "olva_admin" via socket in "/var/run/postgresql" at port "5432".
+COMMIT PREPARED
+You are now connected to database "olva_norte" as user "olva_admin" on host "pg_norte" (address "172.18.0.2") at port "5432".
+COMMIT PREPARED
+You are now connected to database "olva_lima" as user "olva_admin" via socket in "/var/run/postgresql" at port "5432".
+INSERT 0 1
+--- Resultado global tras el COMMIT:
+ nro_tracking  | nodo_envio | estado_actual 
+---------------+------------+---------------
+ OLV2699990001 | LIMA       | EN_HUB
+ OLV2699990002 | NORTE      | EN_HUB
+
+ id_envio | tipo_evento | nodo_evento |      observacion       
+----------+-------------+-------------+------------------------
+   990001 | SALIDA_HUB  | LIMA        | Manifiesto MF-DEMO-2PC
+   990002 | SALIDA_HUB  | LIMA        | Manifiesto MF-DEMO-2PC
+   990001 | LLEGADA_HUB | SUR         | Arribo MF-DEMO-2PC
+   990002 | LLEGADA_HUB | SUR         | Arribo MF-DEMO-2PC
+
+
+================ CASO 2: un participante vota NO -> ROLLBACK global ================
+Se reintenta por error el mismo arribo (manifiesto duplicado).
+INSERT 0 1
+--- FASE 1 en SUR: inserta eventos y PREPARE (vota SÍ)
+You are now connected to database "olva_sur" as user "olva_admin" on host "pg_sur" (address "172.18.0.4") at port "5432".
+BEGIN
+INSERT 0 2
+PREPARE TRANSACTION
+--- FASE 1 en LIMA: el envío ya está EN_HUB -> error -> vota NO
+You are now connected to database "olva_lima" as user "olva_admin" via socket in "/var/run/postgresql" at port "5432".
+BEGIN
+psql:06_transaccion_2pc.sql:168: ERROR:  LIMA vota NO: el envío 990001 no está EN_TRANSITO
+CONTEXT:  PL/pgSQL function inline_code_block line 3 at RAISE
+ROLLBACK
+Votos -> SUR= 1  LIMA= 0  (NORTE ya no se consulta)
+INSERT 0 1
+--- FASE 2: decisión ROLLBACK -> ROLLBACK PREPARED en los nodos que votaron SÍ
+You are now connected to database "olva_sur" as user "olva_admin" on host "pg_sur" (address "172.18.0.4") at port "5432".
+ROLLBACK PREPARED
+You are now connected to database "olva_lima" as user "olva_admin" via socket in "/var/run/postgresql" at port "5432".
+--- Verificación: no quedaron eventos duplicados en SUR
+ id_envio | tipo_evento |      observacion       | nodo 
+----------+-------------+------------------------+------
+   990001 | SALIDA_HUB  | Manifiesto MF-DEMO-2PC | LIMA
+   990002 | SALIDA_HUB  | Manifiesto MF-DEMO-2PC | LIMA
+   990001 | LLEGADA_HUB | Arribo MF-DEMO-2PC     | SUR
+   990002 | LLEGADA_HUB | Arribo MF-DEMO-2PC     | SUR
+
+
+================ CASO 3: falla del coordinador -> transacción EN DUDA ================
+NORTE prepara la salida del envío 2 hacia la agencia, pero el coordinador cae antes de la fase 2.
+INSERT 0 1
+You are now connected to database "olva_norte" as user "olva_admin" on host "pg_norte" (address "172.18.0.2") at port "5432".
+BEGIN
+UPDATE 1
+PREPARE TRANSACTION
+>>> (el coordinador se desconecta aquí: no envía COMMIT ni ROLLBACK)
+You are now connected to database "olva_norte" as user "olva_admin".
+--- La transacción sigue preparada aunque la sesión que la creó ya no existe:
+         gid          |      preparada      |   owner    |  database  
+----------------------+---------------------+------------+------------
+ gtx_salida_003_norte | 2026-10-08 21:56:03 | olva_admin | olva_norte
+
+--- Y retiene sus bloqueos: otra transacción que toca el envío queda bloqueada (lock_timeout 3 s)
+SET
+psql:06_transaccion_2pc.sql:203: ERROR:  canceling statement due to lock timeout
+CONTEXT:  while updating tuple (60,42) in relation "envio"
+RESET
+--- RECUPERACIÓN: el coordinador reinicia, lee su bitácora y resuelve las transacciones en duda
+You are now connected to database "olva_lima" as user "olva_admin" via socket in "/var/run/postgresql" at port "5432".
+      gid       |  fase  |               detalle                
+----------------+--------+--------------------------------------
+ gtx_salida_003 | INICIO | Salida a reparto; participante NORTE
+
+No hay registro DECISION -> regla de recuperación: abortar (presumed abort)
+INSERT 0 1
+You are now connected to database "olva_norte" as user "olva_admin" on host "pg_norte" (address "172.18.0.2") at port "5432".
+ROLLBACK PREPARED
+ transacciones_en_duda 
+-----------------------
+                     0
+
+UPDATE 1
+ nro_tracking  | estado_actual |                 direccion_entrega                  
+---------------+---------------+----------------------------------------------------
+ OLV2699990002 | EN_HUB        | Calle Mercaderes 220, Arequipa (ref. puerta verde)
+
+You are now connected to database "olva_lima" as user "olva_admin" via socket in "/var/run/postgresql" at port "5432".
+
+=== Bitácora del coordinador (global.log_2pc) ===
+ id |      gid       |   fase   |                           detalle                            
+----+----------------+----------+--------------------------------------------------------------
+  1 | gtx_arribo_001 | INICIO   | Arribo MF-DEMO-2PC a HR-AQP; participantes: SUR, LIMA, NORTE
+  2 | gtx_arribo_001 | DECISION | COMMIT (3/3 votos SÍ)
+  3 | gtx_arribo_001 | FIN      | Confirmado en SUR, LIMA, NORTE
+  4 | gtx_arribo_002 | INICIO   | Reintento duplicado del arribo MF-DEMO-2PC
+  5 | gtx_arribo_002 | DECISION | ROLLBACK (LIMA votó NO)
+  6 | gtx_salida_003 | INICIO   | Salida a reparto; participante NORTE
+  7 | gtx_salida_003 | DECISION | ROLLBACK por recuperación (sin decisión registrada)
+

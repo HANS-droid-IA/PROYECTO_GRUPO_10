@@ -1,0 +1,39 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_c11.sql
+
+SET search_path = operacion, maestro, public;
+WITH prod AS (
+    SELECT emp.id_hub, emp.nombres || ' ' || emp.apellidos AS courier,
+           COUNT(*) FILTER (WHERE i.resultado = 'ENTREGADO')              AS entregas,
+           COUNT(DISTINCT i.fecha_hora::DATE)                             AS dias_trabajados
+      FROM intento_entrega i
+      JOIN empleado emp ON emp.id_empleado = i.id_courier
+     GROUP BY 1, 2
+)
+SELECT * FROM (
+    SELECT h.codigo AS agencia, p.courier, p.entregas, p.dias_trabajados,
+           ROUND(p.entregas::NUMERIC / NULLIF(p.dias_trabajados, 0), 2)            AS entregas_por_dia,
+           DENSE_RANK() OVER (PARTITION BY p.id_hub ORDER BY p.entregas DESC)       AS rank_agencia
+      FROM prod p JOIN hub h ON h.id_hub = p.id_hub
+) t
+ WHERE agencia LIKE 'AG-LIM%'
+ ORDER BY agencia, rank_agencia;
+  agencia   |          courier          | entregas | dias_trabajados | entregas_por_dia | rank_agencia 
+------------+---------------------------+----------+-----------------+------------------+--------------
+ AG-LIM-ATE | Wilmer Chávez Alvarado    |      554 |             158 |             3.51 |            1
+ AG-LIM-ATE | Renzo Huamán Ticona       |      536 |             160 |             3.35 |            2
+ AG-LIM-ATE | Karina Castillo Mendoza   |      531 |             161 |             3.30 |            3
+ AG-LIM-MIR | Carmen Díaz Romero        |      564 |             158 |             3.57 |            1
+ AG-LIM-MIR | Sofía Romero Gonzales     |      533 |             157 |             3.39 |            2
+ AG-LIM-MIR | Milagros Espinoza López   |      531 |             157 |             3.38 |            3
+ AG-LIM-OLI | Lucía Rojas Espinoza      |      567 |             159 |             3.57 |            1
+ AG-LIM-OLI | Carmen Ríos Alvarado      |      529 |             155 |             3.41 |            2
+ AG-LIM-OLI | Miguel Villanueva Ramírez |      527 |             161 |             3.27 |            3
+ AG-LIM-SIS | Hugo Cabrera Medina       |      553 |             160 |             3.46 |            1
+ AG-LIM-SIS | Andrés López Rodríguez    |      548 |             160 |             3.43 |            2
+ AG-LIM-SIS | Hugo Paredes López        |      540 |             156 |             3.46 |            3
+ AG-LIM-SJL | María Villanueva Alvarado |      563 |             160 |             3.52 |            1
+ AG-LIM-SJL | Pedro Flores Espinoza     |      541 |             159 |             3.40 |            2
+ AG-LIM-SJL | Liliana López López       |      523 |             158 |             3.31 |            3
+ AG-LIM-SUR | Carmen Palomino Rodríguez |      578 |             160 |             3.61 |            1
+ AG-LIM-SUR | Mariela Alvarado Cabrera  |      557 |             158 |             3.53 |            2
+ AG-LIM-SUR | Diego Espinoza Alvarado   |      522 |             157 |             3.32 |            3

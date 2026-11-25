@@ -1,0 +1,53 @@
+
+=== Vistas de solo lectura ===
+Creadas: vw_tracking_publico, vw_envios_analitica
+
+=== Roles personalizados ===
+
+=== Usuarios ===
+usuario          | base          | roles            | mecanismo    
+-----------------+---------------+------------------+--------------
+u_analista_mongo | olva_tracking | rol_analista     | SCRAM-SHA-256
+u_operador_mongo | olva_tracking | rol_operador_hub | SCRAM-SHA-256
+u_tracking_web   | olva_tracking | rol_tracking_web | SCRAM-SHA-256
+(3 documentos)
+rol              | privilegios                        
+-----------------+------------------------------------
+rol_tracking_web | vw_tracking_publico:find           
+rol_operador_hub | envios:find/update, hubs:find      
+rol_analista     | vw_envios_analitica:find, hubs:find
+(3 documentos)
+
+=== Conectado como u_tracking_web ===
+  PERMITIDO  leer vista vw_tracking_publico  -> {"_id":"OLV2600000001","estado_actual":"ENTREGADO","destino":"Cusco"}
+  DENEGADO   leer colección envios  -> Unauthorized
+  DENEGADO   leer vista vw_envios_analitica  -> Unauthorized
+  DENEGADO   ver datos personales en la vista analítica  -> Unauthorized
+  DENEGADO   actualizar estado de un envío  -> Unauthorized
+  DENEGADO   insertar un envío  -> Unauthorized
+  DENEGADO   borrar envíos  -> Unauthorized
+  DENEGADO   leer clientes (datos personales)  -> Unauthorized
+  DENEGADO   eliminar la colección envios  -> Unauthorized
+
+=== Conectado como u_operador_mongo ===
+  DENEGADO   leer vista vw_tracking_publico  -> Unauthorized
+  PERMITIDO  leer colección envios  -> OLV2600000004
+  DENEGADO   leer vista vw_envios_analitica  -> Unauthorized
+  DENEGADO   ver datos personales en la vista analítica  -> Unauthorized
+  PERMITIDO  actualizar estado de un envío  -> 1 doc
+  DENEGADO   insertar un envío  -> Unauthorized
+  DENEGADO   borrar envíos  -> Unauthorized
+  DENEGADO   leer clientes (datos personales)  -> Unauthorized
+  DENEGADO   eliminar la colección envios  -> Unauthorized
+
+=== Conectado como u_analista_mongo ===
+  DENEGADO   leer vista vw_tracking_publico  -> Unauthorized
+  DENEGADO   leer colección envios  -> Unauthorized
+  PERMITIDO  leer vista vw_envios_analitica  -> 28858 entregados
+  PERMITIDO  ver datos personales en la vista analítica  -> campos ocultos por la vista
+  DENEGADO   actualizar estado de un envío  -> Unauthorized
+  DENEGADO   insertar un envío  -> Unauthorized
+  DENEGADO   borrar envíos  -> Unauthorized
+  DENEGADO   leer clientes (datos personales)  -> Unauthorized
+  DENEGADO   eliminar la colección envios  -> Unauthorized
+MongoServerError: Authentication failed.

@@ -1,0 +1,36 @@
+Connecting to ResourceManager at localhost/127.0.0.1:8032
+Total input files to process : 4
+number of splits:4
+Submitting tokens for job: job_1795483319183_0002
+Submitted application application_1795483319183_0002
+Running job: job_1795483319183_0002
+ map 0% reduce 0%
+ map 100% reduce 0%
+ map 100% reduce 100%
+Job job_1795483319183_0002 completed successfully
+        Launched map tasks=4
+        Launched reduce tasks=1
+        Map input records=1577253
+        Map output records=1577253
+        Reduce input groups=318
+        Reduce output records=318
+Connecting to ResourceManager at localhost/127.0.0.1:8032
+Total input files to process : 1
+number of splits:1
+Submitting tokens for job: job_1795483319183_0003
+Submitted application application_1795483319183_0003
+Running job: job_1795483319183_0003
+ map 0% reduce 0%
+ map 100% reduce 0%
+ map 100% reduce 100%
+Job job_1795483319183_0003 completed successfully
+        Launched map tasks=1
+        Launched reduce tasks=1
+        Map input records=299668
+        Map output records=1198668
+        Reduce input groups=140
+        Reduce output records=140
+    OLVA
+        ENVIOS_LEIDOS=299667
+Resultados en: /olva/resultados
+Tiempo total: 99 s

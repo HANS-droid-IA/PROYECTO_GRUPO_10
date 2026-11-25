@@ -1,0 +1,26 @@
+# respaldos generados por los scripts (se regeneran con 11_backup_restauracion.sh / 07_backup_datapump.sh)
+01_Relacional_PostgreSQL/backups/base_*/
+*.dump
+*.dmp
+# Python
+__pycache__/
+*.pyc
+# datos generados para NoSQL (se regeneran con los scripts generar_*.py)
+04_NoSQL_MongoDB/datos/
+05_NoSQL_Cassandra/datos/
+# clave interna del cluster MongoDB (secreto, se genera localmente)
+04_NoSQL_MongoDB/distribuido/mongo-keyfile
+# Big Data: conjunto masivo (se regenera con 06_BigData_Hadoop/00_ejecutar_todo.sh) y binarios de compilación
+06_BigData_Hadoop/data/masivo/
+06_BigData_Hadoop/mapreduce/lib/
+06_BigData_Hadoop/mapreduce/build/
+06_BigData_Hadoop/mapreduce/olva-bigdata.jar
+# credenciales locales (se usa .env.example como plantilla)
+.env
+# archivos temporales de Office y del sistema
+~$*
+*.tmp
+Thumbs.db
+desktop.ini
+# respaldos de roles (contienen hashes de contraseñas)
+01_Relacional_PostgreSQL/backups/globales_*.sql

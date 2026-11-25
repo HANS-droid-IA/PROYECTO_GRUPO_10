@@ -1,0 +1,17 @@
+olva_admin@mongos:olva_sedes> load('01_configurar_sedes.js')
+=== 1. Registro de las sedes (shards) en el clúster ===
+sede          | servidor                              | estado
+--------------+---------------------------------------+-------
+sede_lima     | rs_lima/olva_mongo_lima:27018         | activo
+sede_arequipa | rs_arequipa/olva_mongo_arequipa:27018 | activo
+(2 filas)
+
+=== 2. Zonas geográficas: cada sede es dueña de una zona ===
+
+=== 3. Base olva_sedes y colección fragmentada envios ===
+zona            | nodo_desde | nodo_hasta_sin_incluir | nodos     
+----------------+------------+------------------------+-----------
+ZONA_LIMA       | (inicio)   | NORTE                  | LIMA      
+ZONA_PROVINCIAS | NORTE      | (fin)                  | NORTE, SUR
+(2 filas)
+Clave de fragmentación (shard key): { "origen.nodo": 1, "_id": 1 }

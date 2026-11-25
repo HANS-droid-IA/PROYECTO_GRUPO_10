@@ -1,0 +1,20 @@
+olva_admin@localhost:5440/olva_lima> psql -h localhost -p 5440 -U olva_admin -d olva_lima -f dd_q3.sql
+
+Q3. JOIN co-localizado (fragmentación derivada): envio ⋈ paquete se ejecuta
+    DENTRO de cada nodo (partitionwise join + join pushdown)
+                                                                                                                                     QUERY PLAN                                                                                                                                      
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Append
+   ->  Async Foreign Scan
+         Output: e.nodo, (count(p.id_paquete)), (round(avg(p.peso_kg), 2))
+         Relations: Aggregate on ((global.envio_norte e) INNER JOIN (global.paquete_norte p))
+         Remote SQL: SELECT r4.nodo, count(r7.id_paquete), round(avg(r7.peso_kg), 2) FROM (operacion.envio r4 INNER JOIN operacion.paquete r7 ON (((r4.id_envio = r7.id_envio)) AND ((r7.nodo = r4.nodo)) AND (r7.fragil) AND ((r4.nodo = ANY ('{NORTE,SUR}'::text[]))))) GROUP BY 1
+   ->  Async Foreign Scan
+         Output: e_1.nodo, (count(p_1.id_paquete)), (round(avg(p_1.peso_kg), 2))
+         Relations: Aggregate on ((global.envio_sur e_1) INNER JOIN (global.paquete_sur p_1))
+         Remote SQL: SELECT r5.nodo, count(r8.id_paquete), round(avg(r8.peso_kg), 2) FROM (operacion.envio r5 INNER JOIN operacion.paquete r8 ON (((r5.id_envio = r8.id_envio)) AND ((r8.nodo = r5.nodo)) AND (r8.fragil) AND ((r5.nodo = ANY ('{NORTE,SUR}'::text[]))))) GROUP BY 1
+
+ nodo  | bultos_fragiles | peso_prom 
+-------+-----------------+-----------
+ NORTE |             666 |      2.25
+ SUR   |             638 |      2.29

@@ -1,0 +1,374 @@
+﻿[
+    {
+        "id":  "PG01",
+        "titulo":  "Conexión al servidor PostgreSQL y datos de la base olva_courier",
+        "parte":  "",
+        "archivo":  "PG01.png"
+    },
+    {
+        "id":  "PG02",
+        "titulo":  "Schemas y tablas creadas en olva_courier",
+        "parte":  "",
+        "archivo":  "PG02.png"
+    },
+    {
+        "id":  "PG03",
+        "titulo":  "Estructura de la tabla operacion.despacho: columnas, PK, FK, CHECK, índices y trigger",
+        "parte":  "",
+        "archivo":  "PG03.png"
+    },
+    {
+        "id":  "PG04",
+        "titulo":  "Restricciones implementadas en la tabla operacion.envio",
+        "parte":  "",
+        "archivo":  "PG04.png"
+    },
+    {
+        "id":  "PG05",
+        "titulo":  "Validación del poblamiento: número de registros por tabla",
+        "parte":  "",
+        "archivo":  "PG05.png"
+    },
+    {
+        "id":  "PG_C01",
+        "titulo":  "Consulta C01: Línea de tiempo (tracking) de un envío con tiempo entre escaneos",
+        "parte":  "",
+        "archivo":  "PG_C01.png"
+    },
+    {
+        "id":  "PG_C02",
+        "titulo":  "Consulta C02: Cumplimiento de SLA por servicio y mes",
+        "parte":  "",
+        "archivo":  "PG_C02.png"
+    },
+    {
+        "id":  "PG_C03",
+        "titulo":  "Consulta C03: Cuellos de botella: permanencia en hubs por franja horaria (función de tabla)",
+        "parte":  "",
+        "archivo":  "PG_C03.png"
+    },
+    {
+        "id":  "PG_C04",
+        "titulo":  "Consulta C04: Impacto del cuello de botella del Hub Central en el SLA",
+        "parte":  "",
+        "archivo":  "PG_C04.png"
+    },
+    {
+        "id":  "PG_C05",
+        "titulo":  "Consulta C05: Puntualidad de despachos por ruta (salida real vs programada)",
+        "parte":  "",
+        "archivo":  "PG_C05.png"
+    },
+    {
+        "id":  "PG_C06_p1",
+        "titulo":  "Consulta C06: Matriz de ingresos región origen x destino con subtotales (ROLLUP)",
+        "parte":  "1/2",
+        "archivo":  "PG_C06_p1.png"
+    },
+    {
+        "id":  "PG_C06_p2",
+        "titulo":  "Consulta C06: Matriz de ingresos región origen x destino con subtotales (ROLLUP)",
+        "parte":  "2/2",
+        "archivo":  "PG_C06_p2.png"
+    },
+    {
+        "id":  "PG_C07",
+        "titulo":  "Consulta C07: Top 10 clientes empresariales: facturación, participación y puntualidad",
+        "parte":  "",
+        "archivo":  "PG_C07.png"
+    },
+    {
+        "id":  "PG_C08",
+        "titulo":  "Consulta C08: Efectividad de entrega al primer intento por ciudad y motivos de falla",
+        "parte":  "",
+        "archivo":  "PG_C08.png"
+    },
+    {
+        "id":  "PG_C09",
+        "titulo":  "Consulta C09: Alerta operativa: envíos vivos vencidos o en riesgo al corte",
+        "parte":  "",
+        "archivo":  "PG_C09.png"
+    },
+    {
+        "id":  "PG_C10_p1",
+        "titulo":  "Consulta C10: Incidencias por tipo y hub: volumen, abiertas y tiempo medio de resolución",
+        "parte":  "1/2",
+        "archivo":  "PG_C10_p1.png"
+    },
+    {
+        "id":  "PG_C10_p2",
+        "titulo":  "Consulta C10: Incidencias por tipo y hub: volumen, abiertas y tiempo medio de resolución",
+        "parte":  "2/2",
+        "archivo":  "PG_C10_p2.png"
+    },
+    {
+        "id":  "PG_C11",
+        "titulo":  "Consulta C11: Productividad de couriers: entregas efectivas por día trabajado, ranking por agencia",
+        "parte":  "",
+        "archivo":  "PG_C11.png"
+    },
+    {
+        "id":  "PG_C12",
+        "titulo":  "Consulta C12: Envíos estancados: sin escaneo en más de 48 h (posible pérdida)",
+        "parte":  "",
+        "archivo":  "PG_C12.png"
+    },
+    {
+        "id":  "PG_C13",
+        "titulo":  "Consulta C13: Ocupación horaria del Hub Central vs capacidad (picos de demanda)",
+        "parte":  "",
+        "archivo":  "PG_C13.png"
+    },
+    {
+        "id":  "PG_F1",
+        "titulo":  "Ejecución de las funciones fn_calcular_tarifa y fn_estado_sla",
+        "parte":  "",
+        "archivo":  "PG_F1.png"
+    },
+    {
+        "id":  "PG_F2",
+        "titulo":  "Ejecución de las funciones fn_cuellos_botella y fn_permanencia_hub",
+        "parte":  "",
+        "archivo":  "PG_F2.png"
+    },
+    {
+        "id":  "PG_P1",
+        "titulo":  "Ejecución del procedimiento sp_registrar_envio y validación de destino sin carretera",
+        "parte":  "",
+        "archivo":  "PG_P1.png"
+    },
+    {
+        "id":  "PG_P2",
+        "titulo":  "Ciclo completo de un envío mediante procedimientos almacenados y auditoría generada por triggers",
+        "parte":  "",
+        "archivo":  "PG_P2.png"
+    },
+    {
+        "id":  "PG_S1",
+        "titulo":  "Roles, usuarios, privilegios y políticas RLS configurados",
+        "parte":  "",
+        "archivo":  "PG_S1.png"
+    },
+    {
+        "id":  "PG_S2",
+        "titulo":  "Row Level Security: cada operador ve solo los envíos de su nodo",
+        "parte":  "",
+        "archivo":  "PG_S2.png"
+    },
+    {
+        "id":  "PG_S3",
+        "titulo":  "Privilegios por columna y escritura solo mediante procedimientos: accesos denegados",
+        "parte":  "",
+        "archivo":  "PG_S3.png"
+    },
+    {
+        "id":  "PG_B1_p1",
+        "titulo":  "Respaldo lógico y físico, incidente simulado y restauración verificada",
+        "parte":  "1/2",
+        "archivo":  "PG_B1_p1.png"
+    },
+    {
+        "id":  "PG_B1_p2",
+        "titulo":  "Respaldo lógico y físico, incidente simulado y restauración verificada",
+        "parte":  "2/2",
+        "archivo":  "PG_B1_p2.png"
+    },
+    {
+        "id":  "ORA01",
+        "titulo":  "Conexión a Oracle con SQL*Plus al servicio FREEPDB1 (esquema OLVA)",
+        "parte":  "",
+        "archivo":  "ORA01.png"
+    },
+    {
+        "id":  "ORA02",
+        "titulo":  "Tablas, volumen de datos, restricciones y objetos PL/SQL del esquema OLVA",
+        "parte":  "",
+        "archivo":  "ORA02.png"
+    },
+    {
+        "id":  "ORA03_p1",
+        "titulo":  "Estructura y restricciones de la tabla ENVIO en Oracle",
+        "parte":  "1/2",
+        "archivo":  "ORA03_p1.png"
+    },
+    {
+        "id":  "ORA03_p2",
+        "titulo":  "Estructura y restricciones de la tabla ENVIO en Oracle",
+        "parte":  "2/2",
+        "archivo":  "ORA03_p2.png"
+    },
+    {
+        "id":  "ORA04",
+        "titulo":  "Consultas básicas en Oracle: envíos por estado y cumplimiento de SLA por servicio",
+        "parte":  "",
+        "archivo":  "ORA04.png"
+    },
+    {
+        "id":  "ORA05",
+        "titulo":  "Consulta jerárquica CONNECT BY sobre la red logística (exclusiva de Oracle)",
+        "parte":  "",
+        "archivo":  "ORA05.png"
+    },
+    {
+        "id":  "ORA06",
+        "titulo":  "LISTAGG y Top-N con FETCH FIRST y ROWNUM",
+        "parte":  "",
+        "archivo":  "ORA06.png"
+    },
+    {
+        "id":  "ORA07",
+        "titulo":  "Funciones analíticas (LAG) y funciones del paquete pkg_tracking invocadas desde SQL",
+        "parte":  "",
+        "archivo":  "ORA07.png"
+    },
+    {
+        "id":  "ORA08",
+        "titulo":  "Cadena vacía como NULL y MERGE (upsert) en Oracle",
+        "parte":  "",
+        "archivo":  "ORA08.png"
+    },
+    {
+        "id":  "ORA09_p1",
+        "titulo":  "Paquete PL/SQL, trigger y transacción autónoma: errores controlados y bitácora persistente",
+        "parte":  "1/2",
+        "archivo":  "ORA09_p1.png"
+    },
+    {
+        "id":  "ORA09_p2",
+        "titulo":  "Paquete PL/SQL, trigger y transacción autónoma: errores controlados y bitácora persistente",
+        "parte":  "2/2",
+        "archivo":  "ORA09_p2.png"
+    },
+    {
+        "id":  "ORA10",
+        "titulo":  "Seguridad en Oracle: usuarios, PROFILE, roles y privilegios",
+        "parte":  "",
+        "archivo":  "ORA10.png"
+    },
+    {
+        "id":  "ORA11_p1",
+        "titulo":  "Pruebas de acceso en Oracle y bloqueo de cuenta por PROFILE",
+        "parte":  "1/2",
+        "archivo":  "ORA11_p1.png"
+    },
+    {
+        "id":  "ORA11_p2",
+        "titulo":  "Pruebas de acceso en Oracle y bloqueo de cuenta por PROFILE",
+        "parte":  "2/2",
+        "archivo":  "ORA11_p2.png"
+    },
+    {
+        "id":  "ORA12",
+        "titulo":  "Respaldo con Data Pump (expdp), DROP simulado y restauración (impdp)",
+        "parte":  "",
+        "archivo":  "ORA12.png"
+    },
+    {
+        "id":  "DD01",
+        "titulo":  "Servidores postgres_fdw y catálogo de fragmentos en el coordinador Lima",
+        "parte":  "",
+        "archivo":  "DD01.png"
+    },
+    {
+        "id":  "DD02",
+        "titulo":  "Distribución de filas por nodo y regla de completitud",
+        "parte":  "",
+        "archivo":  "DD02.png"
+    },
+    {
+        "id":  "DD03",
+        "titulo":  "Reglas de disyunción y reconstrucción (fragmentación horizontal y vertical)",
+        "parte":  "",
+        "archivo":  "DD03.png"
+    },
+    {
+        "id":  "DD04",
+        "titulo":  "Integridad del predicado: el nodo SUR rechaza un envío que no le pertenece",
+        "parte":  "",
+        "archivo":  "DD04.png"
+    },
+    {
+        "id":  "DD_Q1",
+        "titulo":  "Consulta distribuida Q1: Localización: poda de fragmentos y filtro enviado al nodo SUR",
+        "parte":  "",
+        "archivo":  "DD_Q1.png"
+    },
+    {
+        "id":  "DD_Q2",
+        "titulo":  "Consulta distribuida Q2: Agregación distribuida: GROUP BY ejecutado en cada nodo",
+        "parte":  "",
+        "archivo":  "DD_Q2.png"
+    },
+    {
+        "id":  "DD_Q3",
+        "titulo":  "Consulta distribuida Q3: JOIN co-localizado ejecutado dentro de cada nodo (fragmentación derivada)",
+        "parte":  "",
+        "archivo":  "DD_Q3.png"
+    },
+    {
+        "id":  "DD_Q4_p1",
+        "titulo":  "Consulta distribuida Q4: JOIN no co-localizado: tracking de un envío con eventos en los tres nodos",
+        "parte":  "1/2",
+        "archivo":  "DD_Q4_p1.png"
+    },
+    {
+        "id":  "DD_Q4_p2",
+        "titulo":  "Consulta distribuida Q4: JOIN no co-localizado: tracking de un envío con eventos en los tres nodos",
+        "parte":  "2/2",
+        "archivo":  "DD_Q4_p2.png"
+    },
+    {
+        "id":  "DD_Q5",
+        "titulo":  "Consulta distribuida Q5: Reconstrucción vertical del cliente y costo de la distribución",
+        "parte":  "",
+        "archivo":  "DD_Q5.png"
+    },
+    {
+        "id":  "DD_2PC1",
+        "titulo":  "Protocolo 2PC, caso 1: los tres nodos votan SÍ y se confirma la transacción global",
+        "parte":  "",
+        "archivo":  "DD_2PC1.png"
+    },
+    {
+        "id":  "DD_2PC2",
+        "titulo":  "Protocolo 2PC, caso 2: un participante vota NO y se revierte la transacción global",
+        "parte":  "",
+        "archivo":  "DD_2PC2.png"
+    },
+    {
+        "id":  "DD_2PC3",
+        "titulo":  "Protocolo 2PC, caso 3: caída del coordinador, transacción en duda y recuperación",
+        "parte":  "",
+        "archivo":  "DD_2PC3.png"
+    },
+    {
+        "id":  "DD_CC_A",
+        "titulo":  "Concurrencia A: bloqueo exclusivo de fila (SELECT ... FOR UPDATE) en el nodo SUR",
+        "parte":  "",
+        "archivo":  "DD_CC_A.png"
+    },
+    {
+        "id":  "DD_CC_B",
+        "titulo":  "Concurrencia B: actualización perdida en READ COMMITTED frente a REPEATABLE READ",
+        "parte":  "",
+        "archivo":  "DD_CC_B.png"
+    },
+    {
+        "id":  "DD_CC_C1",
+        "titulo":  "Concurrencia C1: interbloqueo local detectado por PostgreSQL",
+        "parte":  "",
+        "archivo":  "DD_CC_C1.png"
+    },
+    {
+        "id":  "DD_CC_C2_p1",
+        "titulo":  "Concurrencia C2: interbloqueo distribuido resuelto por tiempo de espera",
+        "parte":  "1/2",
+        "archivo":  "DD_CC_C2_p1.png"
+    },
+    {
+        "id":  "DD_CC_C2_p2",
+        "titulo":  "Concurrencia C2: interbloqueo distribuido resuelto por tiempo de espera",
+        "parte":  "2/2",
+        "archivo":  "DD_CC_C2_p2.png"
+    }
+]

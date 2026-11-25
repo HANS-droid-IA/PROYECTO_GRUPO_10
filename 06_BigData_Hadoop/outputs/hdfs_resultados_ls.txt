@@ -1,0 +1,6 @@
+drwxr-xr-x   - hadoop supergroup          0 2026-11-23 21:15 /olva/resultados/cumplimiento_sla
+-rw-r--r--   2 hadoop supergroup          0 2026-11-23 21:15 /olva/resultados/cumplimiento_sla/_SUCCESS
+-rw-r--r--   2 hadoop supergroup       9985 2026-11-23 21:15 /olva/resultados/cumplimiento_sla/part-r-00000
+drwxr-xr-x   - hadoop supergroup          0 2026-11-23 21:15 /olva/resultados/permanencia_hub
+-rw-r--r--   2 hadoop supergroup          0 2026-11-23 21:15 /olva/resultados/permanencia_hub/_SUCCESS
+-rw-r--r--   2 hadoop supergroup      10422 2026-11-23 21:15 /olva/resultados/permanencia_hub/part-r-00000

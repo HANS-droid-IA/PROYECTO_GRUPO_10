@@ -1,0 +1,113 @@
+SET
+SET
+BEGIN
+=== F1. fn_calcular_tarifa ===
+      servicio       | origen | destino | peso | tarifa_soles 
+---------------------+--------+---------+------+--------------
+ ECONOMICO_TERRESTRE | Lima   | Oriente |  0.4 |        19.00
+ ECONOMICO_TERRESTRE | Lima   | Oriente |  2.5 |        22.60
+ ECONOMICO_TERRESTRE | Lima   | Oriente | 12.0 |        38.80
+ ESTANDAR_TERRESTRE  | Lima   | Oriente |  0.4 |        24.00
+ ESTANDAR_TERRESTRE  | Lima   | Oriente |  2.5 |        29.00
+ ESTANDAR_TERRESTRE  | Lima   | Oriente | 12.0 |        51.50
+ EXPRESS_AEREO       | Lima   | Oriente |  0.4 |        32.00
+ EXPRESS_AEREO       | Lima   | Oriente |  2.5 |        45.00
+ EXPRESS_AEREO       | Lima   | Oriente | 12.0 |       103.50
+ SOBRE_AEREO         | Lima   | Oriente |  0.4 |        23.00
+
+--- F1 error esperado: peso mayor al permitido para SOBRE_AEREO (0.5 kg)
+psql:/proyecto/01_Relacional_PostgreSQL/09_pruebas_procedimientos.sql:40: ERROR:  Peso 3.0 kg excede el máximo del servicio (0.50 kg)
+CONTEXT:  PL/pgSQL function fn_calcular_tarifa(smallint,smallint,smallint,numeric,date) line 15 at RAISE
+=== P1. sp_registrar_envio: envío empresarial Lima (Miraflores) -> Lima (Surco) ===
+ p_nro_tracking 
+----------------
+ OLV2600029967
+
+psql:/proyecto/01_Relacional_PostgreSQL/09_pruebas_procedimientos.sql:47: NOTICE:  Envío OLV2600029967 registrado: 3.10 kg, S/ 19.50, compromiso 2026-10-12 20:00:00-05
+ nro_tracking  | estado_actual | peso_total_kg | monto_total |  fecha_compromiso   
+---------------+---------------+---------------+-------------+---------------------
+ OLV2600029967 | ADMITIDO      |          3.10 |       19.50 | 2026-10-12 20:00:00
+
+  tipo   | serie | numero | subtotal | igv  | total 
+---------+-------+--------+----------+------+-------
+ FACTURA | F010  |   3049 |    16.53 | 2.97 | 19.50
+
+--- P1 error esperado: servicio TERRESTRE hacia Iquitos (sin acceso por carretera)
+psql:/proyecto/01_Relacional_PostgreSQL/09_pruebas_procedimientos.sql:56: ERROR:  El servicio ESTANDAR_TERRESTRE no está disponible: el destino no tiene acceso terrestre
+CONTEXT:  PL/pgSQL function sp_registrar_envio(integer,character varying,character varying,character varying,character varying,smallint,integer,integer,jsonb,character varying,integer,character) line 33 at RAISE
+=== T3. trg_validar_despacho ===
+--- error esperado: despacho terrestre con un vehículo que no pertenece a la ruta
+psql:/proyecto/01_Relacional_PostgreSQL/09_pruebas_procedimientos.sql:62: ERROR:  El vehículo J7L-812 no pertenece a ningún extremo de la ruta
+CONTEXT:  PL/pgSQL function trg_fn_validar_despacho() line 22 at RAISE
+--- despacho válido Miraflores -> Hub Central (furgoneta de la agencia)
+INSERT 0 1
+INSERT 0 1
+=== P2. sp_registrar_escaneo + máquina de estados ===
+--- error esperado: ENTREGA de un envío que recién fue admitido
+psql:/proyecto/01_Relacional_PostgreSQL/09_pruebas_procedimientos.sql:72: ERROR:  Transición inválida: envío OLV2600029967 en estado ADMITIDO no admite evento ENTREGA
+HINT:  Eventos permitidos: SALIDA_HUB
+CONTEXT:  PL/pgSQL function sp_registrar_escaneo(character,character varying,integer,integer,bigint,character varying,timestamp with time zone) line 24 at RAISE
+--- salida de la agencia de origen
+CALL
+=== P4. sp_cerrar_despacho: arribo al Hub Central y llegada masiva de envíos ===
+ p_envios_procesados 
+---------------------
+                   1
+
+CALL
+INSERT 0 1
+INSERT 0 1
+CALL
+ p_envios_procesados 
+---------------------
+                   1
+
+CALL
+=== P3. sp_registrar_intento_entrega ===
+--- intento 1: destinatario ausente
+CALL
+CALL
+--- error esperado: entrega sin nombre del receptor
+psql:/proyecto/01_Relacional_PostgreSQL/09_pruebas_procedimientos.sql:93: ERROR:  La entrega exige nombre del receptor
+CONTEXT:  PL/pgSQL function sp_registrar_intento_entrega(character,integer,character varying,character varying,character varying,timestamp with time zone) line 21 at RAISE
+--- intento 2: entregado
+CALL
+=== Resultado: línea de tiempo del envío de prueba ===
+   hora   |   tipo_evento   |    hub     |            observacion             
+----------+-----------------+------------+------------------------------------
+ 21:35:11 | ADMISION        | AG-LIM-MIR | Admisión en agencia
+ 21:35:11 | SALIDA_HUB      | AG-LIM-MIR | Carga a furgoneta
+ 21:35:11 | LLEGADA_HUB     | HC-LIM     | Arribo de manifiesto MF-PRUEBA-001
+ 21:35:11 | CLASIFICACION   | HC-LIM     | Clasificado a ruta Surco
+ 21:35:11 | SALIDA_HUB      | HC-LIM     | 
+ 21:35:11 | LLEGADA_HUB     | AG-LIM-SUR | Arribo de manifiesto MF-PRUEBA-002
+ 21:35:11 | EN_REPARTO      | AG-LIM-SUR | 
+ 21:35:11 | INTENTO_FALLIDO | AG-LIM-SUR | Ausente
+ 21:35:11 | EN_REPARTO      | AG-LIM-SUR | Segunda visita
+ 21:35:11 | ENTREGA         | AG-LIM-SUR | Recibido por Ana Torres Ríos
+
+ nro_tracking  | estado_actual | tiene_fecha_entrega |     estado_sla     
+---------------+---------------+---------------------+--------------------
+ OLV2600029967 | ENTREGADO     | t                   | ENTREGADO_A_TIEMPO
+
+=== T1 + T2. Bitácora de auditoría generada automáticamente por triggers ===
+ estado_anterior |  estado_nuevo   | usuario_bd 
+-----------------+-----------------+------------
+                 | REGISTRADO      | olva_admin
+ REGISTRADO      | ADMITIDO        | olva_admin
+ ADMITIDO        | EN_TRANSITO     | olva_admin
+ EN_TRANSITO     | EN_HUB          | olva_admin
+ EN_HUB          | EN_TRANSITO     | olva_admin
+ EN_TRANSITO     | EN_HUB          | olva_admin
+ EN_HUB          | EN_REPARTO      | olva_admin
+ EN_REPARTO      | INTENTO_FALLIDO | olva_admin
+ INTENTO_FALLIDO | EN_REPARTO      | olva_admin
+ EN_REPARTO      | ENTREGADO       | olva_admin
+
+=== F3. fn_permanencia_hub del envío en el Hub Central ===
+ permanencia_en_hc 
+-------------------
+ 00:00:00.007527
+
+ROLLBACK
+>> Transacción revertida: los datos de prueba no se modificaron.

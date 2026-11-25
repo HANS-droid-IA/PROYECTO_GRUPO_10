@@ -1,0 +1,87 @@
+
+
+
+ role               | super | login | options | datacenters
+--------------------+-------+-------+---------+-------------
+          cassandra |  True | False |        {} |         ALL
+         olva_admin |  True |  True |        {} |         ALL
+       rol_analista | False | False |        {} |         ALL
+   rol_operador_hub | False | False |        {} |         ALL
+ rol_portal_cliente | False | False |        {} |         ALL
+    u_analista_cass | False |  True |        {} |         ALL
+    u_operador_cass | False |  True |        {} |         ALL
+       u_portal_web | False |  True |        {} |         ALL
+
+(8 rows)
+
+ role             | username         | resource                                  | permission
+------------------+------------------+-------------------------------------------+------------
+ rol_operador_hub | rol_operador_hub |                  <keyspace olva_tracking> |     SELECT
+ rol_operador_hub | rol_operador_hub |   <table olva_tracking.contador_escaneos> |     MODIFY
+ rol_operador_hub | rol_operador_hub |        <table olva_tracking.estado_envio> |     MODIFY
+ rol_operador_hub | rol_operador_hub |   <table olva_tracking.eventos_por_envio> |     MODIFY
+ rol_operador_hub | rol_operador_hub | <table olva_tracking.eventos_por_hub_dia> |     MODIFY
+
+(5 rows)
+
+ role               | username           | resource                                 | permission
+--------------------+--------------------+------------------------------------------+------------
+ rol_portal_cliente | rol_portal_cliente | <table olva_tracking.envios_por_cliente> |     SELECT
+ rol_portal_cliente | rol_portal_cliente |  <table olva_tracking.eventos_por_envio> |     SELECT
+
+(2 rows)
+=== Conectado como u_analista_cass ===
+
+
+
+ nro_tracking  | estado
+---------------+-----------
+ OLV2600000001 | ENTREGADO
+
+(1 rows)
+
+ fecha_registro                  | nro_tracking  | estado
+---------------------------------+---------------+-----------
+ 2026-10-05 23:46:32.000000+0000 | OLV2600029571 | ENTREGADO
+ 2026-09-28 18:10:05.000000+0000 | OLV2600028239 | ENTREGADO
+
+(2 rows)
+05_pruebas_seguridad.cql:9:Unauthorized: Error from server: code=2100 [Unauthorized] message="User u_analista_cass has no MODIFY permission on <table olva_tracking.estado_envio> or any of its parents"
+05_pruebas_seguridad.cql:10:Unauthorized: Error from server: code=2100 [Unauthorized] message="User u_analista_cass has no MODIFY permission on <table olva_tracking.hubs> or any of its parents"
+05_pruebas_seguridad.cql:11:Unauthorized: Error from server: code=2100 [Unauthorized] message="User u_analista_cass has no DROP permission on <table olva_tracking.alertas_sla> or any of its parents"
+=== Conectado como u_operador_cass ===
+
+
+
+ nro_tracking  | estado
+---------------+-----------
+ OLV2600000001 | ENTREGADO
+
+(1 rows)
+
+ fecha_registro                  | nro_tracking  | estado
+---------------------------------+---------------+-----------
+ 2026-10-05 23:46:32.000000+0000 | OLV2600029571 | ENTREGADO
+ 2026-09-28 18:10:05.000000+0000 | OLV2600028239 | ENTREGADO
+
+(2 rows)
+05_pruebas_seguridad.cql:10:Unauthorized: Error from server: code=2100 [Unauthorized] message="User u_operador_cass has no MODIFY permission on <table olva_tracking.hubs> or any of its parents"
+05_pruebas_seguridad.cql:11:Unauthorized: Error from server: code=2100 [Unauthorized] message="User u_operador_cass has no DROP permission on <table olva_tracking.alertas_sla> or any of its parents"
+=== Conectado como u_portal_web ===
+
+
+05_pruebas_seguridad.cql:7:Unauthorized: Error from server: code=2100 [Unauthorized] message="User u_portal_web has no SELECT permission on <table olva_tracking.estado_envio> or any of its parents"
+
+ fecha_registro                  | nro_tracking  | estado
+---------------------------------+---------------+-----------
+ 2026-10-05 23:46:32.000000+0000 | OLV2600029571 | ENTREGADO
+ 2026-09-28 18:10:05.000000+0000 | OLV2600028239 | ENTREGADO
+
+(2 rows)
+05_pruebas_seguridad.cql:9:Unauthorized: Error from server: code=2100 [Unauthorized] message="User u_portal_web has no MODIFY permission on <table olva_tracking.estado_envio> or any of its parents"
+05_pruebas_seguridad.cql:10:Unauthorized: Error from server: code=2100 [Unauthorized] message="User u_portal_web has no MODIFY permission on <table olva_tracking.hubs> or any of its parents"
+05_pruebas_seguridad.cql:11:Unauthorized: Error from server: code=2100 [Unauthorized] message="User u_portal_web has no DROP permission on <table olva_tracking.alertas_sla> or any of its parents"
+=== Superusuario por defecto (cassandra) deshabilitado ===
+Connection error: ('Unable to connect to any servers', {'127.0.0.1:9042': AuthenticationFailed('Failed to authenticate to 127.0.0.1:9042: Error from server: code=0100 [Bad credentials] message="cassandra is not permitted to log in"')})
+=== Contraseña incorrecta ===
+Connection error: ('Unable to connect to any servers', {'127.0.0.1:9042': AuthenticationFailed('Failed to authenticate to 127.0.0.1:9042: Error from server: code=0100 [Bad credentials] message="Provided username u_analista_cass and/or password are incorrect"')})

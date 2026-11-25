@@ -1,0 +1,33 @@
+olva_courier=# \dt analitica.*
+                   List of relations
+  Schema   |         Name         | Type  |   Owner    
+-----------+----------------------+-------+------------
+ analitica | kpi_cumplimiento_sla | table | olva_admin
+ analitica | kpi_permanencia_hub  | table | olva_admin
+(2 rows)
+
+olva_courier=# SELECT codigo, hora_llegada, estancias, permanencia_promedio_h, pct_mayor_12h,
+olva_courier-#        pct_llegadas_del_hub FROM analitica.vw_franjas_criticas
+olva_courier-#  WHERE ranking_volumen = 1 ORDER BY estancias DESC LIMIT 8;
+ codigo | hora_llegada | estancias | permanencia_promedio_h | pct_mayor_12h | pct_llegadas_del_hub 
+--------+--------------+-----------+------------------------+---------------+----------------------
+ HC-LIM | 20           |    102570 |                  14.57 |         35.66 |                35.79
+ HR-HYO | 20           |     10584 |                   9.63 |         17.91 |                27.02
+ HR-AQP | 20           |      8886 |                  11.69 |         24.52 |                20.41
+ HR-CUZ | 20           |      8126 |                   8.68 |         11.68 |                29.45
+ HR-TRU | 10           |      7790 |                   6.50 |          2.63 |                21.96
+ HR-CIX | 11           |      7030 |                   6.58 |          7.34 |                20.53
+ HR-PIU | 20           |      4999 |                   8.82 |         11.10 |                21.90
+ HR-IQT | 11           |      4369 |                   4.90 |          8.54 |                25.55
+(8 rows)
+
+olva_courier=# SELECT clave AS servicio, envios, pct_cumplimiento_sla, retraso_promedio_h, ingresos_soles
+olva_courier-#   FROM analitica.kpi_cumplimiento_sla WHERE dimension = 'SERVICIO' ORDER BY 3;
+      servicio       | envios | pct_cumplimiento_sla | retraso_promedio_h | ingresos_soles 
+---------------------+--------+----------------------+--------------------+----------------
+ SOBRE_AEREO         |  30023 |                86.68 |              24.57 |      518538.00
+ EXPRESS_AEREO       |  77381 |                86.88 |              24.18 |     3508588.00
+ ESTANDAR_TERRESTRE  | 133389 |                91.88 |              24.53 |     3083042.00
+ ECONOMICO_TERRESTRE |  58874 |                98.84 |              20.58 |      999386.40
+(4 rows)
+

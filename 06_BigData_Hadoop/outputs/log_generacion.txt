@@ -1,0 +1,20 @@
+region                   5 filas
+ciudad                  17 filas
+hub                     38 filas
+tipo_servicio            4 filas
+tarifa                 100 filas
+ruta                    98 filas
+vehiculo               141 filas
+empleado               285 filas
+cliente              3,000 filas
+destinatario       263,513 filas
+envio              299,667 filas
+paquete            407,806 filas
+comprobante        299,667 filas
+despacho            30,185 filas
+despacho_envio     829,869 filas
+evento_tracking  3,152,417 filas
+intento_entrega    334,847 filas
+incidencia          18,852 filas
+Datos generados en ../../06_BigData_Hadoop/data/masivo (semilla 2026, corte 2026-10-07 18:00:00)
+segundos: 162

@@ -1,0 +1,19 @@
+region                   5 filas
+ciudad                  17 filas
+hub                     38 filas
+tipo_servicio            4 filas
+tarifa                 100 filas
+ruta                    98 filas
+vehiculo               141 filas
+empleado               285 filas
+cliente              3,000 filas
+destinatario        26,413 filas
+envio               29,966 filas
+paquete             40,714 filas
+comprobante         29,966 filas
+despacho            22,729 filas
+despacho_envio      82,894 filas
+evento_tracking    315,101 filas
+intento_entrega     33,557 filas
+incidencia           1,904 filas
+Datos generados en G:\PROYECTO_GRUPO_10\01_Relacional_PostgreSQL\datos (semilla 2026, corte 2026-10-07 18:00:00)

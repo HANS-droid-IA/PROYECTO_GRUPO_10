@@ -1,0 +1,36 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_c08.sql
+
+SET search_path = operacion, maestro, public;
+WITH intentos AS (
+    SELECT c.nombre AS ciudad, i.*
+      FROM intento_entrega i
+      JOIN envio e USING (id_envio)
+      JOIN hub h ON h.id_hub = e.id_hub_destino
+      JOIN ciudad c ON c.id_ciudad = h.id_ciudad
+), motivos AS (
+    SELECT ciudad, resultado, COUNT(*) AS n
+      FROM intentos WHERE resultado <> 'ENTREGADO' GROUP BY 1, 2
+)
+SELECT i.ciudad,
+       COUNT(DISTINCT i.id_envio)                                                         AS envios_en_reparto,
+       ROUND(100.0 * COUNT(*) FILTER (WHERE nro_intento = 1 AND resultado = 'ENTREGADO')
+             / COUNT(DISTINCT i.id_envio), 1)                                             AS pct_primer_intento,
+       ROUND(COUNT(*)::NUMERIC / COUNT(DISTINCT i.id_envio), 2)                           AS intentos_por_envio,
+       (SELECT STRING_AGG(m.resultado || ':' || m.n, ', ' ORDER BY m.n DESC)
+          FROM motivos m WHERE m.ciudad = i.ciudad)                                       AS motivos_falla
+  FROM intentos i
+ GROUP BY i.ciudad
+ ORDER BY pct_primer_intento
+ LIMIT 10;
+  ciudad  | envios_en_reparto | pct_primer_intento | intentos_por_envio |                   motivos_falla                   
+----------+-------------------+--------------------+--------------------+---------------------------------------------------
+ Tacna    |               837 |               83.5 |               1.16 | AUSENTE:108, DIRECCION_ERRADA:27, RECHAZADO:13
+ Iquitos  |              1124 |               84.0 |               1.15 | AUSENTE:136, DIRECCION_ERRADA:41, RECHAZADO:28
+ Ayacucho |               573 |               84.6 |               1.13 | AUSENTE:58, DIRECCION_ERRADA:20, RECHAZADO:18
+ Callao   |              1648 |               85.3 |               1.14 | AUSENTE:171, DIRECCION_ERRADA:62, RECHAZADO:43
+ Cusco    |              1646 |               85.4 |               1.14 | AUSENTE:185, DIRECCION_ERRADA:55, RECHAZADO:32
+ Ica      |              1147 |               85.6 |               1.14 | AUSENTE:128, DIRECCION_ERRADA:31, RECHAZADO:29
+ Lima     |             10030 |               85.7 |               1.14 | AUSENTE:1064, DIRECCION_ERRADA:351, RECHAZADO:206
+ Tarapoto |               854 |               85.8 |               1.14 | AUSENTE:80, DIRECCION_ERRADA:42, RECHAZADO:16
+ Puno     |               530 |               86.0 |               1.14 | AUSENTE:58, DIRECCION_ERRADA:19, RECHAZADO:10
+ Arequipa |              2161 |               86.1 |               1.14 | AUSENTE:229, DIRECCION_ERRADA:68, RECHAZADO:53

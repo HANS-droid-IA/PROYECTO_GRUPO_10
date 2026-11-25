@@ -1,0 +1,42 @@
+Using 15 child processes
+Starting copy of olva_tracking.kpi_permanencia_hub with columns [dimension, hub, valor, estancias, permanencia_promedio_h, pct_mayor_12h].
+Processed: 318 rows; Rate:     603 rows/s; Avg. rate:     603 rows/sProcessed: 318 rows; Rate:     301 rows/s; Avg. rate:     493 rows/s
+318 rows imported from 1 files in 0.645 seconds (0 skipped).
+Using 15 child processes
+Starting copy of olva_tracking.kpi_cumplimiento_sla with columns [dimension, clave, detalle, envios, entregados, pct_cumplimiento_sla, retraso_promedio_h, ingresos_soles].
+Processed: 140 rows; Rate:     331 rows/s; Avg. rate:     331 rows/sProcessed: 140 rows; Rate:     166 rows/s; Avg. rate:     267 rows/s
+140 rows imported from 1 files in 0.524 seconds (0 skipped).
+ hora | estancias | permanencia_promedio_h | pct_mayor_12h
+------+-----------+------------------------+---------------
+   00 |      2066 |                  13.38 |         45.26
+   01 |      3799 |                  12.41 |         47.25
+   02 |      1500 |                  10.52 |         34.47
+   03 |       487 |                  11.59 |         43.74
+   04 |       254 |                  10.99 |         38.58
+   05 |       193 |                     14 |         52.85
+   06 |      3808 |                  13.25 |         53.89
+   07 |      4608 |                  12.21 |         53.67
+   08 |      2869 |                  10.97 |         49.67
+   09 |      1506 |                   9.47 |         41.83
+   10 |      8172 |                   6.93 |          8.77
+   11 |     13273 |                   6.16 |          6.89
+   12 |      3729 |                    7.9 |         19.52
+   13 |     20114 |                  11.19 |         41.44
+   14 |     62827 |                  10.82 |         40.98
+   15 |      6449 |                  11.11 |         50.85
+   16 |      6297 |                  11.49 |         59.35
+   17 |      2988 |                  10.49 |          58.6
+   18 |      1818 |                  12.66 |          40.1
+   19 |      2376 |                  12.76 |          46.3
+   20 |    102570 |                  14.57 |         35.66
+   21 |     19439 |                  14.62 |         33.72
+   22 |      8408 |                  14.67 |         37.96
+   23 |      7054 |                  14.22 |          40.8
+(24 rows)
+ servicio            | envios | pct_cumplimiento_sla | retraso_promedio_h
+---------------------+--------+----------------------+--------------------
+ ECONOMICO_TERRESTRE |  58874 |                98.84 |              20.58
+  ESTANDAR_TERRESTRE | 133389 |                91.88 |              24.53
+       EXPRESS_AEREO |  77381 |                86.88 |              24.18
+         SOBRE_AEREO |  30023 |                86.68 |              24.57
+(4 rows)

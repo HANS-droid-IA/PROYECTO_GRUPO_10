@@ -1,0 +1,36 @@
+
+Procedure created.
+
+
+Package created.
+
+
+Package body created.
+
+
+Trigger created.
+
+No errors.
+
+OBJECT_NAME
+--------------------------------------------------------------------------------
+OBJECT_TYPE		STATUS
+----------------------- -------
+PKG_TRACKING
+PACKAGE 		VALID
+
+PKG_TRACKING
+PACKAGE BODY		VALID
+
+SP_LOG_ERROR
+PROCEDURE		VALID
+
+
+OBJECT_NAME
+--------------------------------------------------------------------------------
+OBJECT_TYPE		STATUS
+----------------------- -------
+TRG_EVENTO_ACTUALIZA_ESTADO
+TRIGGER 		VALID
+
+

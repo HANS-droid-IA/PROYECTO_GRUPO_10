@@ -1,0 +1,42 @@
+;;; 
+Export: Release 23.26.3.0.0 - Production on Fri Oct 9 02:46:05 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle and/or its affiliates.  All rights reserved.
+;;; 
+Connected to: Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Starting "OLVA"."SYS_EXPORT_SCHEMA_01":  olva/********@//localhost:1521/FREEPDB1 schemas=olva directory=data_pump_dir dumpfile=olva_20261009_0246.dmp logfile=exp_olva_20261009_0246.log reuse_dumpfiles=y 
+Processing object type SCHEMA_EXPORT/TABLE/TABLE_DATA
+Processing object type SCHEMA_EXPORT/PACKAGE/PACKAGE_BODY
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/STATISTICS/INDEX_STATISTICS
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/STATISTICS/FUNCTIONAL_INDEX/INDEX_STATISTICS
+Processing object type SCHEMA_EXPORT/TABLE/STATISTICS/TABLE_STATISTICS
+Processing object type SCHEMA_EXPORT/PRE_SCHEMA/PROCACT_SCHEMA/LOGREP
+Processing object type SCHEMA_EXPORT/TABLE/TABLE
+Processing object type SCHEMA_EXPORT/TABLE/GRANT/OWNER_GRANT/OBJECT_GRANT
+Processing object type SCHEMA_EXPORT/TABLE/COMMENT
+Processing object type SCHEMA_EXPORT/TABLE/IDENTITY_COLUMN
+Processing object type SCHEMA_EXPORT/PACKAGE/PACKAGE_SPEC
+Processing object type SCHEMA_EXPORT/PACKAGE/GRANT/OWNER_GRANT/OBJECT_GRANT
+Processing object type SCHEMA_EXPORT/PROCEDURE/PROCEDURE
+Processing object type SCHEMA_EXPORT/PACKAGE/COMPILE_PACKAGE/PACKAGE_SPEC/ALTER_PACKAGE_SPEC
+Processing object type SCHEMA_EXPORT/PROCEDURE/ALTER_PROCEDURE
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/INDEX
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/FUNCTIONAL_INDEX/INDEX
+Processing object type SCHEMA_EXPORT/TABLE/CONSTRAINT/CONSTRAINT
+Processing object type SCHEMA_EXPORT/TABLE/CONSTRAINT/REF_CONSTRAINT
+Processing object type SCHEMA_EXPORT/TABLE/TRIGGER
+. . exported "OLVA"."CIUDAD"                               9.7 KB      17 rows
+. . exported "OLVA"."CLIENTE"                             60.8 KB     483 rows
+. . exported "OLVA"."ENVIO"                              102.4 KB    1000 rows
+. . exported "OLVA"."EVENTO_TRACKING"                    428.3 KB   10627 rows
+. . exported "OLVA"."HUB"                                 10.5 KB      38 rows
+. . exported "OLVA"."LOG_ERROR"                            7.3 KB       3 rows
+. . exported "OLVA"."REGION"                               6.6 KB       5 rows
+. . exported "OLVA"."TARIFA"                              11.5 KB     100 rows
+. . exported "OLVA"."TIPO_SERVICIO"                        7.7 KB       4 rows
+Master table "OLVA"."SYS_EXPORT_SCHEMA_01" successfully loaded/unloaded
+******************************************************************************
+Dump file set for OLVA.SYS_EXPORT_SCHEMA_01 is:
+  /opt/oracle/admin/FREE/dpdump/5A4CD42EF8C011A1E0639A00010A3724/olva_20261009_0246.dmp
+Job "OLVA"."SYS_EXPORT_SCHEMA_01" successfully completed at Fri Oct 9 02:47:12 2026 elapsed 0 00:01:03

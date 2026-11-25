@@ -1,0 +1,4 @@
+{
+  "python.defaultInterpreterPath": "G:\Herramientas\Python312\python.exe",
+  "files.exclude": { "**/__pycache__": true }
+}

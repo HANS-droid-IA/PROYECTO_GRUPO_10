@@ -1,0 +1,20 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg04_restricciones_envio.sql
+
+         restriccion         |    tipo     |                                                                                                                                                          definicion                                                                                                                                                          
+-----------------------------+-------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ envio_nro_tracking_key      | UNIQUE      | UNIQUE (nro_tracking)
+ envio_pkey                  | PRIMARY KEY | PRIMARY KEY (id_envio)
+ envio_id_cliente_fkey       | FOREIGN KEY | FOREIGN KEY (id_cliente) REFERENCES maestro.cliente(id_cliente)
+ envio_id_destinatario_fkey  | FOREIGN KEY | FOREIGN KEY (id_destinatario) REFERENCES operacion.destinatario(id_destinatario)
+ envio_id_hub_destino_fkey   | FOREIGN KEY | FOREIGN KEY (id_hub_destino) REFERENCES maestro.hub(id_hub)
+ envio_id_hub_origen_fkey    | FOREIGN KEY | FOREIGN KEY (id_hub_origen) REFERENCES maestro.hub(id_hub)
+ envio_id_servicio_fkey      | FOREIGN KEY | FOREIGN KEY (id_servicio) REFERENCES maestro.tipo_servicio(id_servicio)
+ ck_envio_compromiso         | CHECK       | CHECK ((fecha_compromiso > fecha_registro))
+ ck_envio_entrega            | CHECK       | CHECK (((fecha_entrega IS NULL) OR (fecha_entrega >= fecha_registro)))
+ ck_envio_entregado          | CHECK       | CHECK ((((estado_actual)::text = 'ENTREGADO'::text) = (fecha_entrega IS NOT NULL)))
+ ck_envio_hubs               | CHECK       | CHECK ((id_hub_origen <> id_hub_destino))
+ envio_estado_actual_check   | CHECK       | CHECK (((estado_actual)::text = ANY ((ARRAY['REGISTRADO'::character varying, 'ADMITIDO'::character varying, 'EN_HUB'::character varying, 'EN_TRANSITO'::character varying, 'EN_REPARTO'::character varying, 'INTENTO_FALLIDO'::character varying, 'ENTREGADO'::character varying, 'DEVUELTO'::character varying])::text[])))
+ envio_monto_total_check     | CHECK       | CHECK ((monto_total >= (0)::numeric))
+ envio_nro_tracking_check    | CHECK       | CHECK ((nro_tracking ~ '^OLV[0-9]{10}$'::text))
+ envio_peso_total_kg_check   | CHECK       | CHECK ((peso_total_kg > (0)::numeric))
+ envio_valor_declarado_check | CHECK       | CHECK ((valor_declarado >= (0)::numeric))

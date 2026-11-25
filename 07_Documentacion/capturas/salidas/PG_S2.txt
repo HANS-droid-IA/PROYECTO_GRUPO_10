@@ -1,0 +1,18 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_s2_rls.sql
+
+=== Misma consulta, distinto usuario: Row Level Security por nodo ===
+  usuario  | nodo | envios_visibles 
+-----------+------+-----------------
+ u_op_lima | LIMA |           27023
+
+  usuario   | nodo  | envios_visibles 
+------------+-------+-----------------
+ u_op_norte | NORTE |           11347
+
+ usuario  | nodo | envios_visibles 
+----------+------+-----------------
+ u_op_sur | SUR  |            8658
+
+  usuario   |    nodo     | envios_visibles 
+------------+-------------+-----------------
+ olva_admin | propietario |           29966

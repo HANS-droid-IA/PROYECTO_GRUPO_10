@@ -1,0 +1,29 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_f1_tarifa.sql
+
+=== F1 maestro.fn_calcular_tarifa: tarifas Lima -> Oriente por servicio y peso ===
+      servicio       | origen | destino | peso_kg | tarifa_soles 
+---------------------+--------+---------+---------+--------------
+ ECONOMICO_TERRESTRE | Lima   | Oriente |     0.4 |        19.00
+ ECONOMICO_TERRESTRE | Lima   | Oriente |     2.5 |        22.60
+ ECONOMICO_TERRESTRE | Lima   | Oriente |    12.0 |        38.80
+ ESTANDAR_TERRESTRE  | Lima   | Oriente |     0.4 |        24.00
+ ESTANDAR_TERRESTRE  | Lima   | Oriente |     2.5 |        29.00
+ ESTANDAR_TERRESTRE  | Lima   | Oriente |    12.0 |        51.50
+ EXPRESS_AEREO       | Lima   | Oriente |     0.4 |        32.00
+ EXPRESS_AEREO       | Lima   | Oriente |     2.5 |        45.00
+ EXPRESS_AEREO       | Lima   | Oriente |    12.0 |       103.50
+ SOBRE_AEREO         | Lima   | Oriente |     0.4 |        23.00
+
+=== F2 operacion.fn_estado_sla: clasificación de los envíos al corte 2026-10-07 18:00 ===
+      estado_sla       | envios 
+-----------------------+--------
+ ENTREGADO_A_TIEMPO    |  26376
+ ENTREGADO_CON_RETRASO |   2482
+ DEVUELTO              |    682
+ EN_PLAZO              |    361
+ VENCIDO               |     50
+ EN_RIESGO             |     15
+
+--- Error controlado: peso mayor al permitido para SOBRE_AEREO (máx. 0,5 kg)
+psql:G:/PROYECTO_GRUPO_10/07_Documentacion/capturas/scripts_captura/pg_f1_tarifa.sql:12: ERROR:  Peso 3.0 kg excede el máximo del servicio (0.50 kg)
+CONTEXT:  PL/pgSQL function fn_calcular_tarifa(smallint,smallint,smallint,numeric,date) line 15 at RAISE

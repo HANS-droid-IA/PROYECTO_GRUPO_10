@@ -1,0 +1,29 @@
+mongoimport hubs          38 documentos    0.1 s
+mongoimport clientes    3000 documentos    0.2 s
+mongoimport envios     29966 documentos    9.5 s
+
+=== Documentos cargados con mongoimport ===
+coleccion | documentos | tamano_prom_bytes | datos_MB
+----------+------------+-------------------+---------
+envios    | 29966      | 2604              | 74.40   
+hubs      | 38         | 306               | 0       
+clientes  | 3000       | 272               | 0.80    
+(3 documentos)
+Eventos de tracking embebidos en envios: 315101
+
+=== Creación de índices ===
+coleccion | indice                | claves                                      | propiedades
+----------+-----------------------+---------------------------------------------+------------
+envios    | _id_                  | {"_id":1}                                   |            
+envios    | ix_estado_compromiso  | {"estado_actual":1,"fechas.compromiso":1}   |            
+envios    | ix_cliente_fecha      | {"cliente.id":1,"fechas.registro":-1}       |            
+envios    | ix_tracking_hub_fecha | {"tracking.hub":1,"tracking.fecha_hora":1}  |            
+envios    | ix_destino_modalidad  | {"destino.ciudad":1,"servicio.modalidad":1} |            
+envios    | ix_incidencia_tipo    | {"incidencias.tipo":1}                      | sparse     
+envios    | ix_pod_geo            | {"prueba_entrega.ubicacion":"2dsphere"}     | 2dsphere   
+hubs      | _id_                  | {"_id":1}                                   |            
+hubs      | ix_hub_geo            | {"ubicacion":"2dsphere"}                    | 2dsphere   
+clientes  | _id_                  | {"_id":1}                                   |            
+clientes  | ux_cliente_documento  | {"documento.numero":1}                      | unique     
+clientes  | tx_cliente_nombre     | {"_fts":"text","_ftsx":1}                   |            
+(12 documentos)

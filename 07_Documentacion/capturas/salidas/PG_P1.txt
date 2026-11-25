@@ -1,0 +1,21 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_p1_registrar_envio.sql
+
+=== P1 CALL operacion.sp_registrar_envio (empresa, Miraflores -> Surco, 2 bultos en JSONB) ===
+psql:G:/PROYECTO_GRUPO_10/07_Documentacion/capturas/scripts_captura/pg_p1_registrar_envio.sql:23: NOTICE:  Envío OLV2600029967 registrado: 3.10 kg, S/ 19.50, compromiso 2026-10-13 20:00:00-05
+ p_nro_tracking 
+----------------
+ OLV2600029967
+
+ nro_tracking  | estado_actual | peso_total_kg | monto_total |  tipo   | serie | numero | subtotal | igv  | total 
+---------------+---------------+---------------+-------------+---------+-------+--------+----------+------+-------
+ OLV2600029967 | ADMITIDO      |          3.10 |       19.50 | FACTURA | F010  |   3049 |    16.53 | 2.97 | 19.50
+
+ nro_bulto | peso_kg | descripcion | fragil 
+-----------+---------+-------------+--------
+         1 |    2.30 | Repuestos   | f
+         2 |    0.80 | Accesorios  | t
+
+--- Error controlado: servicio terrestre hacia Iquitos (ciudad sin acceso por carretera)
+psql:G:/PROYECTO_GRUPO_10/07_Documentacion/capturas/scripts_captura/pg_p1_registrar_envio.sql:29: ERROR:  El servicio ESTANDAR_TERRESTRE no está disponible: el destino no tiene acceso terrestre
+CONTEXT:  PL/pgSQL function sp_registrar_envio(integer,character varying,character varying,character varying,character varying,smallint,integer,integer,jsonb,character varying,integer,character) line 33 at RAISE
+>> Transacción revertida (prueba repetible).

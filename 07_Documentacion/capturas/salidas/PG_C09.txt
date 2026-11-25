@@ -1,0 +1,33 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_c09.sql
+
+SET search_path = operacion, maestro, public;
+SELECT e.nro_tracking, ts.codigo AS servicio, ho.codigo AS origen, hd.codigo AS destino,
+       e.estado_actual, e.fecha_compromiso::TIMESTAMP(0) AS compromiso,
+       fn_estado_sla(e.id_envio, '2026-10-07 18:00-05') AS estado_sla,
+       (SELECT h.codigo FROM evento_tracking x JOIN hub h USING (id_hub)
+         WHERE x.id_envio = e.id_envio ORDER BY x.fecha_hora DESC LIMIT 1) AS ultima_ubicacion
+  FROM envio e
+  JOIN tipo_servicio ts USING (id_servicio)
+  JOIN hub ho ON ho.id_hub = e.id_hub_origen
+  JOIN hub hd ON hd.id_hub = e.id_hub_destino
+ WHERE e.estado_actual NOT IN ('ENTREGADO', 'DEVUELTO')
+   AND fn_estado_sla(e.id_envio, '2026-10-07 18:00-05') IN ('VENCIDO', 'EN_RIESGO')
+ ORDER BY e.fecha_compromiso
+ LIMIT 15;
+ nro_tracking  |      servicio       |   origen   |  destino   | estado_actual |     compromiso      | estado_sla | ultima_ubicacion 
+---------------+---------------------+------------+------------+---------------+---------------------+------------+------------------
+ OLV2600001327 | EXPRESS_AEREO       | AG-AYA-01  | AG-LIM-SJL | EN_HUB        | 2026-04-13 20:00:00 | VENCIDO    | HC-LIM
+ OLV2600001462 | ECONOMICO_TERRESTRE | AG-AQP-01  | AG-LIM-MIR | EN_HUB        | 2026-04-17 20:00:00 | VENCIDO    | AG-LIM-MIR
+ OLV2600001744 | ESTANDAR_TERRESTRE  | AG-PCL-01  | AG-TRU-02  | EN_HUB        | 2026-04-17 20:00:00 | VENCIDO    | HR-TRU
+ OLV2600002836 | ESTANDAR_TERRESTRE  | AG-LIM-SJL | AG-LIM-ATE | EN_HUB        | 2026-04-24 20:00:00 | VENCIDO    | AG-LIM-ATE
+ OLV2600003433 | SOBRE_AEREO         | AG-LIM-MIR | AG-ICA-01  | EN_HUB        | 2026-04-29 20:00:00 | VENCIDO    | AG-ICA-01
+ OLV2600004079 | ESTANDAR_TERRESTRE  | AG-HYO-02  | AG-LIM-SUR | EN_HUB        | 2026-05-04 20:00:00 | VENCIDO    | AG-LIM-SUR
+ OLV2600004139 | EXPRESS_AEREO       | AG-LIM-SUR | AG-HYO-02  | EN_HUB        | 2026-05-04 20:00:00 | VENCIDO    | AG-HYO-02
+ OLV2600005140 | EXPRESS_AEREO       | AG-LIM-OLI | AG-IQT-01  | EN_HUB        | 2026-05-11 20:00:00 | VENCIDO    | AG-IQT-01
+ OLV2600005155 | ECONOMICO_TERRESTRE | AG-CUZ-02  | AG-LIM-MIR | EN_HUB        | 2026-05-14 20:00:00 | VENCIDO    | AG-LIM-MIR
+ OLV2600006987 | ESTANDAR_TERRESTRE  | AG-LIM-OLI | AG-LIM-SJL | EN_HUB        | 2026-05-25 20:00:00 | VENCIDO    | AG-LIM-SJL
+ OLV2600007093 | ECONOMICO_TERRESTRE | AG-LIM-SUR | AG-CUZ-02  | EN_HUB        | 2026-05-28 20:00:00 | VENCIDO    | HR-CUZ
+ OLV2600007696 | ECONOMICO_TERRESTRE | AG-LIM-SJL | AG-LIM-OLI | EN_HUB        | 2026-05-30 20:00:00 | VENCIDO    | AG-LIM-OLI
+ OLV2600008388 | ESTANDAR_TERRESTRE  | AG-LIM-ATE | AG-PIU-02  | EN_HUB        | 2026-06-05 20:00:00 | VENCIDO    | AG-PIU-02
+ OLV2600009220 | ESTANDAR_TERRESTRE  | AG-HYO-01  | AG-LIM-MIR | EN_HUB        | 2026-06-11 20:00:00 | VENCIDO    | AG-LIM-MIR
+ OLV2600009777 | ECONOMICO_TERRESTRE | AG-LIM-OLI | AG-LIM-MIR | EN_HUB        | 2026-06-13 20:00:00 | VENCIDO    | AG-LIM-MIR

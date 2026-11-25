@@ -1,0 +1,46 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_c06.sql
+
+SET search_path = operacion, maestro, public;
+SELECT CASE WHEN GROUPING(ro.nombre) = 1 THEN '** TOTAL **' ELSE ro.nombre END   AS region_origen,
+       CASE WHEN GROUPING(rd.nombre) = 1 THEN '(subtotal)'  ELSE rd.nombre END   AS region_destino,
+       COUNT(*)                                                                  AS envios,
+       SUM(e.monto_total)                                                        AS ingresos_soles,
+       ROUND(AVG(e.monto_total), 2)                                              AS ticket_prom
+  FROM envio e
+  JOIN hub ho ON ho.id_hub = e.id_hub_origen  JOIN ciudad co ON co.id_ciudad = ho.id_ciudad JOIN region ro ON ro.id_region = co.id_region
+  JOIN hub hd ON hd.id_hub = e.id_hub_destino JOIN ciudad cd ON cd.id_ciudad = hd.id_ciudad JOIN region rd ON rd.id_region = cd.id_region
+ GROUP BY ROLLUP (ro.nombre, rd.nombre)
+ ORDER BY GROUPING(ro.nombre), ro.nombre, GROUPING(rd.nombre), ingresos_soles DESC;
+ region_origen | region_destino | envios | ingresos_soles | ticket_prom 
+---------------+----------------+--------+----------------+-------------
+ Centro        | Lima           |   1006 |       28796.90 |       28.63
+ Centro        | Norte          |    464 |       13133.20 |       28.30
+ Centro        | Sur            |    414 |       12053.60 |       29.11
+ Centro        | Oriente        |    190 |        7565.80 |       39.82
+ Centro        | Centro         |    101 |        1900.20 |       18.81
+ Centro        | (subtotal)     |   2175 |       63449.70 |       29.17
+ Lima          | Lima           |   8959 |      175020.60 |       19.54
+ Lima          | Sur            |   4449 |      131789.20 |       29.62
+ Lima          | Norte          |   4461 |      129627.10 |       29.06
+ Lima          | Oriente        |   2156 |       83612.10 |       38.78
+ Lima          | Centro         |   1438 |       41795.80 |       29.07
+ Lima          | (subtotal)     |  21463 |      561844.80 |       26.18
+ Norte         | Lima           |    929 |       27237.80 |       29.32
+ Norte         | Sur            |    386 |       11041.30 |       28.60
+ Norte         | Norte          |    361 |        7834.80 |       21.70
+ Norte         | Oriente        |    189 |        7425.50 |       39.29
+ Norte         | Centro         |    117 |        3511.70 |       30.01
+ Norte         | (subtotal)     |   1982 |       57051.10 |       28.78
+ Oriente       | Lima           |    565 |       18536.60 |       32.81
+ Oriente       | Sur            |    247 |        8174.90 |       33.10
+ Oriente       | Norte          |    229 |        7399.30 |       32.31
+ Oriente       | Centro         |     86 |        2860.50 |       33.26
+ Oriente       | Oriente        |     57 |        1520.80 |       26.68
+ Oriente       | (subtotal)     |   1184 |       38492.10 |       32.51
+ Sur           | Lima           |   1506 |       43918.20 |       29.16
+ Sur           | Norte          |    645 |       19319.30 |       29.95
+ Sur           | Sur            |    564 |       12545.90 |       22.24
+ Sur           | Oriente        |    265 |       10583.30 |       39.94
+ Sur           | Centro         |    182 |        5088.00 |       27.96
+ Sur           | (subtotal)     |   3162 |       91454.70 |       28.92
+ ** TOTAL **   | (subtotal)     |  29966 |      812292.40 |       27.11

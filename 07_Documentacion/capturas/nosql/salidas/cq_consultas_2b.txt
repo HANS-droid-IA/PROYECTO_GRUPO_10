@@ -1,0 +1,15 @@
+
+-- Q6. BATCH: el mismo escaneo se escribe de forma atómica en las dos tablas desnormalizadas
+olva_admin@cqlsh:olva_tracking (Lima)> BEGIN BATCH
+                                       INSERT INTO eventos_por_envio (nro_tracking, fecha_hora, id_evento, tipo_evento, hub, ciudad) VALUES ('OLV2600029865', '2026-10-07 22:50:00+0000', 900000001, 'SALIDA_HUB', 'HC-LIM', 'Callao');
+                                       INSERT INTO eventos_por_hub_dia (hub, dia, fecha_hora, id_evento, nro_tracking, tipo_evento, servicio) VALUES ('HC-LIM', '2026-10-07', '2026-10-07 22:50:00+0000', 900000001, 'OLV2600029865', 'SALIDA_HUB', 'ECONOMICO_TERRESTRE');
+                                       APPLY BATCH;
+
+olva_admin@cqlsh:olva_tracking (Lima)> SELECT fecha_hora, tipo_evento, hub FROM eventos_por_envio WHERE nro_tracking = 'OLV2600029865' AND fecha_hora >= '2026-10-07 22:00:00+0000';
+ fecha_hora                      | tipo_evento   | hub
+---------------------------------+---------------+--------
+ 2026-10-07 22:00:27.000000+0000 |   LLEGADA_HUB | HC-LIM
+ 2026-10-07 22:30:30.000000+0000 | CLASIFICACION | HC-LIM
+ 2026-10-07 22:50:00.000000+0000 |    SALIDA_HUB | HC-LIM
+
+(3 rows)

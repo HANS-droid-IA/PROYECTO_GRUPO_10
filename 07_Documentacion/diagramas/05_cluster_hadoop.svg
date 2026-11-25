@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagrama 5. Arquitectura del clúster Apache Hadoop 3.3.6 instalado (pseudo-distribuido en Ubuntu 22.04 / WSL2). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 860" width="1400" height="860" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#4a4f57"/>
+    </marker>
+    <marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#2f5d9e"/>
+    </marker>
+    <style>
+      .box{fill:#eef3fb;stroke:#3d5a8a;stroke-width:1.4}
+      .boxM{fill:#e3ecf9;stroke:#2f5d9e;stroke-width:2}
+      .boxW{fill:#f1f6ee;stroke:#5b8a3d;stroke-width:1.4}
+      .clu{fill:#f8f9fb;stroke:#8c9bb5;stroke-width:1.4}
+      .cluA{fill:#f3f7fd;stroke:#2f5d9e;stroke-width:2.2}
+      .t{font-size:15px;fill:#1b2433}
+      .b{font-size:15px;font-weight:bold;fill:#1b2433}
+      .c{font-size:16px;font-weight:bold;fill:#1b2433}
+      .s{font-size:13.5px;fill:#4a4f57}
+      .ln{fill:none;stroke:#4a4f57;stroke-width:1.5}
+      .hb{fill:none;stroke:#2f5d9e;stroke-width:2.4;stroke-dasharray:7 5}
+      .dash{fill:none;stroke:#4a4f57;stroke-width:1.5;stroke-dasharray:6 5}
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1400" height="860" fill="#ffffff"/>
+  <text x="30" y="34" style="font-size:20px;font-weight:bold;fill:#1b2433">Clúster Apache Hadoop 3.3.6: HDFS (almacenamiento) y YARN (procesamiento MapReduce)</text>
+
+  <!-- Cliente -->
+  <rect class="box" x="470" y="56" width="460" height="74" rx="8"/>
+  <text class="b" x="700" y="80" text-anchor="middle">Cliente Hadoop (usuario hadoop)</text>
+  <text class="t" x="700" y="101" text-anchor="middle">hdfs dfs -put / -cat  ·  hadoop jar olva-bigdata.jar</text>
+  <text class="s" x="700" y="120" text-anchor="middle">scripts 01_cargar_hdfs.sh · 02_ejecutar_mapreduce.sh · 03_integracion</text>
+
+  <!-- Host -->
+  <rect class="cluA" x="30" y="160" width="1340" height="630" rx="10"/>
+  <text class="c" x="50" y="752">Equipo del proyecto · Windows 11 · Ubuntu 22.04 LTS (WSL2) · OpenJDK 11 · /opt/hadoop</text>
+  <text class="s" x="50" y="773">modo pseudo-distribuido: cada demonio es un proceso Java independiente con sus propios puertos y directorios</text>
+
+  <!-- HDFS -->
+  <rect class="clu" x="60" y="196" width="620" height="530" rx="10"/>
+  <text class="c" x="80" y="222">HDFS · hdfs://localhost:9000</text>
+  <text class="s" x="80" y="242">dfs.replication = 2 · dfs.blocksize = 64 MB</text>
+
+  <rect class="boxM" x="180" y="292" width="380" height="104" rx="8"/>
+  <text class="b" x="370" y="317" text-anchor="middle">NameNode (maestro)</text>
+  <text class="t" x="370" y="339" text-anchor="middle">metadatos: árbol /olva, bloques y réplicas</text>
+  <text class="t" x="370" y="359" text-anchor="middle">RPC :9000 · web :9870</text>
+  <text class="s" x="370" y="379" text-anchor="middle">~/hadoop_data/namenode</text>
+
+  <rect class="boxW" x="90" y="470" width="260" height="110" rx="8"/>
+  <text class="b" x="220" y="495" text-anchor="middle">DataNode 1 (trabajador)</text>
+  <text class="t" x="220" y="517" text-anchor="middle">datos :9866 · web :9864</text>
+  <text class="s" x="220" y="537" text-anchor="middle">~/hadoop_data/datanode1</text>
+  <text class="s" x="220" y="557" text-anchor="middle">1.ª réplica de cada bloque</text>
+
+  <rect class="boxW" x="390" y="470" width="260" height="110" rx="8"/>
+  <text class="b" x="520" y="495" text-anchor="middle">DataNode 2 (trabajador)</text>
+  <text class="t" x="520" y="517" text-anchor="middle">datos :9876 · web :9874</text>
+  <text class="s" x="520" y="537" text-anchor="middle">~/hadoop_data/datanode2</text>
+  <text class="s" x="520" y="557" text-anchor="middle">2.ª réplica de cada bloque</text>
+
+  <path class="ln" d="M300 396 L230 468" marker-end="url(#fl)"/>
+  <path class="ln" d="M440 396 L510 468" marker-end="url(#fl)"/>
+  <text class="s" x="370" y="438" text-anchor="middle">latidos e informes de bloques</text>
+  <path class="dash" d="M350 525 L388 525" marker-end="url(#fl)" marker-start="url(#fl)"/>
+
+  <rect class="box" x="90" y="606" width="560" height="100" rx="8"/>
+  <text class="b" x="370" y="630" text-anchor="middle">Zonas de datos en HDFS</text>
+  <text class="t" x="370" y="652" text-anchor="middle">/olva/raw/&lt;tabla&gt;  (9 tablas masivas, 340 MB → 680 MB replicados)</text>
+  <text class="t" x="370" y="672" text-anchor="middle">/olva/raw/catalogos  ·  /olva/operacional/&lt;fecha&gt;</text>
+  <text class="t" x="370" y="692" text-anchor="middle">/olva/resultados/{permanencia_hub, cumplimiento_sla}</text>
+
+  <!-- YARN -->
+  <rect class="clu" x="720" y="196" width="620" height="530" rx="10"/>
+  <text class="c" x="740" y="222">YARN</text>
+  <text class="s" x="740" y="242">MapReduce sobre YARN</text>
+
+  <rect class="boxM" x="840" y="292" width="380" height="104" rx="8"/>
+  <text class="b" x="1030" y="317" text-anchor="middle">ResourceManager (maestro)</text>
+  <text class="t" x="1030" y="339" text-anchor="middle">planificador Capacity · cola default</text>
+  <text class="t" x="1030" y="359" text-anchor="middle">asigna contenedores a los jobs</text>
+  <text class="s" x="1030" y="379" text-anchor="middle">web :8088</text>
+
+  <rect class="boxW" x="760" y="470" width="300" height="110" rx="8"/>
+  <text class="b" x="910" y="495" text-anchor="middle">NodeManager (trabajador)</text>
+  <text class="t" x="910" y="517" text-anchor="middle">4 096 MB · 6 vCores</text>
+  <text class="s" x="910" y="537" text-anchor="middle">ejecuta tareas map / reduce</text>
+  <text class="s" x="910" y="557" text-anchor="middle">servicio auxiliar mapreduce_shuffle</text>
+
+  <rect class="box" x="1090" y="470" width="220" height="110" rx="8"/>
+  <text class="b" x="1200" y="495" text-anchor="middle">JobHistory Server</text>
+  <text class="t" x="1200" y="517" text-anchor="middle">historial y contadores</text>
+  <text class="s" x="1200" y="537" text-anchor="middle">web :19888</text>
+  <text class="s" x="1200" y="557" text-anchor="middle">RPC :10020</text>
+
+  <path class="ln" d="M1000 396 L930 468" marker-end="url(#fl)"/>
+  <path class="dash" d="M1060 525 L1088 525" marker-end="url(#fl)"/>
+
+  <rect class="box" x="760" y="606" width="550" height="100" rx="8"/>
+  <text class="b" x="1035" y="630" text-anchor="middle">Job encadenado pe.olva.bigdata.OlvaBigDataDriver</text>
+  <text class="t" x="1035" y="652" text-anchor="middle">J1 permanencia por envío → J2 indicadores por hub</text>
+  <text class="t" x="1035" y="672" text-anchor="middle">J3 cumplimiento del SLA (map-side join con caché distribuida)</text>
+  <text class="s" x="1035" y="692" text-anchor="middle">3,15 M eventos + 299 667 envíos procesados en ~95 s</text>
+
+  <!-- relaciones -->
+  <path class="ln" d="M520 130 L520 290" marker-end="url(#fl)"/>
+  <text class="s" x="510" y="180" text-anchor="end">archivos (HDFS)</text>
+  <path class="ln" d="M905 130 L905 290" marker-end="url(#fl)"/>
+  <text class="s" x="915" y="180">jobs (YARN)</text>
+  <path class="hb" d="M760 525 C700 525 700 525 652 525" marker-end="url(#flA)" marker-start="url(#flA)"/>
+  <text class="s" x="706" y="512" text-anchor="middle">lectura local</text>
+  <text class="s" x="706" y="548" text-anchor="middle">de bloques</text>
+
+  <text class="s" x="30" y="818">Contenedores YARN: map 512 MB · reduce 768 MB · ApplicationMaster 512 MB.  Consolas web accesibles desde Windows: http://localhost:9870 (HDFS) · http://localhost:8088 (YARN) · http://localhost:19888 (JobHistory)</text>
+  <text class="s" x="30" y="840">Inicio/parada: hadoop_nativo/iniciar_hadoop.bat · detener_hadoop.bat · estado: hadoop_cluster status (jps, dfsadmin -report, yarn node -list)</text>
+</svg>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagrama 6. Flujo de datos e integración end-to-end: PostgreSQL, Oracle, MongoDB, Cassandra y Hadoop. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" width="1400" height="900" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#4a4f57"/>
+    </marker>
+    <marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#2f5d9e"/>
+    </marker>
+    <style>
+      .box{fill:#eef3fb;stroke:#3d5a8a;stroke-width:1.4}
+      .boxH{fill:#fff6e6;stroke:#b7791f;stroke-width:1.8}
+      .boxG{fill:#f1f6ee;stroke:#5b8a3d;stroke-width:1.4}
+      .clu{fill:#f8f9fb;stroke:#8c9bb5;stroke-width:1.4}
+      .t{font-size:14.5px;fill:#1b2433}
+      .b{font-size:15px;font-weight:bold;fill:#1b2433}
+      .c{font-size:16px;font-weight:bold;fill:#1b2433}
+      .s{font-size:13px;fill:#4a4f57}
+      .n{font-size:14px;font-weight:bold;fill:#2f5d9e}
+      .ln{fill:none;stroke:#4a4f57;stroke-width:1.6}
+      .lnA{fill:none;stroke:#2f5d9e;stroke-width:2.6}
+      .dash{fill:none;stroke:#4a4f57;stroke-width:1.5;stroke-dasharray:6 5}
+    </style>
+  </defs>
+  <rect x="0" y="0" width="1400" height="900" fill="#ffffff"/>
+  <text x="30" y="34" style="font-size:20px;font-weight:bold;fill:#1b2433">Flujo de datos end-to-end: operación (OLTP) → Big Data (Hadoop) → indicadores en los motores de consumo</text>
+
+  <!-- Columna 1: operación -->
+  <rect class="clu" x="30" y="60" width="400" height="800" rx="10"/>
+  <text class="c" x="50" y="86">1. CAPA OPERACIONAL (registro en línea)</text>
+  <rect class="box" x="55" y="104" width="350" height="70" rx="8"/>
+  <text class="b" x="230" y="128" text-anchor="middle">Agencias · hubs · couriers · portal</text>
+  <text class="t" x="230" y="150" text-anchor="middle">admisión, escaneos, entregas, pagos</text>
+  <text class="s" x="230" y="166" text-anchor="middle">(simulados por generar_datos.py)</text>
+
+  <rect class="box" x="55" y="210" width="350" height="120" rx="8"/>
+  <text class="b" x="230" y="234" text-anchor="middle">PostgreSQL 16 · olva_courier</text>
+  <text class="t" x="230" y="256" text-anchor="middle">fuente de verdad transaccional (ACID, FK)</text>
+  <text class="t" x="230" y="276" text-anchor="middle">maestro · operacion · auditoria</text>
+  <text class="t" x="230" y="296" text-anchor="middle">+ BD distribuida Lima / Norte / Sur (2PC)</text>
+  <text class="s" x="230" y="316" text-anchor="middle">29 966 envíos · 315 101 eventos</text>
+
+  <rect class="box" x="55" y="356" width="350" height="76" rx="8"/>
+  <text class="b" x="230" y="380" text-anchor="middle">Oracle · implementación parcial</text>
+  <text class="t" x="230" y="402" text-anchor="middle">8 tablas · PL/SQL · PROFILE · Data Pump</text>
+  <text class="s" x="230" y="421" text-anchor="middle">respaldo y comparación del núcleo relacional</text>
+
+  <rect class="box" x="55" y="458" width="350" height="96" rx="8"/>
+  <text class="b" x="230" y="482" text-anchor="middle">MongoDB · olva_tracking</text>
+  <text class="t" x="230" y="504" text-anchor="middle">expediente documental de cada envío</text>
+  <text class="t" x="230" y="524" text-anchor="middle">sharding por zonas: sede Lima / Arequipa</text>
+  <text class="s" x="230" y="543" text-anchor="middle">consulta de seguimiento sin JOIN</text>
+
+  <rect class="box" x="55" y="580" width="350" height="96" rx="8"/>
+  <text class="b" x="230" y="604" text-anchor="middle">Apache Cassandra · olva_tracking</text>
+  <text class="t" x="230" y="626" text-anchor="middle">bitácora de escaneos (serie de tiempo)</text>
+  <text class="t" x="230" y="646" text-anchor="middle">réplica dc_lima + dc_arequipa</text>
+  <text class="s" x="230" y="665" text-anchor="middle">escrituras masivas, alta disponibilidad</text>
+
+  <path class="ln" d="M230 174 L230 208" marker-end="url(#fl)"/>
+  <path class="dash" d="M230 330 L230 354" marker-end="url(#fl)"/>
+  <text class="s" x="240" y="346">subconjunto</text>
+  <path class="dash" d="M410 270 C450 270 450 505 407 505" marker-end="url(#fl)"/>
+  <path class="dash" d="M410 280 C470 280 470 628 407 628" marker-end="url(#fl)"/>
+  <text class="s" x="455" y="420" text-anchor="middle" transform="rotate(90 455 420)">transformación CSV → JSON / CQL</text>
+
+  <!-- Columna 2: Big Data -->
+  <rect class="clu" x="500" y="60" width="420" height="800" rx="10"/>
+  <text class="c" x="520" y="86">2. CAPA BIG DATA (Apache Hadoop 3.3.6)</text>
+
+  <rect class="boxH" x="525" y="104" width="370" height="76" rx="8"/>
+  <text class="b" x="710" y="128" text-anchor="middle">Generador masivo (punto 12)</text>
+  <text class="t" x="710" y="150" text-anchor="middle">299 667 envíos · 3 152 417 eventos</text>
+  <text class="s" x="710" y="169" text-anchor="middle">5 640 511 registros · 340 MB CSV</text>
+
+  <rect class="boxH" x="525" y="210" width="370" height="120" rx="8"/>
+  <text class="b" x="710" y="234" text-anchor="middle">HDFS (NameNode + 2 DataNodes)</text>
+  <text class="t" x="710" y="256" text-anchor="middle">/olva/raw/&lt;tabla&gt;  ← conjunto masivo</text>
+  <text class="t" x="710" y="276" text-anchor="middle">/olva/operacional/&lt;fecha&gt;  ← extracción</text>
+  <text class="t" x="710" y="296" text-anchor="middle">diaria desde PostgreSQL (COPY → put)</text>
+  <text class="s" x="710" y="316" text-anchor="middle">bloques 64 MB · replicación 2</text>
+
+  <rect class="boxH" x="525" y="356" width="370" height="150" rx="8"/>
+  <text class="b" x="710" y="380" text-anchor="middle">YARN + MapReduce (olva-bigdata.jar)</text>
+  <text class="t" x="710" y="404" text-anchor="middle">J1 PermanenciaMapper / Reducer</text>
+  <text class="t" x="710" y="424" text-anchor="middle">J2 AgregadoMapper / SumaCombiner / Reducer</text>
+  <text class="t" x="710" y="444" text-anchor="middle">J3 SlaMapper (join con catálogos) / Reducer</text>
+  <text class="s" x="710" y="466" text-anchor="middle">pregunta analítica: ¿dónde y cuándo se acumula</text>
+  <text class="s" x="710" y="484" text-anchor="middle">la permanencia y cómo afecta al SLA?</text>
+
+  <rect class="boxH" x="525" y="532" width="370" height="96" rx="8"/>
+  <text class="b" x="710" y="556" text-anchor="middle">/olva/resultados</text>
+  <text class="t" x="710" y="578" text-anchor="middle">permanencia_hub (318 indicadores)</text>
+  <text class="t" x="710" y="598" text-anchor="middle">cumplimiento_sla (140 indicadores)</text>
+  <text class="s" x="710" y="617" text-anchor="middle">CSV agregados: KB en lugar de cientos de MB</text>
+
+  <path class="ln" d="M710 180 L710 208" marker-end="url(#fl)"/>
+  <path class="ln" d="M710 330 L710 354" marker-end="url(#fl)"/>
+  <path class="ln" d="M710 506 L710 530" marker-end="url(#fl)"/>
+  <path class="lnA" d="M407 250 L522 278" marker-end="url(#flA)"/>
+  <text class="n" x="462" y="238" text-anchor="middle">①</text>
+
+  <rect class="box" x="525" y="660" width="370" height="170" rx="8"/>
+  <text class="b" x="710" y="684" text-anchor="middle">Orquestación (06_BigData_Hadoop)</text>
+  <text class="t" x="710" y="706" text-anchor="middle">00_ejecutar_todo.sh</text>
+  <text class="t" x="710" y="726" text-anchor="middle">① 03_integracion: extracción PG → HDFS</text>
+  <text class="t" x="710" y="746" text-anchor="middle">② MapReduce sobre lo extraído</text>
+  <text class="t" x="710" y="766" text-anchor="middle">③ carga de indicadores en 3 motores</text>
+  <text class="t" x="710" y="786" text-anchor="middle">④ verificación cruzada del mismo KPI</text>
+  <text class="s" x="710" y="810" text-anchor="middle">idempotente: se puede reejecutar</text>
+
+  <!-- Columna 3: consumo -->
+  <rect class="clu" x="990" y="60" width="380" height="800" rx="10"/>
+  <text class="c" x="1010" y="86">3. CAPA DE CONSUMO (indicadores)</text>
+
+  <rect class="boxG" x="1015" y="150" width="330" height="120" rx="8"/>
+  <text class="b" x="1180" y="174" text-anchor="middle">PostgreSQL · esquema analitica</text>
+  <text class="t" x="1180" y="196" text-anchor="middle">kpi_permanencia_hub</text>
+  <text class="t" x="1180" y="216" text-anchor="middle">kpi_cumplimiento_sla</text>
+  <text class="t" x="1180" y="236" text-anchor="middle">vw_franjas_criticas (JOIN maestro.hub)</text>
+  <text class="s" x="1180" y="256" text-anchor="middle">reportes SQL de gestión · rol_analista</text>
+
+  <rect class="boxG" x="1015" y="330" width="330" height="110" rx="8"/>
+  <text class="b" x="1180" y="354" text-anchor="middle">MongoDB · kpi_bigdata</text>
+  <text class="t" x="1180" y="376" text-anchor="middle">458 documentos (upsert por _id)</text>
+  <text class="t" x="1180" y="396" text-anchor="middle">índice indicador + dimensión + hub</text>
+  <text class="s" x="1180" y="418" text-anchor="middle">paneles y portal junto al expediente</text>
+
+  <rect class="boxG" x="1015" y="500" width="330" height="110" rx="8"/>
+  <text class="b" x="1180" y="524" text-anchor="middle">Cassandra · kpi_permanencia_hub</text>
+  <text class="t" x="1180" y="546" text-anchor="middle">PRIMARY KEY ((hub), dimension, valor)</text>
+  <text class="t" x="1180" y="566" text-anchor="middle">+ kpi_cumplimiento_sla</text>
+  <text class="s" x="1180" y="588" text-anchor="middle">panel operativo por hub, en ambas sedes</text>
+
+  <rect class="box" x="1015" y="660" width="330" height="96" rx="8"/>
+  <text class="b" x="1180" y="684" text-anchor="middle">Mismo indicador en los 3 motores</text>
+  <text class="t" x="1180" y="706" text-anchor="middle">HC-LIM · 20:00 → 102 570 estancias</text>
+  <text class="t" x="1180" y="726" text-anchor="middle">14,57 h de permanencia promedio</text>
+  <text class="s" x="1180" y="745" text-anchor="middle">verificación automática del flujo</text>
+
+  <path class="lnA" d="M897 570 C950 570 950 210 1012 210" marker-end="url(#flA)"/>
+  <path class="lnA" d="M897 580 C960 580 960 385 1012 385" marker-end="url(#flA)"/>
+  <path class="lnA" d="M897 590 C965 590 965 555 1012 555" marker-end="url(#flA)"/>
+  <text class="n" x="975" y="470" text-anchor="middle">③</text>
+  <path class="dash" d="M1180 612 L1180 658" marker-end="url(#fl)"/>
+</svg>

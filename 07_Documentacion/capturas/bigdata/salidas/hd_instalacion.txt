@@ -1,0 +1,24 @@
+hadoop@Hans:~$ java -version 2>&1 | head -1
+openjdk version "11.0.33.1" 2026-11-17
+
+hadoop@Hans:~$ hadoop version | head -4
+Hadoop 3.3.6
+Source code repository https://github.com/apache/hadoop.git -r 1be78238728da9266a4f88195058f08fd012bf9c
+Compiled by ubuntu on 2023-06-18T08:22Z
+Compiled on platform linux-x86_64
+
+hadoop@Hans:~$ ls -l /opt | grep hadoop
+lrwxrwxrwx  1 root   root          17 Nov 23 20:19 hadoop -> /opt/hadoop-3.3.6
+drwxr-xr-x 11 hadoop hadoop      4096 Nov 23 20:19 hadoop-3.3.6
+-rw-r--r--  1 root   root   730107476 Nov 23 20:18 hadoop-3.3.6.tar.gz
+-rw-r--r--  1 root   root         164 Nov 23 20:18 hadoop-3.3.6.tar.gz.sha512
+
+hadoop@Hans:~$ hdfs getconf -confKey fs.defaultFS; hdfs getconf -confKey dfs.replication; hdfs getconf -confKey dfs.blocksize
+hdfs://localhost:9000
+2
+67108864
+
+hadoop@Hans:~$ hdfs getconf -namenodes; hdfs getconf -confKey yarn.resourcemanager.webapp.address
+localhost
+0.0.0.0:8088
+

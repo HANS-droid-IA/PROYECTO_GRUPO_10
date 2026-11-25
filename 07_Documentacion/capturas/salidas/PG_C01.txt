@@ -1,0 +1,31 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_c01.sql
+
+SET search_path = operacion, maestro, public;
+SELECT ev.fecha_hora::TIMESTAMP(0)                       AS fecha_hora,
+       ev.tipo_evento,
+       h.codigo                                          AS hub,
+       c.nombre                                          AS ciudad,
+       d.codigo_manifiesto                               AS manifiesto,
+       COALESCE(d.nro_vuelo, v.placa)                    AS transporte,
+       ev.fecha_hora - LAG(ev.fecha_hora) OVER (ORDER BY ev.fecha_hora, ev.id_evento) AS desde_evento_anterior
+  FROM evento_tracking ev
+  JOIN envio e      ON e.id_envio = ev.id_envio
+  JOIN hub h        ON h.id_hub = ev.id_hub
+  JOIN ciudad c     ON c.id_ciudad = h.id_ciudad
+  LEFT JOIN despacho d ON d.id_despacho = ev.id_despacho
+  LEFT JOIN vehiculo v ON v.id_vehiculo = d.id_vehiculo
+ WHERE e.nro_tracking = 'OLV2600001112'
+ ORDER BY ev.fecha_hora, ev.id_evento;
+     fecha_hora      |  tipo_evento  |    hub     |  ciudad  |   manifiesto    | transporte | desde_evento_anterior 
+---------------------+---------------+------------+----------+-----------------+------------+-----------------------
+ 2026-04-09 13:30:27 | ADMISION      | AG-AQP-01  | Arequipa |                 |            | 
+ 2026-04-09 19:42:39 | SALIDA_HUB    | AG-AQP-01  | Arequipa | MF260409-001004 | J1X-822    | 06:12:12
+ 2026-04-09 20:37:50 | LLEGADA_HUB   | HR-AQP     | Arequipa | MF260409-001004 | J1X-822    | 00:55:11
+ 2026-04-09 22:03:19 | CLASIFICACION | HR-AQP     | Arequipa |                 |            | 01:25:29
+ 2026-04-09 23:39:10 | SALIDA_HUB    | HR-AQP     | Arequipa | MF260409-000890 | C7F-325    | 01:35:51
+ 2026-04-10 15:35:28 | LLEGADA_HUB   | HC-LIM     | Callao   | MF260409-000890 | C7F-325    | 15:56:18
+ 2026-04-10 16:55:15 | CLASIFICACION | HC-LIM     | Callao   |                 |            | 01:19:47
+ 2026-04-11 06:07:08 | SALIDA_HUB    | HC-LIM     | Callao   | MF260411-000963 | E2E-298    | 13:11:53
+ 2026-04-11 06:53:30 | LLEGADA_HUB   | AG-LIM-MIR | Lima     | MF260411-000963 | E2E-298    | 00:46:22
+ 2026-04-11 08:30:00 | EN_REPARTO    | AG-LIM-MIR | Lima     |                 |            | 01:36:30
+ 2026-04-11 14:49:00 | ENTREGA       | AG-LIM-MIR | Lima     |                 |            | 06:19:00

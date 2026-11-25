@@ -1,0 +1,43 @@
+olva_admin@localhost:5440/olva_lima> psql -h localhost -p 5440 -U olva_admin -d olva_lima -f dd_q2.sql
+
+Q2. OPTIMIZACIÓN - agregación distribuida (partitionwise aggregate):
+    cada nodo calcula su GROUP BY y solo viaja el resumen
+                                                  QUERY PLAN                                                   
+---------------------------------------------------------------------------------------------------------------
+ Append
+   ->  HashAggregate
+         Output: envio.nodo, envio.estado_actual, count(*), sum(envio.monto_total)
+         Group Key: envio.nodo, envio.estado_actual
+         ->  Seq Scan on operacion.envio
+               Output: envio.nodo, envio.estado_actual, envio.monto_total
+   ->  Async Foreign Scan
+         Output: envio_1.nodo, envio_1.estado_actual, (count(*)), (sum(envio_1.monto_total))
+         Relations: Aggregate on (global.envio_norte envio_1)
+         Remote SQL: SELECT nodo, estado_actual, count(*), sum(monto_total) FROM operacion.envio GROUP BY 1, 2
+   ->  Async Foreign Scan
+         Output: envio_2.nodo, envio_2.estado_actual, (count(*)), (sum(envio_2.monto_total))
+         Relations: Aggregate on (global.envio_sur envio_2)
+         Remote SQL: SELECT nodo, estado_actual, count(*), sum(monto_total) FROM operacion.envio GROUP BY 1, 2
+
+ nodo  |  estado_actual  | envios | ingresos  
+-------+-----------------+--------+-----------
+ LIMA  | ENTREGADO       |  22774 | 602492.50
+ LIMA  | DEVUELTO        |    542 |  14180.00
+ LIMA  | EN_HUB          |    197 |   5465.50
+ LIMA  | ADMITIDO        |     84 |   2068.30
+ LIMA  | EN_TRANSITO     |     23 |    748.00
+ LIMA  | INTENTO_FALLIDO |     16 |    327.20
+ LIMA  | EN_REPARTO      |      3 |     52.00
+ NORTE | ENTREGADO       |   3064 |  92454.40
+ NORTE | DEVUELTO        |     57 |   1639.10
+ NORTE | EN_HUB          |     31 |    949.50
+ NORTE | ADMITIDO        |     10 |    319.20
+ NORTE | INTENTO_FALLIDO |      3 |    109.50
+ NORTE | EN_TRANSITO     |      2 |    117.00
+ SUR   | ENTREGADO       |   3020 |  87412.40
+ SUR   | DEVUELTO        |     83 |   2297.00
+ SUR   | EN_HUB          |     36 |   1106.20
+ SUR   | EN_TRANSITO     |     11 |    249.00
+ SUR   | ADMITIDO        |     10 |    259.60
+ SUR   | INTENTO_FALLIDO |      3 |     87.50
+ SUR   | EN_REPARTO      |      1 |     83.00

@@ -1,0 +1,31 @@
+coordinador-lima:~$ ./07_concurrencia.sh B
+
+Preparación: envíos de demostración 990002 (NORTE), 990003 y 990004 (SUR) con valor_declarado = 100
+
+==================================================================
+B) ACTUALIZACIÓN PERDIDA: dos supervisores ajustan el valor declarado
+   A suma 100, B suma 50, ambos calculando a partir de lo que leyeron
+==================================================================
+### Nivel de aislamiento: READ COMMITTED
+[A] leyó 100.00
+ 
+[A] escribió 100.00 + 100
+[A] COMMIT
+[B] leyó 100.00
+ 
+[B] intentó escribir 100.00 + 50
+    valor final = 150.00   (esperado si no se pierde nada: 250)
+
+### Nivel de aislamiento: REPEATABLE READ
+[A] leyó 100.00
+ 
+[A] escribió 100.00 + 100
+[A] COMMIT
+[B] leyó 100.00
+ 
+ERROR:  could not serialize access due to concurrent update
+[B] intentó escribir 100.00 + 50
+    valor final = 200.00   (esperado si no se pierde nada: 250)
+
+Conclusión: en READ COMMITTED la escritura de A se PIERDE; en REPEATABLE READ PostgreSQL
+aborta a B (could not serialize access) y la aplicación debe reintentar.

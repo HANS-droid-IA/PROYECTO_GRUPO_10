@@ -1,0 +1,43 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_c02.sql
+
+SET search_path = operacion, maestro, public;
+SELECT to_char(date_trunc('month', e.fecha_registro), 'YYYY-MM')              AS mes,
+       ts.codigo                                                              AS servicio,
+       COUNT(*)                                                               AS entregados,
+       ROUND(100.0 * COUNT(*) FILTER (WHERE e.fecha_entrega <= e.fecha_compromiso) / COUNT(*), 1) AS pct_a_tiempo,
+       ROUND(AVG(EXTRACT(EPOCH FROM e.fecha_entrega - e.fecha_registro) / 3600)::NUMERIC, 1)     AS horas_prom
+  FROM envio e
+  JOIN tipo_servicio ts USING (id_servicio)
+ WHERE e.estado_actual = 'ENTREGADO'
+ GROUP BY 1, 2
+ ORDER BY 1, 2;
+   mes   |      servicio       | entregados | pct_a_tiempo | horas_prom 
+---------+---------------------+------------+--------------+------------
+ 2026-04 | ECONOMICO_TERRESTRE |        771 |         99.1 |       51.7
+ 2026-04 | ESTANDAR_TERRESTRE  |       1657 |         93.1 |       52.3
+ 2026-04 | EXPRESS_AEREO       |       1019 |         88.0 |       47.7
+ 2026-04 | SOBRE_AEREO         |        413 |         89.8 |       47.1
+ 2026-05 | ECONOMICO_TERRESTRE |        790 |         99.1 |       51.0
+ 2026-05 | ESTANDAR_TERRESTRE  |       1790 |         91.5 |       52.0
+ 2026-05 | EXPRESS_AEREO       |       1090 |         87.4 |       48.4
+ 2026-05 | SOBRE_AEREO         |        424 |         86.6 |       48.4
+ 2026-06 | ECONOMICO_TERRESTRE |        834 |         98.7 |       52.2
+ 2026-06 | ESTANDAR_TERRESTRE  |       1925 |         91.6 |       52.6
+ 2026-06 | EXPRESS_AEREO       |       1153 |         88.0 |       47.4
+ 2026-06 | SOBRE_AEREO         |        444 |         86.3 |       46.8
+ 2026-07 | ECONOMICO_TERRESTRE |       1103 |         98.4 |       54.6
+ 2026-07 | ESTANDAR_TERRESTRE  |       2628 |         91.4 |       52.4
+ 2026-07 | EXPRESS_AEREO       |       1595 |         85.8 |       49.8
+ 2026-07 | SOBRE_AEREO         |        586 |         86.2 |       48.4
+ 2026-08 | ECONOMICO_TERRESTRE |        970 |         98.8 |       52.6
+ 2026-08 | ESTANDAR_TERRESTRE  |       2154 |         91.3 |       52.5
+ 2026-08 | EXPRESS_AEREO       |       1198 |         86.3 |       48.4
+ 2026-08 | SOBRE_AEREO         |        481 |         86.3 |       48.7
+ 2026-09 | ECONOMICO_TERRESTRE |        973 |         99.1 |       52.3
+ 2026-09 | ESTANDAR_TERRESTRE  |       2222 |         91.8 |       52.3
+ 2026-09 | EXPRESS_AEREO       |       1317 |         86.0 |       48.4
+ 2026-09 | SOBRE_AEREO         |        521 |         84.6 |       49.0
+ 2026-10 | ECONOMICO_TERRESTRE |        151 |        100.0 |       46.5
+ 2026-10 | ESTANDAR_TERRESTRE  |        363 |         97.2 |       47.8
+ 2026-10 | EXPRESS_AEREO       |        208 |         91.3 |       47.6
+ 2026-10 | SOBRE_AEREO         |         78 |         91.0 |       48.4

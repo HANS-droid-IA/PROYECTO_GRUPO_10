@@ -1,0 +1,34 @@
+SQL> -- sqlplus olva@//localhost:1521/FREEPDB1 @ora06_o4_o5.sql
+
+=== O4. [ORACLE] Agencias por hub con LISTAGG (PG: STRING_AGG) ===
+
+HUB	    N_AGENCIAS AGENCIAS
+----------- ---------- ------------------------------------------------------------------------------------------
+HC-LIM		     9 AG-CAL-01, AG-ICA-01, AG-LIM-ATE, AG-LIM-MIR, AG-LIM-OLI, AG-LIM-SIS, AG-LIM-SJL, AG-LIM-S
+		       UR, AG-PCL-01
+
+HR-AQP		     4 AG-AQP-01, AG-AQP-02, AG-AQP-03, AG-TCQ-01
+HR-CIX		     3 AG-CIX-01, AG-CIX-02, AG-TPP-01
+HR-HYO		     3 AG-AYA-01, AG-HYO-01, AG-HYO-02
+HR-TRU		     3 AG-CAJ-01, AG-TRU-01, AG-TRU-02
+HR-JUL		     2 AG-JUL-01, AG-PUN-01
+HR-PIU		     2 AG-PIU-01, AG-PIU-02
+HR-CUZ		     2 AG-CUZ-01, AG-CUZ-02
+HR-IQT		     1 AG-IQT-01
+=== O5. Top 5 clientes por facturación: FETCH FIRST (estándar) vs ROWNUM (clásico Oracle) ===
+
+NOMBRE_RAZON_SOCIAL			 ENVIOS  FACTURADO
+------------------------------------ ---------- ----------
+Distribuidora San Martín E.I.R.L.            26      850.8
+Negociaciones Inca S.A. 		     24      738.4
+Representaciones Santa Rosa S.R.L.	     22      623.7
+Textil Los Andes S.R.L. 		     18      556.7
+Importaciones Los Andes E.I.R.L.	     14      507.5
+
+NOMBRE_RAZON_SOCIAL		      FACTURADO
+------------------------------------ ----------
+Distribuidora San Martín E.I.R.L.         850.8
+Negociaciones Inca S.A. 		  738.4
+Representaciones Santa Rosa S.R.L.	  623.7
+Textil Los Andes S.R.L. 		  556.7
+Importaciones Los Andes E.I.R.L.	  507.5

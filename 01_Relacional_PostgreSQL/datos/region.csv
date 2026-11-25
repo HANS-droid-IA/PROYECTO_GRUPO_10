@@ -1,0 +1,6 @@
+id_region,codigo,nombre,nodo
+1,LIM,Lima,LIMA
+2,CEN,Centro,LIMA
+3,NOR,Norte,NORTE
+4,ORI,Oriente,NORTE
+5,SUR,Sur,SUR

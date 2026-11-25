@@ -1,0 +1,21 @@
+hadoop@Hans:~$ hdfs dfs -ls /olva
+Found 4 items
+drwxr-xr-x   - hadoop supergroup          0 2026-11-23 20:29 /olva/operacional
+drwxr-xr-x   - hadoop supergroup          0 2026-11-23 20:27 /olva/raw
+drwxr-xr-x   - hadoop supergroup          0 2026-11-23 20:29 /olva/resultados
+drwxr-xr-x   - hadoop supergroup          0 2026-11-23 20:31 /olva/resultados_operacional
+
+hadoop@Hans:~$ hdfs dfs -du -h /olva/raw
+10.0 K   20.0 K   /olva/raw/catalogos
+23.4 M   46.7 M   /olva/raw/comprobante
+28.7 M   57.5 M   /olva/raw/despacho_envio
+12.8 M   25.6 M   /olva/raw/destinatario
+43.7 M   87.3 M   /olva/raw/envio
+180.9 M  361.9 M  /olva/raw/evento_tracking
+2.4 M    4.7 M    /olva/raw/incidencia
+25.4 M   50.7 M   /olva/raw/intento_entrega
+19.4 M   38.9 M   /olva/raw/paquete
+
+hadoop@Hans:~$ hdfs dfs -count -h /olva/raw
+          10           14            336.7 M /olva/raw
+

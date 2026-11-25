@@ -1,0 +1,16 @@
+   tabla_global   |       fragmento        |        predicado        |     ubicacion     
+------------------+------------------------+-------------------------+-------------------
+ cliente_contacto | cliente_contacto       | FOR VALUES IN ('LIMA')  | local (olva_lima)
+ cliente_contacto | cliente_contacto_norte | FOR VALUES IN ('NORTE') | srv_norte
+ cliente_contacto | cliente_contacto_sur   | FOR VALUES IN ('SUR')   | srv_sur
+ envio            | envio                  | FOR VALUES IN ('LIMA')  | local (olva_lima)
+ envio            | envio_norte            | FOR VALUES IN ('NORTE') | srv_norte
+ envio            | envio_sur              | FOR VALUES IN ('SUR')   | srv_sur
+ evento_tracking  | evento_tracking        | FOR VALUES IN ('LIMA')  | local (olva_lima)
+ evento_tracking  | evento_tracking_norte  | FOR VALUES IN ('NORTE') | srv_norte
+ evento_tracking  | evento_tracking_sur    | FOR VALUES IN ('SUR')   | srv_sur
+ paquete          | paquete                | FOR VALUES IN ('LIMA')  | local (olva_lima)
+ paquete          | paquete_norte          | FOR VALUES IN ('NORTE') | srv_norte
+ paquete          | paquete_sur            | FOR VALUES IN ('SUR')   | srv_sur
+(12 rows)
+

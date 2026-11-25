@@ -1,0 +1,20 @@
+
+-- Conectado como u_analista_cass (rol_analista: solo lectura)
+u_analista_cass@cqlsh:olva_tracking (Lima)> SELECT nro_tracking, estado FROM estado_envio WHERE nro_tracking = 'OLV2600000001';
+ nro_tracking  | estado
+---------------+-----------
+ OLV2600000001 | ENTREGADO
+
+(1 rows)
+
+
+u_analista_cass@cqlsh:olva_tracking (Lima)> UPDATE estado_envio SET estado = 'ENTREGADO' WHERE nro_tracking = 'OLV2600000001';
+Unauthorized: Error from server: code=2100 [Unauthorized] message="User u_analista_cass has no MODIFY permission on <table olva_tracking.estado_envio> or any of its parents"
+
+
+-- Conectado como u_portal_web (rol_portal_cliente: solo 2 tablas)
+u_portal_web@cqlsh:olva_tracking (Lima)> SELECT nro_tracking, estado FROM estado_envio WHERE nro_tracking = 'OLV2600000001';
+Unauthorized: Error from server: code=2100 [Unauthorized] message="User u_portal_web has no SELECT permission on <table olva_tracking.estado_envio> or any of its parents"
+
+u_portal_web@cqlsh:olva_tracking (Lima)> DROP TABLE alertas_sla;
+Unauthorized: Error from server: code=2100 [Unauthorized] message="User u_portal_web has no DROP permission on <table olva_tracking.alertas_sla> or any of its parents"

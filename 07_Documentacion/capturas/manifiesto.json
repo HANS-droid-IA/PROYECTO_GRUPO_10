@@ -1,0 +1,415 @@
+[
+ {
+  "id": "PG01",
+  "titulo": "Conexión al servidor PostgreSQL y datos de la base olva_courier",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg01_conexion.sql"
+ },
+ {
+  "id": "PG02",
+  "titulo": "Schemas y tablas creadas en olva_courier",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg02_schemas_tablas.sql"
+ },
+ {
+  "id": "PG03",
+  "titulo": "Estructura de la tabla operacion.despacho: columnas, PK, FK, CHECK, índices y trigger",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg03_estructura_despacho.sql"
+ },
+ {
+  "id": "PG04",
+  "titulo": "Restricciones implementadas en la tabla operacion.envio",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg04_restricciones_envio.sql"
+ },
+ {
+  "id": "PG05",
+  "titulo": "Validación del poblamiento: número de registros por tabla",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg05_validacion_carga.sql"
+ },
+ {
+  "id": "PG_C01",
+  "titulo": "Consulta C01: Línea de tiempo (tracking) de un envío con tiempo entre escaneos",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_c01.sql",
+  "echo": true
+ },
+ {
+  "id": "PG_C02",
+  "titulo": "Consulta C02: Cumplimiento de SLA por servicio y mes",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_c02.sql",
+  "echo": true
+ },
+ {
+  "id": "PG_C03",
+  "titulo": "Consulta C03: Cuellos de botella: permanencia en hubs por franja horaria (función de tabla)",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_c03.sql",
+  "echo": true
+ },
+ {
+  "id": "PG_C04",
+  "titulo": "Consulta C04: Impacto del cuello de botella del Hub Central en el SLA",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_c04.sql",
+  "echo": true
+ },
+ {
+  "id": "PG_C05",
+  "titulo": "Consulta C05: Puntualidad de despachos por ruta (salida real vs programada)",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_c05.sql",
+  "echo": true
+ },
+ {
+  "id": "PG_C06",
+  "titulo": "Consulta C06: Matriz de ingresos región origen x destino con subtotales (ROLLUP)",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_c06.sql",
+  "echo": true
+ },
+ {
+  "id": "PG_C07",
+  "titulo": "Consulta C07: Top 10 clientes empresariales: facturación, participación y puntualidad",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_c07.sql",
+  "echo": true
+ },
+ {
+  "id": "PG_C08",
+  "titulo": "Consulta C08: Efectividad de entrega al primer intento por ciudad y motivos de falla",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_c08.sql",
+  "echo": true
+ },
+ {
+  "id": "PG_C09",
+  "titulo": "Consulta C09: Alerta operativa: envíos vivos vencidos o en riesgo al corte",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_c09.sql",
+  "echo": true
+ },
+ {
+  "id": "PG_C10",
+  "titulo": "Consulta C10: Incidencias por tipo y hub: volumen, abiertas y tiempo medio de resolución",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_c10.sql",
+  "echo": true
+ },
+ {
+  "id": "PG_C11",
+  "titulo": "Consulta C11: Productividad de couriers: entregas efectivas por día trabajado, ranking por agencia",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_c11.sql",
+  "echo": true
+ },
+ {
+  "id": "PG_C12",
+  "titulo": "Consulta C12: Envíos estancados: sin escaneo en más de 48 h (posible pérdida)",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_c12.sql",
+  "echo": true
+ },
+ {
+  "id": "PG_C13",
+  "titulo": "Consulta C13: Ocupación horaria del Hub Central vs capacidad (picos de demanda)",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_c13.sql",
+  "echo": true
+ },
+ {
+  "id": "PG_F1",
+  "titulo": "Ejecución de las funciones fn_calcular_tarifa y fn_estado_sla",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_f1_tarifa.sql"
+ },
+ {
+  "id": "PG_F2",
+  "titulo": "Ejecución de las funciones fn_cuellos_botella y fn_permanencia_hub",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_f2_cuellos.sql"
+ },
+ {
+  "id": "PG_P1",
+  "titulo": "Ejecución del procedimiento sp_registrar_envio y validación de destino sin carretera",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_p1_registrar_envio.sql",
+  "quiet": true
+ },
+ {
+  "id": "PG_P2",
+  "titulo": "Ciclo completo de un envío mediante procedimientos almacenados y auditoría generada por triggers",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_p2_ciclo_envio.sql",
+  "quiet": true
+ },
+ {
+  "id": "PG_S1",
+  "titulo": "Roles, usuarios, privilegios y políticas RLS configurados",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_s1_roles.sql"
+ },
+ {
+  "id": "PG_S2",
+  "titulo": "Row Level Security: cada operador ve solo los envíos de su nodo",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_s2_rls.sql",
+  "quiet": true
+ },
+ {
+  "id": "PG_S3",
+  "titulo": "Privilegios por columna y escritura solo mediante procedimientos: accesos denegados",
+  "tipo": "psql",
+  "db": "olva_courier",
+  "file": "pg_s3_denegados.sql",
+  "quiet": true
+ },
+ {
+  "id": "PG_B1",
+  "titulo": "Respaldo lógico y físico, incidente simulado y restauración verificada",
+  "tipo": "bash",
+  "contenedor": "olva_pg_lima",
+  "comando": "bash /proyecto/01_Relacional_PostgreSQL/11_backup_restauracion.sh",
+  "encabezado": "postgres@servidor-lima:~$ ./11_backup_restauracion.sh"
+ },
+ {
+  "id": "ORA01",
+  "titulo": "Conexión a Oracle con SQL*Plus al servicio FREEPDB1 (esquema OLVA)",
+  "tipo": "sqlplus",
+  "usuario": "olva",
+  "file": "ora01_conexion.sql",
+  "banner": true
+ },
+ {
+  "id": "ORA02",
+  "titulo": "Tablas, volumen de datos, restricciones y objetos PL/SQL del esquema OLVA",
+  "tipo": "sqlplus",
+  "usuario": "olva",
+  "file": "ora02_tablas.sql"
+ },
+ {
+  "id": "ORA03",
+  "titulo": "Estructura y restricciones de la tabla ENVIO en Oracle",
+  "tipo": "sqlplus",
+  "usuario": "olva",
+  "file": "ora03_desc_envio.sql"
+ },
+ {
+  "id": "ORA04",
+  "titulo": "Consultas básicas en Oracle: envíos por estado y cumplimiento de SLA por servicio",
+  "tipo": "sqlplus",
+  "usuario": "olva",
+  "file": "ora04_o1_o2.sql"
+ },
+ {
+  "id": "ORA05",
+  "titulo": "Consulta jerárquica CONNECT BY sobre la red logística (exclusiva de Oracle)",
+  "tipo": "sqlplus",
+  "usuario": "olva",
+  "file": "ora05_o3.sql"
+ },
+ {
+  "id": "ORA06",
+  "titulo": "LISTAGG y Top-N con FETCH FIRST y ROWNUM",
+  "tipo": "sqlplus",
+  "usuario": "olva",
+  "file": "ora06_o4_o5.sql"
+ },
+ {
+  "id": "ORA07",
+  "titulo": "Funciones analíticas (LAG) y funciones del paquete pkg_tracking invocadas desde SQL",
+  "tipo": "sqlplus",
+  "usuario": "olva",
+  "file": "ora07_o6_o7.sql"
+ },
+ {
+  "id": "ORA08",
+  "titulo": "Cadena vacía como NULL y MERGE (upsert) en Oracle",
+  "tipo": "sqlplus",
+  "usuario": "olva",
+  "file": "ora08_o8_o9.sql"
+ },
+ {
+  "id": "ORA09",
+  "titulo": "Paquete PL/SQL, trigger y transacción autónoma: errores controlados y bitácora persistente",
+  "tipo": "sqlplus",
+  "usuario": "olva",
+  "file": "ora09_p1_p2.sql"
+ },
+ {
+  "id": "ORA10",
+  "titulo": "Seguridad en Oracle: usuarios, PROFILE, roles y privilegios",
+  "tipo": "sqlplus",
+  "usuario": "system",
+  "file": "ora10_seguridad.sql"
+ },
+ {
+  "id": "ORA11",
+  "titulo": "Pruebas de acceso en Oracle y bloqueo de cuenta por PROFILE",
+  "tipo": "bash",
+  "contenedor": "olva_oracle",
+  "comando": "bash /proyecto/07_Documentacion/capturas/scripts_captura/ora11_bloqueo.sh",
+  "encabezado": "SQL*Plus> @06_pruebas_seguridad.sql"
+ },
+ {
+  "id": "ORA12",
+  "titulo": "Respaldo con Data Pump (expdp), DROP simulado y restauración (impdp)",
+  "tipo": "bash",
+  "contenedor": "olva_oracle",
+  "comando": "bash /proyecto/02_Oracle/07_backup_datapump.sh",
+  "encabezado": "oracle@servidor-oracle:~$ ./07_backup_datapump.sh"
+ },
+ {
+  "id": "DD01",
+  "titulo": "Servidores postgres_fdw y catálogo de fragmentos en el coordinador Lima",
+  "tipo": "psql",
+  "db": "olva_lima",
+  "file": "dd01_fdw_catalogo.sql"
+ },
+ {
+  "id": "DD02",
+  "titulo": "Distribución de filas por nodo y regla de completitud",
+  "tipo": "psql",
+  "db": "olva_lima",
+  "file": "dd02_distribucion.sql"
+ },
+ {
+  "id": "DD03",
+  "titulo": "Reglas de disyunción y reconstrucción (fragmentación horizontal y vertical)",
+  "tipo": "psql",
+  "db": "olva_lima",
+  "file": "dd03_reconstruccion.sql"
+ },
+ {
+  "id": "DD04",
+  "titulo": "Integridad del predicado: el nodo SUR rechaza un envío que no le pertenece",
+  "tipo": "psql",
+  "db": "olva_lima",
+  "file": "dd04_predicado.sql"
+ },
+ {
+  "id": "DD_Q1",
+  "titulo": "Consulta distribuida Q1: Localización: poda de fragmentos y filtro enviado al nodo SUR",
+  "tipo": "psql",
+  "db": "olva_lima",
+  "file": "dd_q1.sql"
+ },
+ {
+  "id": "DD_Q2",
+  "titulo": "Consulta distribuida Q2: Agregación distribuida: GROUP BY ejecutado en cada nodo",
+  "tipo": "psql",
+  "db": "olva_lima",
+  "file": "dd_q2.sql"
+ },
+ {
+  "id": "DD_Q3",
+  "titulo": "Consulta distribuida Q3: JOIN co-localizado ejecutado dentro de cada nodo (fragmentación derivada)",
+  "tipo": "psql",
+  "db": "olva_lima",
+  "file": "dd_q3.sql"
+ },
+ {
+  "id": "DD_Q4",
+  "titulo": "Consulta distribuida Q4: JOIN no co-localizado: tracking de un envío con eventos en los tres nodos",
+  "tipo": "psql",
+  "db": "olva_lima",
+  "file": "dd_q4.sql"
+ },
+ {
+  "id": "DD_Q5",
+  "titulo": "Consulta distribuida Q5: Reconstrucción vertical del cliente y costo de la distribución",
+  "tipo": "psql",
+  "db": "olva_lima",
+  "file": "dd_q5.sql"
+ },
+ {
+  "id": "DD_2PC0",
+  "titulo": "Preparación del escenario 2PC (no se captura)",
+  "tipo": "prep",
+  "contenedor": "olva_pg_lima",
+  "comando": "psql -X -q -U olva_admin -d olva_lima -f /proyecto/07_Documentacion/capturas/scripts_captura/dd_2pc_0_preparacion.sql"
+ },
+ {
+  "id": "DD_2PC1",
+  "titulo": "Protocolo 2PC, caso 1: los tres nodos votan SÍ y se confirma la transacción global",
+  "tipo": "bash",
+  "contenedor": "olva_pg_lima",
+  "comando": "psql -X -q -U olva_admin -d olva_lima -f /proyecto/07_Documentacion/capturas/scripts_captura/dd_2pc_1.sql",
+  "encabezado": "olva_lima (coordinador)> \\i dd_2pc_1.sql"
+ },
+ {
+  "id": "DD_2PC2",
+  "titulo": "Protocolo 2PC, caso 2: un participante vota NO y se revierte la transacción global",
+  "tipo": "bash",
+  "contenedor": "olva_pg_lima",
+  "comando": "psql -X -q -U olva_admin -d olva_lima -f /proyecto/07_Documentacion/capturas/scripts_captura/dd_2pc_2.sql",
+  "encabezado": "olva_lima (coordinador)> \\i dd_2pc_2.sql"
+ },
+ {
+  "id": "DD_2PC3",
+  "titulo": "Protocolo 2PC, caso 3: caída del coordinador, transacción en duda y recuperación",
+  "tipo": "bash",
+  "contenedor": "olva_pg_lima",
+  "comando": "psql -X -q -U olva_admin -d olva_lima -f /proyecto/07_Documentacion/capturas/scripts_captura/dd_2pc_3.sql",
+  "encabezado": "olva_lima (coordinador)> \\i dd_2pc_3.sql"
+ },
+ {
+  "id": "DD_CC_A",
+  "titulo": "Concurrencia A: bloqueo exclusivo de fila (SELECT ... FOR UPDATE) en el nodo SUR",
+  "tipo": "bash",
+  "contenedor": "olva_pg_lima",
+  "comando": "bash /proyecto/03_BD_Distribuida/07_concurrencia.sh A",
+  "encabezado": "coordinador-lima:~$ ./07_concurrencia.sh A"
+ },
+ {
+  "id": "DD_CC_B",
+  "titulo": "Concurrencia B: actualización perdida en READ COMMITTED frente a REPEATABLE READ",
+  "tipo": "bash",
+  "contenedor": "olva_pg_lima",
+  "comando": "bash /proyecto/03_BD_Distribuida/07_concurrencia.sh B",
+  "encabezado": "coordinador-lima:~$ ./07_concurrencia.sh B"
+ },
+ {
+  "id": "DD_CC_C1",
+  "titulo": "Concurrencia C1: interbloqueo local detectado por PostgreSQL",
+  "tipo": "bash",
+  "contenedor": "olva_pg_lima",
+  "comando": "bash /proyecto/03_BD_Distribuida/07_concurrencia.sh C1",
+  "encabezado": "coordinador-lima:~$ ./07_concurrencia.sh C1"
+ },
+ {
+  "id": "DD_CC_C2",
+  "titulo": "Concurrencia C2: interbloqueo distribuido resuelto por tiempo de espera",
+  "tipo": "bash",
+  "contenedor": "olva_pg_lima",
+  "comando": "bash /proyecto/03_BD_Distribuida/07_concurrencia.sh C2",
+  "encabezado": "coordinador-lima:~$ ./07_concurrencia.sh C2"
+ }
+]

@@ -1,0 +1,16 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_c03.sql
+
+SET search_path = operacion, maestro, public;
+SELECT * FROM fn_cuellos_botella('2026-04-01', '2026-10-08', 12) LIMIT 10;
+  hub   | franja_llegada | envios | permanencia_prom_h | permanencia_p90_h | pct_sobre_umbral 
+--------+----------------+--------+--------------------+-------------------+------------------
+ HC-LIM | 18-24          |  14270 |              14.49 |             27.14 |             35.8
+ HR-AQP | 00-06          |    342 |              13.71 |             21.68 |             52.3
+ HR-CIX | 00-06          |    185 |              13.51 |             20.52 |             60.0
+ HR-PIU | 12-18          |   1152 |              13.04 |             16.82 |             75.2
+ HR-CIX | 18-24          |    760 |              12.92 |             24.94 |             32.5
+ HR-TRU | 00-06          |    351 |              12.71 |             21.51 |             49.9
+ HR-TRU | 18-24          |    807 |              12.53 |             25.20 |             27.9
+ HR-HYO | 00-06          |    160 |              12.46 |             20.65 |             48.1
+ HC-LIM | 00-06          |    820 |              12.05 |             22.83 |             43.7
+ HR-AQP | 18-24          |   1617 |              12.05 |             25.07 |             29.4

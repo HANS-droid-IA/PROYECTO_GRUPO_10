@@ -1,0 +1,56 @@
+SQL> -- sqlplus olva@//localhost:1521/FREEPDB1 @ora09_p1_p2.sql
+
+=== P1. Prueba del paquete + trigger: nuevo envío y escaneos ===
+
+NRO_TRACKING  ESTADO_ACTUAL   MONTO_TOTAL
+------------- --------------- -----------
+OLV2699999999 ADMITIDO		       39
+--- error esperado: transición inválida (ENTREGA desde ADMITIDO)
+BEGIN pkg_tracking.sp_registrar_escaneo('OLV2699999999', 'ENTREGA', 10); END;
+
+*
+ERROR at line 1:
+ORA-20010: Transición inválida: envío OLV2699999999 en estado ADMITIDO no admite evento ENTREGA
+ORA-06512: at "OLVA.PKG_TRACKING", line 94
+ORA-06512: at "OLVA.PKG_TRACKING", line 82
+ORA-06512: at line 1
+
+
+--- error esperado: tracking inexistente
+BEGIN pkg_tracking.sp_registrar_escaneo('OLV0000000000', 'ADMISION', 10); END;
+
+*
+ERROR at line 1:
+ORA-20011: Tracking OLV0000000000 no existe
+ORA-06512: at "OLVA.PKG_TRACKING", line 91
+ORA-06512: at line 1
+
+
+--- error esperado: peso excede el máximo del servicio
+SELECT pkg_tracking.fn_calcular_tarifa(2, 1, 4, 3) FROM dual
+       *
+ERROR at line 1:
+ORA-20002: Peso 3 kg excede el máximo del servicio (.5 kg)
+ORA-06512: at "OLVA.PKG_TRACKING", line 19
+ORA-06512: at line 1
+
+
+=== P2. [ORACLE] Transacción autónoma: se hace ROLLBACK, pero el log de errores persiste ===
+
+ENVIO_PRUEBA_TRAS_ROLLBACK
+--------------------------
+			 0
+
+ORIGEN				     MENSAJE
+------------------------------------ --------------------------------------------------------------------------------
+pkg_tracking.sp_registrar_escaneo    ORA-20010: Transición inválida: envío OLV2699999999 en estado ADMITIDO no admite
+				      evento ENTREGA
+
+pkg_tracking.sp_registrar_escaneo    Tracking inexistente: OLV0000000000
+pkg_tracking.sp_registrar_escaneo    ORA-20010: Transición inválida: envío OLV2600000001 en estado ENTREGADO no admit
+				     e evento CLASIFICACION
+
+pkg_tracking.sp_registrar_escaneo    ORA-20010: Transición inválida: envío OLV2699999999 en estado ADMITIDO no admite
+				      evento ENTREGA
+
+pkg_tracking.sp_registrar_escaneo    Tracking inexistente: OLV0000000000

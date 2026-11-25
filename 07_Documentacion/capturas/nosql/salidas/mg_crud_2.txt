@@ -1,0 +1,41 @@
+olva_admin@mongosh:olva_tracking> load('03_operaciones_crud.js')   // escrituras
+=== C2. Validación $jsonSchema: se rechaza un documento con estado inválido ===
+Rechazado: Document failed validation
+
+=== U1. updateOne con $push + $set: un escaneo agrega un evento y cambia el estado en una sola operación atómica ===
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+Estado: EN_TRANSITO | eventos: ADMISION -> SALIDA_HUB
+
+=== U3. Actualización con arrayFilters: marca solo las incidencias de RETRASO no cerradas dentro de cada arreglo ===
+Envíos con incidencia de retraso no cerrada: 7
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 7,
+  modifiedCount: 7,
+  upsertedCount: 0
+}
+
+=== B1. Inserción masiva con insertMany (5000 envíos sintéticos en una colección de prueba) ===
+Insertados: 5000 documentos en 117 ms
+
+=== B2. bulkWrite: operaciones mixtas en un solo viaje al servidor ===
+{
+  acknowledged: true,
+  insertedCount: 1,
+  insertedIds: {
+    '2': 'OLV2799999999'
+  },
+  matchedCount: 2500,
+  modifiedCount: 2500,
+  deletedCount: 830,
+  upsertedCount: 0,
+  upsertedIds: {}
+}
+Quedan en la colección de prueba: 4171

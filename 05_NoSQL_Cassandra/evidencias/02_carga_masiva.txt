@@ -1,0 +1,141 @@
+
+
+Using 15 child processes
+
+Starting copy of olva_tracking.hubs with columns [hub, nombre, tipo, ciudad, capacidad_hora].
+38 rows imported from 1 files in 0.578 seconds (0 skipped).
+Using 4 child processes
+
+Starting copy of olva_tracking.eventos_por_envio with columns [nro_tracking, fecha_hora, id_evento, tipo_evento, hub, ciudad, id_despacho, observacion].
+315101 rows imported from 1 files in 0 day, 0 hour, 0 minute, and 5.709 seconds (0 skipped).
+Using 4 child processes
+
+Starting copy of olva_tracking.eventos_por_hub_dia with columns [hub, dia, fecha_hora, id_evento, nro_tracking, tipo_evento, servicio].
+315101 rows imported from 1 files in 0 day, 0 hour, 0 minute, and 7.542 seconds (0 skipped).
+Using 4 child processes
+
+Starting copy of olva_tracking.escaneos_hub_hora with columns [hub, dia, hora, llegadas, salidas, escaneos].
+69309 rows imported from 1 files in 0 day, 0 hour, 0 minute, and 1.622 seconds (0 skipped).
+Using 4 child processes
+
+Starting copy of olva_tracking.envios_por_cliente with columns [id_cliente, fecha_registro, nro_tracking, servicio, origen, destino, estado, monto_total].
+29966 rows imported from 1 files in 0 day, 0 hour, 0 minute, and 1.294 seconds (0 skipped).
+Using 4 child processes
+
+Starting copy of olva_tracking.estado_envio with columns [nro_tracking, estado, ultimo_evento, ultimo_hub, fecha_ultimo_evento, fecha_compromiso, servicio, destino].
+29966 rows imported from 1 files in 0 day, 0 hour, 0 minute, and 1.609 seconds (0 skipped).
+
+
+
+ eventos_por_envio
+-------------------
+            315101
+
+(1 rows)
+
+Warnings :
+Aggregation query used without partition key
+
+
+ eventos_por_hub_dia
+---------------------
+              315101
+
+(1 rows)
+
+Warnings :
+Aggregation query used without partition key
+
+
+ escaneos_hub_hora
+-------------------
+             69309
+
+(1 rows)
+
+Warnings :
+Aggregation query used without partition key
+
+
+ envios_por_cliente
+--------------------
+              29966
+
+(1 rows)
+
+Warnings :
+Aggregation query used without partition key
+
+
+ estado_envio
+--------------
+        29966
+
+(1 rows)
+
+Warnings :
+Aggregation query used without partition key
+
+		Table: alertas_sla
+		SSTable count: 0
+		Old SSTable count: 0
+		Space used (live): 0
+		SSTable Compression Ratio: -1.0
+		Number of partitions (estimate): 0
+		Compacted partition maximum bytes: 0
+		Table: contador_escaneos
+		SSTable count: 0
+		Old SSTable count: 0
+		Space used (live): 0
+		SSTable Compression Ratio: -1.0
+		Number of partitions (estimate): 0
+		Compacted partition maximum bytes: 0
+		Table: envios_por_cliente
+		SSTable count: 1
+		Old SSTable count: 0
+		Space used (live): 1013652
+		SSTable Compression Ratio: 0.35617638648661165
+		Number of partitions (estimate): 2688
+		Compacted partition maximum bytes: 88148
+		Table: escaneos_hub_hora
+		SSTable count: 1
+		Old SSTable count: 0
+		Space used (live): 1147599
+		SSTable Compression Ratio: 0.4656180374943957
+		Number of partitions (estimate): 7207
+		Compacted partition maximum bytes: 770
+		Table (index): estado_envio.ix_estado_envio_estado
+		SSTable count: 1
+		Old SSTable count: 0
+		Space used (live): 280367
+		SSTable Compression Ratio: 0.3661122988514951
+		Number of partitions (estimate): 7
+		Compacted partition maximum bytes: 785939
+		Table: estado_envio
+		SSTable count: 1
+		Old SSTable count: 0
+		Space used (live): 1651656
+		SSTable Compression Ratio: 0.31004158398136333
+		Number of partitions (estimate): 30279
+		Compacted partition maximum bytes: 149
+		Table: eventos_por_envio
+		SSTable count: 1
+		Old SSTable count: 0
+		Space used (live): 8548717
+		SSTable Compression Ratio: 0.3897450312142697
+		Number of partitions (estimate): 30279
+		Compacted partition maximum bytes: 1331
+		Table: eventos_por_hub_dia
+		SSTable count: 3
+		Old SSTable count: 0
+		Space used (live): 6208140
+		SSTable Compression Ratio: 0.2727408436664934
+		Number of partitions (estimate): 7202
+		Compacted partition maximum bytes: 61214
+		Table: hubs
+		SSTable count: 1
+		Old SSTable count: 0
+		Space used (live): 6993
+		SSTable Compression Ratio: 0.44306569343065694
+		Number of partitions (estimate): 38
+		Compacted partition maximum bytes: 86

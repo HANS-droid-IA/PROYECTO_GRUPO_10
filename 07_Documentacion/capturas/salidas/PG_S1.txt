@@ -1,0 +1,36 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_s1_roles.sql
+
+=== Usuarios, rol heredado y atributos de cuenta ===
+    usuario    |         rol          | limite_conexiones |  vigencia  | bypass_rls 
+---------------+----------------------+-------------------+------------+------------
+ u_admin_bd    | rol_admin_olva       |                -1 |            | f
+ u_analista    | rol_analista         |                 3 | 2026-12-31 | f
+ u_atencion    | rol_atencion_cliente |                -1 |            | f
+ u_facturacion | rol_facturacion      |                -1 |            | f
+ u_op_lima     | rol_operador_hub     |                10 |            | f
+ u_op_norte    | rol_operador_hub     |                10 |            | f
+ u_op_sur      | rol_operador_hub     |                10 |            | f
+
+=== Privilegios otorgados por rol y schema (GRANT) ===
+         rol          |  schema   |                          privilegios                          | objetos 
+----------------------+-----------+---------------------------------------------------------------+---------
+ rol_admin_olva       | auditoria | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |       1
+ rol_admin_olva       | maestro   | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |       9
+ rol_admin_olva       | operacion | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |      11
+ rol_admin_olva       | seguridad | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |       1
+ rol_analista         | maestro   | SELECT                                                        |       6
+ rol_analista         | operacion | SELECT                                                        |       3
+ rol_atencion_cliente | maestro   | INSERT, SELECT                                                |       6
+ rol_atencion_cliente | operacion | INSERT, SELECT                                                |       5
+ rol_facturacion      | maestro   | SELECT                                                        |       4
+ rol_facturacion      | operacion | SELECT                                                        |       2
+ rol_operador_hub     | maestro   | SELECT                                                        |       6
+ rol_operador_hub     | operacion | SELECT                                                        |       4
+
+=== Políticas de seguridad por fila (RLS) ===
+      tabla      |        politica         |                 roles                  |  cmd   
+-----------------+-------------------------+----------------------------------------+--------
+ envio           | p_envio_lectura_global  | {rol_atencion_cliente,rol_facturacion} | SELECT
+ envio           | p_envio_operador_nodo   | {rol_operador_hub}                     | SELECT
+ evento_tracking | p_evento_lectura_global | {rol_analista,rol_atencion_cliente}    | SELECT
+ evento_tracking | p_evento_operador_nodo  | {rol_operador_hub}                     | SELECT

@@ -1,0 +1,43 @@
+olva_lima (coordinador)> \i dd_2pc_1.sql
+
+================ CASO 1: 2PC exitoso (todos votan SÍ) ================
+--- FASE 1 en SUR: insertar eventos de llegada y PREPARE
+--- FASE 1 en LIMA: actualizar estado del envío 1 (solo si está EN_TRANSITO) y PREPARE
+--- FASE 1 en NORTE: actualizar estado del envío 2 y PREPARE
+--- Estado intermedio: transacciones preparadas (en duda) en cada nodo
+ nodo |        gid         |      preparada      
+------+--------------------+---------------------
+ SUR  | gtx_arribo_001_sur | 2026-10-11 12:34:54
+
+ nodo  |         gid          |      preparada      
+-------+----------------------+---------------------
+ NORTE | gtx_arribo_001_norte | 2026-10-11 12:34:54
+
+ nodo |         gid         |      preparada      
+------+---------------------+---------------------
+ LIMA | gtx_arribo_001_lima | 2026-10-11 12:34:54
+
+--- Mientras están preparadas, los cambios NO son visibles para nadie:
+ nro_tracking  | nodo  | estado_actual 
+---------------+-------+---------------
+ OLV2699990001 | LIMA  | EN_TRANSITO
+ OLV2699990002 | NORTE | EN_TRANSITO
+ OLV2699990003 | SUR   | EN_HUB
+ OLV2699990004 | SUR   | EN_HUB
+
+Votos -> SUR= 1  LIMA= 1  NORTE= 1
+--- FASE 2: decisión COMMIT -> COMMIT PREPARED en cada nodo
+--- Resultado global tras el COMMIT:
+ nro_tracking  | nodo_envio | estado_actual 
+---------------+------------+---------------
+ OLV2699990001 | LIMA       | EN_HUB
+ OLV2699990002 | NORTE      | EN_HUB
+ OLV2699990003 | SUR        | EN_HUB
+ OLV2699990004 | SUR        | EN_HUB
+
+ id_envio | tipo_evento | nodo_evento |      observacion       
+----------+-------------+-------------+------------------------
+   990001 | SALIDA_HUB  | LIMA        | Manifiesto MF-DEMO-2PC
+   990002 | SALIDA_HUB  | LIMA        | Manifiesto MF-DEMO-2PC
+   990001 | LLEGADA_HUB | SUR         | Arribo MF-DEMO-2PC
+   990002 | LLEGADA_HUB | SUR         | Arribo MF-DEMO-2PC

@@ -1,0 +1,20 @@
+hadoop@Hans:~$ hadoop_cluster status
+== Procesos Java de Hadoop (jps) ==
+509 DataNode
+616 DataNode
+1009 JobHistoryServer
+448 NameNode
+890 NodeManager
+767 ResourceManager
+== HDFS ==
+DFS Used%: 0.04%
+Live datanodes (2):
+Name: 127.0.0.1:9866 (localhost)
+DFS Used%: 0.04%
+Name: 127.0.0.1:9876 (localhost)
+DFS Used%: 0.04%
+== YARN ==
+         Node-Id         Node-State    Node-Http-Address    Number-of-Running-Containers
+Hans.localdomain:34921            RUNNING    Hans.localdomain:8042                               0
+Web: HDFS http://localhost:9870 | YARN http://localhost:8088 | JobHistory http://localhost:19888
+

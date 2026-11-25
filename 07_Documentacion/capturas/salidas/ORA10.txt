@@ -1,0 +1,36 @@
+SQL> -- sqlplus system@//localhost:1521/FREEPDB1 @ora10_seguridad.sql
+
+=== Usuarios y perfil ===
+
+USERNAME	 ACCOUNT_STATUS   PROFILE
+---------------- ---------------- ------------------
+OLVA		 OPEN		  DEFAULT
+U_ANALISTA_ORA	 OPEN		  PRF_OLVA_USUARIOS
+U_OPERADOR_ORA	 OPEN		  PRF_OLVA_USUARIOS
+=== Límites del PROFILE prf_olva_usuarios ===
+
+RESOURCE_NAME		 LIMIT
+------------------------ --------
+FAILED_LOGIN_ATTEMPTS	 3
+IDLE_TIME		 30
+PASSWORD_LIFE_TIME	 90
+PASSWORD_LOCK_TIME	 .0416
+SESSIONS_PER_USER	 3
+=== Roles y privilegios de objeto ===
+
+GRANTEE 	   GRANTED_ROLE
+------------------ ------------------
+U_ANALISTA_ORA	   ROL_ANALISTA_ORA
+U_OPERADOR_ORA	   ROL_OPERADOR_ORA
+
+GRANTEE 	   TABLE_NAME	    PRIVILEGE
+------------------ ---------------- ----------
+ROL_ANALISTA_ORA   CIUDAD	    SELECT
+ROL_ANALISTA_ORA   ENVIO	    SELECT
+ROL_ANALISTA_ORA   EVENTO_TRACKING  SELECT
+ROL_ANALISTA_ORA   HUB		    SELECT
+ROL_ANALISTA_ORA   REGION	    SELECT
+ROL_ANALISTA_ORA   TIPO_SERVICIO    SELECT
+ROL_OPERADOR_ORA   ENVIO	    SELECT
+ROL_OPERADOR_ORA   HUB		    SELECT
+ROL_OPERADOR_ORA   PKG_TRACKING     EXECUTE

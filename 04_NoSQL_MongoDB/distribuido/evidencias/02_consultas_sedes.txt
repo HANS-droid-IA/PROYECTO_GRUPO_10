@@ -1,0 +1,73 @@
+>> 5. Consultas distribuidas
+
+=== D1. Documentos por sede (lo que guarda físicamente cada shard) ===
+sede          | documentos | datos_MB
+--------------+------------+---------
+sede_arequipa | 6328       | 16.60   
+sede_lima     | 23638      | 57.80   
+(2 filas)
+Total en el clúster (vista global a través de mongos): 29966
+
+=== D2. Envíos por nodo de origen y sede asignada (reconstrucción) ===
+nodo_origen | sede          | envios
+------------+---------------+-------
+LIMA        | sede_lima     | 23638 
+NORTE       | sede_arequipa | 3166  
+SUR         | sede_arequipa | 3162  
+(3 filas)
+
+=== D3. Fragmentos (chunks) por sede y zona ===
+sede          | fragmentos
+--------------+-----------
+sede_arequipa | 1         
+sede_lima     | 1         
+(2 filas)
+
+=== Q1. Consulta CON la clave de fragmentación -> va a UNA sola sede ===
+db.envios.find({ 'origen.nodo': 'SUR', estado_actual: 'EN_HUB' })
+etapa        | sedes_consultadas | devueltos_por_sede | total
+-------------+-------------------+--------------------+------
+SINGLE_SHARD | sede_arequipa     | sede_arequipa=34   | 34   
+(1 fila)
+
+=== Q2. Consulta SIN la clave de fragmentación -> mongos pregunta a TODAS las sedes ===
+db.envios.find({ estado_actual: 'EN_HUB' })
+etapa       | sedes_consultadas        | devueltos_por_sede              | total
+------------+--------------------------+---------------------------------+------
+SHARD_MERGE | sede_arequipa, sede_lima | sede_arequipa=64, sede_lima=196 | 260  
+(1 fila)
+
+=== Q3. Búsqueda por tracking: sin nodo (todas las sedes) vs con nodo (una sede) ===
+consulta                                         | etapa        | sedes_consultadas        | devueltos_por_sede           | total
+-------------------------------------------------+--------------+--------------------------+------------------------------+------
+{ _id: 'OLV2600000006' }                         | SHARD_MERGE  | sede_arequipa, sede_lima | sede_arequipa=1, sede_lima=0 | 1    
+{ 'origen.nodo': 'NORTE', _id: 'OLV2600000006' } | SINGLE_SHARD | sede_arequipa            | sede_arequipa=1              | 1    
+(2 filas)
+
+=== Q4. Agregación global: SLA por sede (cada sede calcula su parte y mongos combina) ===
+nodo_origen | sede          | entregados | pct_sla | ingresos_S
+------------+---------------+------------+---------+-----------
+LIMA        | sede_lima     | 22774      | 93.40   | 602492.50 
+NORTE       | sede_arequipa | 3064       | 83.90   | 92454.40  
+SUR         | sede_arequipa | 3020       | 83.60   | 87412.40  
+(3 filas)
+Plan: pipeline dividido -> shardsPart en sede_arequipa y sede_lima, mergerPart en mongos
+
+=== T1. Transacción distribuida: un envío en cada sede, confirmada (COMMIT) ===
+tracking      | nodo | sede         
+--------------+------+--------------
+OLV2690000002 | SUR  | sede_arequipa
+OLV2690000001 | LIMA | sede_lima    
+(2 filas)
+
+=== T2. Transacción distribuida cancelada (ABORT): no queda nada en ninguna sede ===
+Dentro de la transacción se ven: 2
+Después del ABORT existen: 0
+
+=== T3. Traslado entre sedes: cambiar la clave de fragmentación mueve el documento de shard ===
+tracking      | etapa        | sedes_consultadas | devueltos_por_sede | total
+--------------+--------------+-------------------+--------------------+------
+OLV2690000001 | SINGLE_SHARD | sede_arequipa     | sede_arequipa=1    | 1    
+(1 fila)
+
+Limpieza de los documentos de prueba: 2 eliminados

@@ -1,0 +1,26 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg01_conexion.sql
+
+       Connection Information
+      Parameter       |    Value     
+----------------------+--------------
+ Database             | olva_courier
+ Client User          | olva_admin
+ Host                 | localhost
+ Host Address         | ::1
+ Server Port          | 5440
+ Options              | 
+ Protocol Version     | 3.0
+ Password Used        | true
+ GSSAPI Authenticated | false
+ Backend PID          | 61
+ SSL Connection       | false
+ Superuser            | on
+ Hot Standby          | off
+
+                                                       version                                                        
+----------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+
+ base_de_datos |  usuario   | zona_horaria | codificacion | tamano 
+---------------+------------+--------------+--------------+--------
+ olva_courier  | olva_admin | America/Lima | UTF8         | 115 MB

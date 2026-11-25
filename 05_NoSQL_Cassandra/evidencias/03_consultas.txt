@@ -1,0 +1,140 @@
+
+
+03_consultas.cql:7:Tracing is not enabled.
+Disabled Query paging.
+
+ fecha_hora                      | tipo_evento   | hub        | ciudad
+---------------------------------+---------------+------------+--------
+ 2026-04-01 13:05:45.000000+0000 |      ADMISION | AG-LIM-SUR |   Lima
+ 2026-04-01 18:44:24.000000+0000 |    SALIDA_HUB | AG-LIM-SUR |   Lima
+ 2026-04-01 19:37:53.000000+0000 |   LLEGADA_HUB |     HC-LIM | Callao
+ 2026-04-01 21:34:20.000000+0000 | CLASIFICACION |     HC-LIM | Callao
+ 2026-04-02 04:31:27.000000+0000 |    SALIDA_HUB |     HC-LIM | Callao
+ 2026-04-03 01:34:47.000000+0000 |   LLEGADA_HUB |     HR-CUZ |  Cusco
+ 2026-04-03 04:48:38.000000+0000 | CLASIFICACION |     HR-CUZ |  Cusco
+ 2026-04-03 11:28:44.000000+0000 |    SALIDA_HUB |     HR-CUZ |  Cusco
+ 2026-04-03 12:25:36.000000+0000 |   LLEGADA_HUB |  AG-CUZ-02 |  Cusco
+ 2026-04-03 13:30:00.000000+0000 |    EN_REPARTO |  AG-CUZ-02 |  Cusco
+ 2026-04-03 16:43:00.000000+0000 |       ENTREGA |  AG-CUZ-02 |  Cusco
+
+(11 rows)
+
+ fecha_hora                      | tipo_evento | nro_tracking  | servicio
+---------------------------------+-------------+---------------+---------------------
+ 2026-10-07 01:55:39.000000+0000 | LLEGADA_HUB | OLV2600029696 |  ESTANDAR_TERRESTRE
+ 2026-10-07 01:55:39.000000+0000 | LLEGADA_HUB | OLV2600029770 |  ESTANDAR_TERRESTRE
+ 2026-10-07 01:50:56.000000+0000 | LLEGADA_HUB | OLV2600029592 |         SOBRE_AEREO
+ 2026-10-07 01:50:56.000000+0000 | LLEGADA_HUB | OLV2600029613 |       EXPRESS_AEREO
+ 2026-10-07 01:37:57.000000+0000 | LLEGADA_HUB | OLV2600029668 | ECONOMICO_TERRESTRE
+ 2026-10-07 01:37:57.000000+0000 | LLEGADA_HUB | OLV2600029673 | ECONOMICO_TERRESTRE
+ 2026-10-07 01:37:57.000000+0000 | LLEGADA_HUB | OLV2600029680 |  ESTANDAR_TERRESTRE
+ 2026-10-07 01:37:57.000000+0000 | LLEGADA_HUB | OLV2600029683 | ECONOMICO_TERRESTRE
+ 2026-10-07 01:37:57.000000+0000 | LLEGADA_HUB | OLV2600029691 |         SOBRE_AEREO
+ 2026-10-07 01:37:57.000000+0000 | LLEGADA_HUB | OLV2600029695 | ECONOMICO_TERRESTRE
+ 2026-10-07 01:37:57.000000+0000 | LLEGADA_HUB | OLV2600029706 |  ESTANDAR_TERRESTRE
+ 2026-10-07 01:37:57.000000+0000 | LLEGADA_HUB | OLV2600029714 | ECONOMICO_TERRESTRE
+
+(12 rows)
+
+ escaneos_20h
+--------------
+           85
+
+(1 rows)
+
+ capacidad_hora
+----------------
+             50
+
+(1 rows)
+
+ hora | llegadas | salidas | escaneos
+------+----------+---------+----------
+   18 |        1 |       2 |        3
+   20 |       84 |       0 |       85
+   21 |       16 |      13 |       37
+   22 |        0 |       0 |       33
+   23 |        0 |      41 |       71
+
+(5 rows)
+
+ dia        | hora | llegadas
+------------+------+----------
+ 2026-10-01 |   20 |       70
+ 2026-10-02 |   20 |       67
+ 2026-10-03 |   20 |       31
+ 2026-10-04 |   20 |        6
+ 2026-10-05 |   20 |       80
+ 2026-10-06 |   20 |       84
+
+(6 rows)
+
+ fecha_registro                  | nro_tracking  | servicio            | destino    | estado    | monto_total
+---------------------------------+---------------+---------------------+------------+-----------+-------------
+ 2026-10-05 23:46:32.000000+0000 | OLV2600029571 |  ESTANDAR_TERRESTRE |  AG-JUL-01 | ENTREGADO |       18.00
+ 2026-09-28 18:10:05.000000+0000 | OLV2600028239 |  ESTANDAR_TERRESTRE | AG-LIM-SIS | ENTREGADO |       14.50
+ 2026-09-21 20:23:00.000000+0000 | OLV2600027085 |       EXPRESS_AEREO |  AG-PIU-01 | ENTREGADO |       45.50
+ 2026-09-11 18:57:40.000000+0000 | OLV2600025464 | ECONOMICO_TERRESTRE |  AG-ICA-01 | ENTREGADO |       14.40
+ 2026-09-10 21:07:28.000000+0000 | OLV2600025319 |       EXPRESS_AEREO |  AG-CUZ-01 | ENTREGADO |       65.00
+ 2026-09-09 19:47:29.000000+0000 | OLV2600025103 |  ESTANDAR_TERRESTRE |  AG-PIU-01 | ENTREGADO |       25.50
+ 2026-07-29 20:01:01.000000+0000 | OLV2600018253 |  ESTANDAR_TERRESTRE | AG-LIM-OLI | ENTREGADO |       17.00
+ 2026-07-18 21:03:04.000000+0000 | OLV2600015956 |       EXPRESS_AEREO |  AG-CIX-01 | ENTREGADO |       45.50
+
+(8 rows)
+
+ nro_tracking  | destino  | estado | fecha_compromiso                | fecha_ultimo_evento             | servicio            | ultimo_evento | ultimo_hub
+---------------+----------+--------+---------------------------------+---------------------------------+---------------------+---------------+------------
+ OLV2600029865 | Arequipa | EN_HUB | 2026-10-13 01:00:00.000000+0000 | 2026-10-07 22:30:30.000000+0000 | ECONOMICO_TERRESTRE | CLASIFICACION |     HC-LIM
+
+(1 rows)
+
+ [applied] | estado
+-----------+------------
+     False | EN_REPARTO
+
+ [applied]
+-----------
+      True
+
+ nro_tracking  | estado    | ultimo_evento | ultimo_hub
+---------------+-----------+---------------+------------
+ OLV2600029865 | ENTREGADO |       ENTREGA |     HC-LIM
+
+(1 rows)
+
+ nro_tracking  | ultimo_hub | fecha_compromiso
+---------------+------------+---------------------------------
+ OLV2600029578 |     HC-LIM | 2026-10-09 01:00:00.000000+0000
+ OLV2600029836 |     HR-AQP | 2026-10-10 01:00:00.000000+0000
+ OLV2600029839 |     HR-HYO | 2026-10-10 01:00:00.000000+0000
+ OLV2600029700 |     HC-LIM | 2026-10-09 01:00:00.000000+0000
+ OLV2600029832 |     HR-CUZ | 2026-10-10 01:00:00.000000+0000
+
+(5 rows)
+
+ hub    | dia        | tipo_evento | total
+--------+------------+-------------+-------
+ HC-LIM | 2026-10-07 | LLEGADA_HUB |     4
+ HC-LIM | 2026-10-07 |  SALIDA_HUB |     2
+
+(2 rows)
+
+ nro_tracking  | nivel   | mensaje                           | segundos_restantes | escrito_us
+---------------+---------+-----------------------------------+--------------------+------------------
+ OLV2600028788 |   AVISO |           Compromiso vence en 2 h |               3600 | 1793843420259300
+ OLV2600029215 | CRITICO | Permanencia > 12 h en Hub Central |             172800 | 1793843420257205
+
+(2 rows)
+
+ eventos | primero                         | ultimo
+---------+---------------------------------+---------------------------------
+     630 | 2026-10-06 05:01:45.000000+0000 | 2026-10-07 04:57:51.000000+0000
+
+(1 rows)
+
+ llegadas_dia | pico_hora | prom_hora
+--------------+-----------+-----------
+          197 |        84 |         8
+
+(1 rows)
+03_consultas.cql:103:InvalidRequest: Error from server: code=2200 [Invalid query] message="Cannot execute this query as it might involve data filtering and thus may have unpredictable performance. If you want to execute this query despite the performance unpredictability, use ALLOW FILTERING"

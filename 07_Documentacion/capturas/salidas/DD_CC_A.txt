@@ -1,0 +1,42 @@
+coordinador-lima:~$ ./07_concurrencia.sh A
+
+Preparación: envíos de demostración 990002 (NORTE), 990003 y 990004 (SUR) con valor_declarado = 100
+
+==================================================================
+A) BLOQUEO DE FILA en el nodo SUR: dos operadores escanean el mismo envío
+==================================================================
+----- Sesión A -----
+[12:33:32.033] A: BEGIN; SELECT ... FOR UPDATE (toma bloqueo exclusivo de fila)
+ nro_tracking  | estado_actual 
+---------------+---------------
+ OLV2699990003 | EN_HUB
+(1 row)
+
+ pg_sleep 
+----------
+ 
+(1 row)
+
+[12:33:36.120] A: COMMIT (libera el bloqueo)
+
+----- Sesión B -----
+[12:33:33.036] B: UPDATE del mismo envío (debe ESPERAR a que A libere)
+Time: 3026.065 ms (00:03.026)
+[12:33:36.120] B: terminó
+
+----- Monitor (t≈2.5 s): B espera un bloqueo de A -----
+ pid |  usename   | state  | wait_event_type |  wait_event   | bloqueado_por |                                consulta                                
+-----+------------+--------+-----------------+---------------+---------------+------------------------------------------------------------------------
+  45 | olva_admin | active | Timeout         | PgSleep       | {}            | BEGIN; SELECT nro_tracking, estado_actual FROM operacion.envio WHERE i
+  46 | olva_admin | active | Lock            | transactionid | {45}          | UPDATE operacion.envio SET estado_actual = 'EN_HUB' WHERE id_envio = 9
+(2 rows)
+
+ pid |   locktype    |       mode       | granted | relname 
+-----+---------------+------------------+---------+---------
+  45 | relation      | RowShareLock     | t       | envio
+  45 | transactionid | ExclusiveLock    | t       | 
+  46 | relation      | RowExclusiveLock | t       | envio
+  46 | tuple         | ExclusiveLock    | t       | envio
+  46 | transactionid | ExclusiveLock    | t       | 
+  46 | transactionid | ShareLock        | f       | 
+(6 rows)

@@ -1,0 +1,41 @@
+>> 9. Caída de la sede Lima
+olva_cassandra DETENIDO
+Datacenter: dc_arequipa
+UN  172.18.0.8  18.38 MiB  16      ?     49b71810-8e23-4edf-8f95-b989322b1ddd  rack1
+Datacenter: dc_lima
+DN  172.18.0.6  18.42 MiB  16      ?     2a5e5ade-bd2d-45dd-80bf-204af0a22dc9  rack1
+--- la sede Arequipa sigue atendiendo (inicio de sesión + lectura + escritura locales):
+
+
+Consistency level set to LOCAL_ONE.
+
+ fecha_hora                      | tipo_evento | hub
+---------------------------------+-------------+------------
+ 2026-04-01 13:05:45.000000+0000 |    ADMISION | AG-LIM-SUR
+ 2026-04-01 18:44:24.000000+0000 |  SALIDA_HUB | AG-LIM-SUR
+ 2026-04-01 19:37:53.000000+0000 | LLEGADA_HUB |     HC-LIM
+
+(3 rows)
+--- operaciones que exigen a las dos sedes fallan:
+
+
+<stdin>:1:NoHostAvailable: ('Unable to complete the operation against any hosts', {<Host: 127.0.0.1:9042 dc_arequipa>: Unavailable('Error from server: code=1000 [Unavailable exception] message="Cannot achieve consistency level ALL" info={\'consistency\': \'ALL\', \'required_replicas\': 2, \'alive_replicas\': 1}')})
+Consistency level set to ALL.
+
+
+<stdin>:1:NoHostAvailable: ('Unable to complete the operation against any hosts', {<Host: 127.0.0.1:9042 dc_arequipa>: Unavailable('Error from server: code=1000 [Unavailable exception] message="Cannot achieve consistency level EACH_QUORUM in DC dc_lima" info={\'consistency\': \'EACH_QUORUM\', \'required_replicas\': 1, \'alive_replicas\': 0}')})
+Consistency level set to EACH_QUORUM.
+--- hints guardados en Arequipa para entregar a Lima cuando vuelva:
+This node does not have any pending hints
+olva_cassandra ENCENDIDO de nuevo, esperando que vuelva al anillo...
+--- lo escrito en Arequipa durante la caída ya está en Lima (hinted handoff):
+
+
+Consistency level set to LOCAL_ONE.
+
+ nro_tracking  | nivel | mensaje
+---------------+-------+--------------------------------
+ OLV2600029839 | AVISO | Escrita con la sede Lima caída
+ OLV2600029836 | AVISO | Registrada en la sede Arequipa
+
+(2 rows)

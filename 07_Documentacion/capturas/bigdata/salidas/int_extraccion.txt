@@ -1,0 +1,21 @@
+$ bash 06_BigData_Hadoop/03_integracion_end_to_end.sh
+================ 1) EXTRACCIÓN: PostgreSQL (olva_courier) -> HDFS /olva/operacional/20261123 ================
+  maestro.hub -> /olva/operacional/20261123/catalogos/hub.csv (39 líneas)
+  maestro.ciudad -> /olva/operacional/20261123/catalogos/ciudad.csv (18 líneas)
+  maestro.region -> /olva/operacional/20261123/catalogos/region.csv (6 líneas)
+  maestro.tipo_servicio -> /olva/operacional/20261123/catalogos/tipo_servicio.csv (5 líneas)
+  operacion.envio -> /olva/operacional/20261123/envio/envio.csv (29967 líneas)
+  operacion.evento_tracking -> /olva/operacional/20261123/evento_tracking/evento_tracking.csv (315102 líneas)
+
+================ 2) PROCESAMIENTO: MapReduce sobre los datos operacionales extraídos ================
+  Job job_1795483319183_0004 completed successfully
+        ESTANCIAS_EN_HUB=52501
+  Job job_1795483319183_0005 completed successfully
+  Job job_1795483319183_0006 completed successfully
+        ENVIOS_LEIDOS=29966
+  SLA por servicio (base operativa, 30 mil envíos):
+    SERVICIO,ECONOMICO_TERRESTRE,TOTAL,5831,5592,98.86,21.18,98622.40
+    SERVICIO,ESTANDAR_TERRESTRE,TOTAL,13214,12739,91.88,24.12,305683.50
+    SERVICIO,EXPRESS_AEREO,TOTAL,7860,7580,86.94,24.52,354907.50
+    SERVICIO,SOBRE_AEREO,TOTAL,3061,2947,86.63,23.18,53079.00
+

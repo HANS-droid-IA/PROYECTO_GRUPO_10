@@ -1,0 +1,28 @@
+SQL> -- sqlplus olva@//localhost:1521/FREEPDB1 @ora05_o3.sql
+
+=== O3. [ORACLE] Red logística jerárquica con CONNECT BY (PG: WITH RECURSIVE) ===
+
+RED					 TIPO		      NIVEL RUTA_JERARQUICA
+---------------------------------------- --------------- ---------- ---------------------------------------------
+HC-LIM					 HUB_CENTRAL		  1 /HC-LIM
+  AG-CAL-01				 AGENCIA		  2 /HC-LIM/AG-CAL-01
+  AG-ICA-01				 AGENCIA		  2 /HC-LIM/AG-ICA-01
+  AG-LIM-ATE				 AGENCIA		  2 /HC-LIM/AG-LIM-ATE
+  AG-LIM-MIR				 AGENCIA		  2 /HC-LIM/AG-LIM-MIR
+  AG-LIM-OLI				 AGENCIA		  2 /HC-LIM/AG-LIM-OLI
+  AG-LIM-SIS				 AGENCIA		  2 /HC-LIM/AG-LIM-SIS
+  AG-LIM-SJL				 AGENCIA		  2 /HC-LIM/AG-LIM-SJL
+  AG-LIM-SUR				 AGENCIA		  2 /HC-LIM/AG-LIM-SUR
+  AG-PCL-01				 AGENCIA		  2 /HC-LIM/AG-PCL-01
+  HR-AQP				 HUB_REGIONAL		  2 /HC-LIM/HR-AQP
+    AG-AQP-01				 AGENCIA		  3 /HC-LIM/HR-AQP/AG-AQP-01
+    AG-AQP-02				 AGENCIA		  3 /HC-LIM/HR-AQP/AG-AQP-02
+    AG-AQP-03				 AGENCIA		  3 /HC-LIM/HR-AQP/AG-AQP-03
+    AG-TCQ-01				 AGENCIA		  3 /HC-LIM/HR-AQP/AG-TCQ-01
+  HR-CIX				 HUB_REGIONAL		  2 /HC-LIM/HR-CIX
+  HR-CUZ				 HUB_REGIONAL		  2 /HC-LIM/HR-CUZ
+  HR-HYO				 HUB_REGIONAL		  2 /HC-LIM/HR-HYO
+  HR-IQT				 HUB_REGIONAL		  2 /HC-LIM/HR-IQT
+  HR-JUL				 HUB_REGIONAL		  2 /HC-LIM/HR-JUL
+  HR-PIU				 HUB_REGIONAL		  2 /HC-LIM/HR-PIU
+  HR-TRU				 HUB_REGIONAL		  2 /HC-LIM/HR-TRU

@@ -1,0 +1,120 @@
+
+=== A1. Cumplimiento de SLA por servicio ($match, $group, $cond, $project) ===
+entregados | servicio                 | pct_sla | horas_promedio
+-----------+--------------------------+---------+---------------
+2947       | Sobre / Documentos Aéreo | 86.60   | 48.20         
+7580       | Express Aéreo            | 86.90   | 48.40         
+12739      | Estándar Terrestre       | 91.90   | 52.20         
+5592       | Económico Terrestre      | 98.90   | 52.40         
+(4 documentos)
+
+=== A2. Cuello de botella: permanencia en el Hub Central por hora de llegada ($unwind, $setWindowFields, $dateDiff) ===
+hora_llegada | envios | permanencia_prom_h | max_h | mas_de_12h
+-------------+--------+--------------------+-------+-----------
+0            | 213    | 13.20              | 26.60 | 95        
+1            | 373    | 12.50              | 25.50 | 183       
+2            | 165    | 10                 | 24.40 | 51        
+3            | 22     | 6.20               | 21.40 | 3         
+4            | 22     | 12.40              | 20.10 | 12        
+5            | 25     | 14                 | 19.10 | 14        
+6            | 462    | 13.20              | 20.20 | 253       
+7            | 466    | 12.40              | 19.90 | 255       
+8            | 241    | 10.90              | 18.40 | 120       
+9            | 112    | 9.70               | 20.30 | 49        
+10           | 831    | 6.80               | 20    | 64        
+11           | 1333   | 5.90               | 21.50 | 70        
+12           | 348    | 8.10               | 21.20 | 75        
+13           | 1881   | 11.10              | 19.90 | 767       
+14           | 6316   | 10.80              | 21.60 | 2574      
+15           | 563    | 11.20              | 18.70 | 282       
+16           | 613    | 11.70              | 19.90 | 386       
+17           | 351    | 10.90              | 18.20 | 221       
+18           | 110    | 12.40              | 30    | 41        
+19           | 280    | 13.50              | 30.50 | 129       
+20           | 10344  | 14.60              | 30.70 | 3665      
+21           | 2030   | 14.70              | 29.80 | 704       
+22           | 810    | 14.10              | 28    | 290       
+23           | 696    | 14                 | 27.80 | 274       
+(24 documentos)
+
+=== A3. Efectividad del primer intento de entrega por ciudad y motivos de falla ($unwind, $push, $slice) ===
+ciudad   | primeros_intentos | pct_exito | motivos_falla                                   
+---------+-------------------+-----------+-------------------------------------------------
+Tacna    | 837               | 83.50     | AUSENTE:99, DIRECCION_ERRADA:26, RECHAZADO:13   
+Iquitos  | 1124              | 84        | AUSENTE:119, DIRECCION_ERRADA:36, RECHAZADO:25  
+Ayacucho | 573               | 84.60     | AUSENTE:52, RECHAZADO:18, DIRECCION_ERRADA:18   
+Callao   | 1648              | 85.30     | AUSENTE:154, DIRECCION_ERRADA:49, RECHAZADO:40  
+Cusco    | 1646              | 85.40     | AUSENTE:166, DIRECCION_ERRADA:49, RECHAZADO:25  
+Ica      | 1147              | 85.60     | AUSENTE:111, DIRECCION_ERRADA:29, RECHAZADO:25  
+Lima     | 10030             | 85.70     | AUSENTE:928, DIRECCION_ERRADA:319, RECHAZADO:188
+Tarapoto | 854               | 85.80     | AUSENTE:71, DIRECCION_ERRADA:34, RECHAZADO:16   
+Puno     | 530               | 86        | AUSENTE:49, DIRECCION_ERRADA:17, RECHAZADO:8    
+Juliaca  | 787               | 86.10     | AUSENTE:76, DIRECCION_ERRADA:19, RECHAZADO:14   
+(10 documentos)
+
+=== A4. Ocupación del Hub Central vs su capacidad por hora del día ($lookup a hubs) ===
+hora | llegadas_prom | pico | capacidad | ocupacion_pct
+-----+---------------+------+-----------+--------------
+6    | 6.60          | 15   | 50        | 13           
+7    | 6.10          | 19   | 50        | 12           
+11   | 7.30          | 24   | 50        | 15           
+13   | 11.50         | 43   | 50        | 23           
+14   | 33.40         | 79   | 50        | 67           
+15   | 5.20          | 27   | 50        | 10           
+16   | 5.80          | 27   | 50        | 12           
+20   | 54.80         | 145  | 50        | 110          
+21   | 11.60         | 46   | 50        | 23           
+22   | 7.40          | 35   | 50        | 15           
+23   | 7.10          | 45   | 50        | 14           
+(11 documentos)
+
+=== A5. Top 10 clientes empresariales por facturación con su contacto ($lookup a clientes) ===
+cliente                            | email                              | envios | facturado_S | con_incidencia
+-----------------------------------+------------------------------------+--------+-------------+---------------
+Negociaciones Inca S.A.            | ventas@negociacionesinca.com.pe    | 886    | 25411.80    | 56            
+Distribuidora San Martín E.I.R.L.  | ventas@distribuidorasanmart.com.pe | 707    | 21049.80    | 52            
+Textil Los Andes S.R.L.            | ventas@textillosandes.com.pe       | 601    | 17551.90    | 56            
+Representaciones Santa Rosa S.R.L. | ventas@representacionessant.com.pe | 513    | 12853.70    | 29            
+Representaciones Inti E.I.R.L.     | ventas@representacionesinti.com.pe | 466    | 11788       | 22            
+Importaciones Los Andes E.I.R.L.   | ventas@importacioneslosande.com.pe | 300    | 10925       | 24            
+Agroexportadora Moche S.A.C.       | ventas@agroexportadoramoche.com.pe | 380    | 9858.40     | 14            
+Corporación Mistiana E.I.R.L.      | ventas@corporacionmistiana.com.pe  | 385    | 9198.30     | 16            
+Negociaciones Andina S.A.          | ventas@negociacionesandina.com.pe  | 301    | 8196.30     | 14            
+Distribuidora Costa Azul S.R.L.    | ventas@distribuidoracostaaz.com.pe | 297    | 8049.40     | 10            
+(10 documentos)
+
+=== A6. Tablero operativo en una sola consulta ($facet, $bucket, $sortByCount) ===
+-- Envíos por estado
+estado          | envios
+----------------+-------
+ENTREGADO       | 28858 
+DEVUELTO        | 682   
+EN_HUB          | 260   
+ADMITIDO        | 104   
+EN_TRANSITO     | 36    
+INTENTO_FALLIDO | 22    
+EN_REPARTO      | 4     
+(7 documentos)
+-- Por modalidad
+modalidad | envios | ingresos_S
+----------+--------+-----------
+TERRESTRE | 19045  | 404305.90 
+AEREO     | 10921  | 407986.50 
+(2 documentos)
+-- Por rango de peso
+desde_kg | envios | tarifa_prom_S
+---------+--------+--------------
+0        | 7311   | 17.59        
+1        | 16678  | 25.02        
+5        | 4737   | 40.18        
+10       | 1232   | 61.20        
+30       | 8      | 89.91        
+(5 documentos)
+-- Incidencias por tipo
+tipo                 | casos
+---------------------+------
+DIRECCION_INCORRECTA | 988  
+RETRASO              | 742  
+DANO                 | 126  
+PERDIDA              | 48   
+(4 documentos)

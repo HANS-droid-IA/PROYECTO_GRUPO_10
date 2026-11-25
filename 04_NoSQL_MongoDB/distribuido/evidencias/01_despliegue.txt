@@ -1,0 +1,54 @@
+>> 1. Iniciar los conjuntos de réplicas (config server y una por sede)
+rs_config ya estaba iniciado
+rs_lima ya estaba iniciado
+rs_arequipa ya estaba iniciado
+>> 2. Administrador del clúster (excepción localhost del router, solo la primera vez)
+usuario ya existe (Unauthorized)
+>> 3. Sedes, zonas y colección fragmentada
+
+=== 1. Registro de las sedes (shards) en el clúster ===
+sede          | servidor                              | estado
+--------------+---------------------------------------+-------
+sede_lima     | rs_lima/olva_mongo_lima:27018         | activo
+sede_arequipa | rs_arequipa/olva_mongo_arequipa:27018 | activo
+(2 filas)
+
+=== 2. Zonas geográficas: cada sede es dueña de una zona ===
+
+=== 3. Base olva_sedes y colección fragmentada envios ===
+zona            | nodo_desde | nodo_hasta_sin_incluir | nodos     
+----------------+------------+------------------------+-----------
+ZONA_LIMA       | (inicio)   | NORTE                  | LIMA      
+ZONA_PROVINCIAS | NORTE      | (fin)                  | NORTE, SUR
+(2 filas)
+Clave de fragmentación (shard key): { "origen.nodo": 1, "_id": 1 }
+>> 4. Carga a través del router: mongos envía cada documento a su sede
+mongoimport envios: 29966 documentos en 9 s
+mongoimport hubs: 38 documentos en 1 s
+mongoimport clientes: 3000 documentos en 1 s
+índices creados en cada sede: _id_, origen.nodo_1__id_1, estado_actual_1_fechas.compromiso_1, destino.ciudad_1
+shards
+    _id: 'sede_arequipa',
+    tags: [ 'ZONA_PROVINCIAS' ]
+    _id: 'sede_lima',
+    tags: [ 'ZONA_LIMA' ]
+    shards: [
+        shardName: 'sede_arequipa',
+    ns: 'olva_sedes.envios',
+    shards: [
+        shardName: 'sede_arequipa',
+        shardName: 'sede_lima',
+        chunkMetadata: [ { shard: 'sede_arequipa', nChunks: 1 } ],
+        chunks: [
+          { min: { _id: MinKey() }, max: { _id: MaxKey() }, 'on shard': 'sede_arequipa', 'last modified': Timestamp({ t: 1, i: 0 }) }
+        tags: []
+      primary: 'sede_lima',
+      'olva_sedes.envios': {
+          { shard: 'sede_arequipa', nChunks: 1 },
+          { shard: 'sede_lima', nChunks: 1 }
+        chunks: [
+          { min: { 'origen.nodo': MinKey(), _id: MinKey() }, max: { 'origen.nodo': 'NORTE', _id: MinKey() }, 'on shard': 'sede_lima', 'last modified': Timestamp({ t: 1, i: 0 }) },
+          { min: { 'origen.nodo': 'NORTE', _id: MinKey() }, max: { 'origen.nodo': MaxKey(), _id: MaxKey() }, 'on shard': 'sede_arequipa', 'last modified': Timestamp({ t: 1, i: 1 }) }
+        tags: [
+            tag: 'ZONA_LIMA',
+            tag: 'ZONA_PROVINCIAS',

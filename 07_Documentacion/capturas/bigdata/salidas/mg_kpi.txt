@@ -1,0 +1,22 @@
+olva_tracking> db.kpi_bigdata.countDocuments()
+458
+olva_tracking> db.kpi_bigdata.aggregate([{ $group: { _id: "$indicador", documentos: { $sum: 1 } } }])
+[
+  {
+    _id: 'cumplimiento_sla',
+    documentos: 140
+  },
+  {
+    _id: 'permanencia_hub',
+    documentos: 318
+  }
+]
+olva_tracking> db.kpi_bigdata.find({ indicador: "permanencia_hub", dimension: "MES", hub: "HR-AQP" },
+...   { _id: 0, valor: 1, estancias: 1, permanencia_promedio_h: 1, pct_mayor_12h: 1 }).sort({ valor: 1 })
+{"valor":"2026-04","estancias":5560,"permanencia_promedio_h":10.38,"pct_mayor_12h":33.45}
+{"valor":"2026-05","estancias":6128,"permanencia_promedio_h":10.42,"pct_mayor_12h":32.31}
+{"valor":"2026-06","estancias":6468,"permanencia_promedio_h":10.25,"pct_mayor_12h":30.01}
+{"valor":"2026-07","estancias":9069,"permanencia_promedio_h":10.82,"pct_mayor_12h":38.31}
+{"valor":"2026-08","estancias":7192,"permanencia_promedio_h":12.49,"pct_mayor_12h":44.59}
+{"valor":"2026-09","estancias":7553,"permanencia_promedio_h":12.39,"pct_mayor_12h":46.1}
+{"valor":"2026-10","estancias":1561,"permanencia_promedio_h":9.63,"pct_mayor_12h":29.15}

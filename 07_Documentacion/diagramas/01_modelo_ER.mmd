@@ -1,0 +1,211 @@
+%% Diagrama 1. Modelo Entidad-Relación de olva_courier (schemas maestro y operacion)
+%% Generado automáticamente desde el catálogo de PostgreSQL con generar_er_desde_catalogo.sql
+erDiagram
+    CIUDAD ||--o{ CLIENTE : "id_ciudad"
+    CIUDAD ||--o{ HUB : "id_ciudad"
+    CLIENTE ||--o{ ENVIO : "id_cliente"
+    DESPACHO |o--o{ EVENTO_TRACKING : "id_despacho"
+    DESPACHO ||--o{ DESPACHO_ENVIO : "id_despacho"
+    DESTINATARIO ||--o{ ENVIO : "id_destinatario"
+    EMPLEADO |o--o{ EVENTO_TRACKING : "id_empleado"
+    EMPLEADO ||--o{ INTENTO_ENTREGA : "id_courier"
+    ENVIO ||--o{ DESPACHO_ENVIO : "id_envio"
+    ENVIO ||--o{ EVENTO_TRACKING : "id_envio"
+    ENVIO ||--o{ INCIDENCIA : "id_envio"
+    ENVIO ||--o{ INTENTO_ENTREGA : "id_envio"
+    ENVIO ||--o{ PAQUETE : "id_envio"
+    ENVIO ||--o| COMPROBANTE : "id_envio"
+    HUB |o--o{ HUB : "id_hub_padre"
+    HUB |o--o{ INCIDENCIA : "id_hub"
+    HUB ||--o{ EMPLEADO : "id_hub"
+    HUB ||--o{ ENVIO : "id_hub_destino"
+    HUB ||--o{ ENVIO : "id_hub_origen"
+    HUB ||--o{ EVENTO_TRACKING : "id_hub"
+    HUB ||--o{ RUTA : "id_hub_destino"
+    HUB ||--o{ RUTA : "id_hub_origen"
+    HUB ||--o{ VEHICULO : "id_hub_base"
+    REGION ||--o{ CIUDAD : "id_region"
+    REGION ||--o{ TARIFA : "id_region_destino"
+    REGION ||--o{ TARIFA : "id_region_origen"
+    RUTA ||--o{ DESPACHO : "id_ruta"
+    TIPO_SERVICIO ||--o{ ENVIO : "id_servicio"
+    TIPO_SERVICIO ||--o{ TARIFA : "id_servicio"
+    VEHICULO |o--o{ DESPACHO : "id_vehiculo"
+    CIUDAD {
+        integer id_ciudad PK
+        varchar nombre
+        varchar departamento
+        smallint id_region FK
+        char ubigeo UK
+        boolean tiene_aeropuerto
+        boolean acceso_terrestre
+        numeric latitud
+        numeric longitud
+    }
+    CLIENTE {
+        integer id_cliente PK
+        varchar tipo_cliente
+        varchar tipo_documento
+        varchar nro_documento
+        varchar nombre_razon_social
+        varchar email
+        varchar telefono
+        varchar direccion
+        integer id_ciudad FK
+        date fecha_registro
+    }
+    COMPROBANTE {
+        bigint id_comprobante PK
+        bigint id_envio FK,UK
+        varchar tipo
+        char serie
+        integer numero
+        timestamptz fecha_emision
+        numeric subtotal
+        numeric igv
+        numeric total
+        varchar metodo_pago
+    }
+    DESPACHO {
+        bigint id_despacho PK
+        varchar codigo_manifiesto UK
+        integer id_ruta FK
+        integer id_vehiculo FK
+        varchar nro_vuelo
+        timestamptz fecha_salida_prog
+        timestamptz fecha_salida_real
+        timestamptz fecha_llegada_real
+        varchar estado
+    }
+    DESPACHO_ENVIO {
+        bigint id_despacho PK,FK
+        bigint id_envio PK,FK
+        timestamptz fecha_carga
+    }
+    DESTINATARIO {
+        integer id_destinatario PK
+        varchar nombre
+        varchar tipo_documento
+        varchar nro_documento
+        varchar telefono
+    }
+    EMPLEADO {
+        integer id_empleado PK
+        char dni UK
+        varchar nombres
+        varchar apellidos
+        varchar cargo
+        integer id_hub FK
+        date fecha_ingreso
+        boolean activo
+    }
+    ENVIO {
+        bigint id_envio PK
+        char nro_tracking UK
+        integer id_cliente FK
+        integer id_destinatario FK
+        smallint id_servicio FK
+        integer id_hub_origen FK
+        integer id_hub_destino FK
+        varchar direccion_entrega
+        timestamptz fecha_registro
+        timestamptz fecha_compromiso
+        varchar estado_actual
+        numeric peso_total_kg
+        numeric valor_declarado
+        numeric monto_total
+        timestamptz fecha_entrega
+    }
+    EVENTO_TRACKING {
+        bigint id_evento PK
+        bigint id_envio FK
+        varchar tipo_evento
+        integer id_hub FK
+        integer id_empleado FK
+        bigint id_despacho FK
+        timestamptz fecha_hora
+        varchar observacion
+    }
+    HUB {
+        integer id_hub PK
+        varchar codigo UK
+        varchar nombre
+        varchar tipo
+        integer id_ciudad FK
+        integer id_hub_padre FK
+        integer capacidad_hora
+        varchar direccion
+        boolean activo
+    }
+    INCIDENCIA {
+        integer id_incidencia PK
+        bigint id_envio FK
+        varchar tipo
+        integer id_hub FK
+        timestamptz fecha_reporte
+        varchar descripcion
+        varchar estado
+        timestamptz fecha_cierre
+    }
+    INTENTO_ENTREGA {
+        bigint id_intento PK
+        bigint id_envio FK
+        smallint nro_intento
+        timestamptz fecha_hora
+        integer id_courier FK
+        varchar resultado
+        varchar receptor_nombre
+        varchar receptor_documento
+    }
+    PAQUETE {
+        bigint id_paquete PK
+        bigint id_envio FK
+        smallint nro_bulto
+        numeric peso_kg
+        numeric largo_cm
+        numeric ancho_cm
+        numeric alto_cm
+        varchar descripcion
+        boolean fragil
+    }
+    REGION {
+        smallint id_region PK
+        varchar codigo UK
+        varchar nombre UK
+        varchar nodo
+    }
+    RUTA {
+        integer id_ruta PK
+        integer id_hub_origen FK
+        integer id_hub_destino FK
+        varchar modalidad
+        numeric distancia_km
+        numeric tiempo_estimado_horas
+        boolean activa
+    }
+    TARIFA {
+        integer id_tarifa PK
+        smallint id_servicio FK
+        smallint id_region_origen FK
+        smallint id_region_destino FK
+        numeric precio_base
+        numeric precio_kg_adicional
+        date vigente_desde
+        date vigente_hasta
+    }
+    TIPO_SERVICIO {
+        smallint id_servicio PK
+        varchar codigo UK
+        varchar nombre
+        varchar modalidad
+        smallint sla_horas
+        numeric peso_max_kg
+    }
+    VEHICULO {
+        integer id_vehiculo PK
+        varchar placa UK
+        varchar tipo
+        numeric capacidad_kg
+        integer id_hub_base FK
+        boolean activo
+    }

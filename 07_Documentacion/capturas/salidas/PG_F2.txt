@@ -1,0 +1,21 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_f2_cuellos.sql
+
+=== F4 operacion.fn_cuellos_botella(desde, hasta, umbral_horas): función de tabla ===
+  hub   | franja_llegada | envios | permanencia_prom_h | permanencia_p90_h | pct_sobre_umbral 
+--------+----------------+--------+--------------------+-------------------+------------------
+ HC-LIM | 18-24          |  14270 |              14.49 |             27.14 |             35.8
+ HR-AQP | 00-06          |    342 |              13.71 |             21.68 |             52.3
+ HR-CIX | 00-06          |    185 |              13.51 |             20.52 |             60.0
+ HR-PIU | 12-18          |   1152 |              13.04 |             16.82 |             75.2
+ HR-CIX | 18-24          |    760 |              12.92 |             24.94 |             32.5
+ HR-TRU | 00-06          |    351 |              12.71 |             21.51 |             49.9
+ HR-TRU | 18-24          |    807 |              12.53 |             25.20 |             27.9
+ HR-HYO | 00-06          |    160 |              12.46 |             20.65 |             48.1
+
+=== F3 operacion.fn_permanencia_hub: permanencia del envío OLV2600001112 en cada hub ===
+    hub     | permanencia 
+------------+-------------
+ HC-LIM     | 14:31:40
+ HR-AQP     | 03:01:20
+ AG-LIM-MIR | 01:36:30
+ AG-AQP-01  | 06:12:12

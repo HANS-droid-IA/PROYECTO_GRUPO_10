@@ -1,0 +1,87 @@
+>> Recreando base de datos olva_courier
+>> Ejecutando 01_ddl_esquemas_tablas.sql
+psql:01_ddl_esquemas_tablas.sql:13: NOTICE:  schema "seguridad" does not exist, skipping
+psql:01_ddl_esquemas_tablas.sql:14: NOTICE:  schema "auditoria" does not exist, skipping
+psql:01_ddl_esquemas_tablas.sql:15: NOTICE:  schema "operacion" does not exist, skipping
+psql:01_ddl_esquemas_tablas.sql:16: NOTICE:  schema "maestro" does not exist, skipping
+>> Ejecutando 02_funciones.sql
+>> Ejecutando 03_procedimientos.sql
+>> Ejecutando 04_carga_datos.sql
+Time: 0.307 ms
+Time: 0.156 ms
+Time: 7.003 ms
+Time: 7.581 ms
+Time: 7.732 ms
+Time: 5.992 ms
+Time: 9.764 ms
+Time: 8.486 ms
+Time: 8.046 ms
+Time: 11.210 ms
+Time: 78.826 ms
+Time: 100.963 ms
+Time: 1820.163 ms (00:01.820)
+Time: 676.139 ms
+Time: 698.593 ms
+Time: 703.009 ms
+Time: 1691.622 ms (00:01.692)
+Time: 11971.618 ms (00:11.972)
+Time: 786.031 ms
+Time: 46.748 ms
+Time: 2.290 ms
+Time: 9.285 ms
+Time: 1385.522 ms (00:01.386)
+           tabla           | filas  
+---------------------------+--------
+ maestro.ciudad            |     17
+ maestro.cliente           |   3000
+ maestro.empleado          |    285
+ maestro.hub               |     38
+ maestro.region            |      5
+ maestro.ruta              |     98
+ maestro.tarifa            |    100
+ maestro.tipo_servicio     |      4
+ maestro.vehiculo          |    141
+ operacion.comprobante     |  29966
+ operacion.despacho        |  22729
+ operacion.despacho_envio  |  82894
+ operacion.destinatario    |  26413
+ operacion.envio           |  29966
+ operacion.evento_tracking | 315101
+ operacion.incidencia      |   1904
+ operacion.intento_entrega |  33557
+ operacion.paquete         |  40714
+(18 rows)
+
+Time: 3.395 ms
+>> Ejecutando 05_triggers.sql
+>> Ejecutando 06_vistas.sql
+psql:06_vistas.sql:66: NOTICE:  materialized view "mv_permanencia_hub" does not exist, skipping
+>> Ejecutando 07_seguridad_roles.sql
+psql:07_seguridad_roles.sql:46: NOTICE:  role "u_admin_bd" has already been granted membership in role "rol_admin_olva" by role "olva_admin"
+psql:07_seguridad_roles.sql:46: NOTICE:  role "u_op_lima" has already been granted membership in role "rol_operador_hub" by role "olva_admin"
+psql:07_seguridad_roles.sql:46: NOTICE:  role "u_op_norte" has already been granted membership in role "rol_operador_hub" by role "olva_admin"
+psql:07_seguridad_roles.sql:46: NOTICE:  role "u_op_sur" has already been granted membership in role "rol_operador_hub" by role "olva_admin"
+psql:07_seguridad_roles.sql:46: NOTICE:  role "u_atencion" has already been granted membership in role "rol_atencion_cliente" by role "olva_admin"
+psql:07_seguridad_roles.sql:46: NOTICE:  role "u_facturacion" has already been granted membership in role "rol_facturacion" by role "olva_admin"
+psql:07_seguridad_roles.sql:46: NOTICE:  role "u_analista" has already been granted membership in role "rol_analista" by role "olva_admin"
+psql:07_seguridad_roles.sql:135: NOTICE:  policy "p_envio_operador_nodo" for relation "operacion.envio" does not exist, skipping
+psql:07_seguridad_roles.sql:140: NOTICE:  policy "p_envio_lectura_global" for relation "operacion.envio" does not exist, skipping
+psql:07_seguridad_roles.sql:145: NOTICE:  policy "p_evento_operador_nodo" for relation "operacion.evento_tracking" does not exist, skipping
+psql:07_seguridad_roles.sql:150: NOTICE:  policy "p_evento_lectura_global" for relation "operacion.evento_tracking" does not exist, skipping
+       grantee        | table_schema | privilegios 
+----------------------+--------------+-------------
+ rol_admin_olva       | auditoria    |           7
+ rol_admin_olva       | maestro      |          63
+ rol_admin_olva       | operacion    |          77
+ rol_admin_olva       | seguridad    |           7
+ rol_analista         | maestro      |           6
+ rol_analista         | operacion    |           3
+ rol_atencion_cliente | maestro      |           7
+ rol_atencion_cliente | operacion    |           6
+ rol_facturacion      | maestro      |           4
+ rol_facturacion      | operacion    |           2
+ rol_operador_hub     | maestro      |           6
+ rol_operador_hub     | operacion    |           4
+(12 rows)
+
+>> BD olva_courier lista

@@ -1,0 +1,39 @@
+id_hub,codigo,nombre,tipo,id_ciudad,id_hub_padre,capacidad_hora,direccion,activo
+1,HC-LIM,Hub Central Lima,HUB_CENTRAL,2,,50,Psje. Gonzales 1183,t
+2,HR-TRU,Hub Regional Trujillo,HUB_REGIONAL,6,1,15,Calle Condori 587,t
+3,HR-CIX,Hub Regional Chiclayo,HUB_REGIONAL,7,1,15,Calle Mendoza 2314,t
+4,HR-PIU,Hub Regional Piura,HUB_REGIONAL,8,1,12,Calle Ríos 648,t
+5,HR-HYO,Hub Regional Huancayo,HUB_REGIONAL,4,1,12,Av. Ticona 616,t
+6,HR-IQT,Hub Regional Iquitos,HUB_REGIONAL,10,1,8,Calle Alvarado 815,t
+7,HR-AQP,Hub Regional Arequipa,HUB_REGIONAL,13,1,18,Psje. Navarro 1372,t
+8,HR-CUZ,Hub Regional Cusco,HUB_REGIONAL,14,1,14,Av. Chávez 314,t
+9,HR-JUL,Hub Regional Juliaca,HUB_REGIONAL,17,1,10,Av. Cruz 899,t
+10,AG-LIM-MIR,Agencia Miraflores,AGENCIA,1,1,15,Psje. Ccama 123,t
+11,AG-LIM-SIS,Agencia San Isidro,AGENCIA,1,1,15,Calle Rojas 288,t
+12,AG-LIM-OLI,Agencia Los Olivos,AGENCIA,1,1,15,Av. Chávez 1457,t
+13,AG-LIM-SJL,Agencia San Juan de Lurigancho,AGENCIA,1,1,15,Psje. Pérez 1899,t
+14,AG-LIM-SUR,Agencia Santiago de Surco,AGENCIA,1,1,15,Calle Gonzales 2338,t
+15,AG-LIM-ATE,Agencia Ate,AGENCIA,1,1,12,Psje. Ccama 2705,t
+16,AG-CAL-01,Agencia Callao,AGENCIA,2,1,12,Jr. Castillo 2561,t
+17,AG-ICA-01,Agencia Ica,AGENCIA,3,1,10,Psje. García 2529,t
+18,AG-PCL-01,Agencia Pucallpa,AGENCIA,11,1,8,Calle Flores 901,t
+19,AG-HYO-01,Agencia Huancayo Centro,AGENCIA,4,5,10,Av. Rodríguez 1550,t
+20,AG-HYO-02,Agencia El Tambo,AGENCIA,4,5,8,Calle Villanueva 2523,t
+21,AG-AYA-01,Agencia Ayacucho,AGENCIA,5,5,8,Av. Cárdenas 2269,t
+22,AG-TRU-01,Agencia Trujillo Centro,AGENCIA,6,2,10,Calle Torres 279,t
+23,AG-TRU-02,Agencia Trujillo La Esperanza,AGENCIA,6,2,8,Jr. Aguilar 2709,t
+24,AG-CAJ-01,Agencia Cajamarca,AGENCIA,9,2,8,Av. Condori 2459,t
+25,AG-CIX-01,Agencia Chiclayo Centro,AGENCIA,7,3,10,Av. Chávez 924,t
+26,AG-CIX-02,Agencia José Leonardo Ortiz,AGENCIA,7,3,8,Av. Mamani 2870,t
+27,AG-TPP-01,Agencia Tarapoto,AGENCIA,12,3,8,Av. Vásquez 290,t
+28,AG-PIU-01,Agencia Piura Centro,AGENCIA,8,4,10,Calle Cruz 2829,t
+29,AG-PIU-02,Agencia Castilla,AGENCIA,8,4,8,Av. Ríos 2140,t
+30,AG-IQT-01,Agencia Iquitos,AGENCIA,10,6,8,Jr. López 1319,t
+31,AG-AQP-01,Agencia Arequipa Centro,AGENCIA,13,7,10,Av. Ccama 977,t
+32,AG-AQP-02,Agencia Cayma,AGENCIA,13,7,8,Av. Medina 1202,t
+33,AG-AQP-03,Agencia Paucarpata,AGENCIA,13,7,8,Calle Romero 312,t
+34,AG-TCQ-01,Agencia Tacna,AGENCIA,15,7,8,Jr. Ramírez 2283,t
+35,AG-CUZ-01,Agencia Cusco Centro,AGENCIA,14,8,10,Jr. Alvarado 1167,t
+36,AG-CUZ-02,Agencia Wanchaq,AGENCIA,14,8,8,Jr. Alvarado 2415,t
+37,AG-JUL-01,Agencia Juliaca,AGENCIA,17,9,8,Jr. Cabrera 2334,t
+38,AG-PUN-01,Agencia Puno,AGENCIA,16,9,8,Calle Huamán 619,t

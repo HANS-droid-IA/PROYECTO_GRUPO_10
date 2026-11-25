@@ -1,0 +1,16 @@
+SQL> -- sqlplus olva@//localhost:1521/FREEPDB1 @ora04_o1_o2.sql
+
+=== O1. Envíos por estado (consulta básica) ===
+
+ESTADO_ACTUAL	    ENVIOS TICKET_PROM
+--------------- ---------- -----------
+ENTREGADO	       982	  27.8
+DEVUELTO		18	 22.32
+=== O2. Cumplimiento de SLA por servicio (JOIN + CASE) ===
+
+SERVICIO	     ENTREGADOS PCT_A_TIEMPO HORAS_PROM
+-------------------- ---------- ------------ ----------
+ECONOMICO_TERRESTRE	    184 	99.5	   49.4
+ESTANDAR_TERRESTRE	    425 	94.1	   51.5
+EXPRESS_AEREO		    272 	86.8	   47.8
+SOBRE_AEREO		    101 	88.1	   47.7

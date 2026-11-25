@@ -1,0 +1,8 @@
+-- se detiene el servidor de la sede Arequipa (shard sede_arequipa)
+olva_mongo_arequipa DETENIDO
+Consulta dirigida a la sede Lima (nodo LIMA): 196 envíos EN_HUB -> RESPONDE
+Consulta dirigida a la sede Arequipa (nodo SUR): ERROR FailedToSatisfyReadPreference - Could not find host matching read preference { mode: "primary" } for set rs_arequipa
+Consulta global (necesita las dos sedes): ERROR FailedToSatisfyReadPreference - Could not find host matching read preference { mode: "primary" } for set rs_arequipa
+Alta de un envío en Lima mientras Arequipa está caída: insertado y borrado -> la sede Lima sigue operando
+olva_mongo_arequipa ENCENDIDO de nuevo
+Consulta global después de la recuperación: 260 envíos EN_HUB

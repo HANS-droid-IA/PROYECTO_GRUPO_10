@@ -1,0 +1,40 @@
+%% Diagrama 3. Arquitectura de Oracle - implementación parcial (esquema OLVA)
+%% Fuente editable (Mermaid). Renderizar con renderizar_diagramas.py o en https://mermaid.live
+%% No se configuraron enlaces de base de datos (database links): Oracle opera como servidor independiente.
+flowchart TB
+    subgraph CLI["Clientes de conexión"]
+        direction LR
+        SQLP["<b>SQL*Plus</b><br/>ejecución de scripts"]
+        DBV["<b>DBeaver 26.2</b><br/>consultas"]
+        DP["<b>Data Pump</b><br/>expdp / impdp"]
+    end
+    LSN["<b>Listener Oracle Net</b> · puerto 1521<br/>service name FREEPDB1"]
+    subgraph INST["Instancia Oracle AI Database 26ai Free (23.26)"]
+        direction TB
+        MEM["<b>Memoria y procesos</b><br/>SGA: buffer cache · shared pool · redo log buffer<br/>PGA por sesión · DBWn · LGWR · CKPT · SMON · PMON"]
+        subgraph PDB["CDB FREE → PDB FREEPDB1"]
+            direction TB
+            subgraph OLVA["Esquema / usuario OLVA · tablespace USERS"]
+                direction LR
+                region --> ciudad --> hub
+                hub -- "id_hub_padre" --> hub
+                region --> tarifa
+                tipo_servicio --> tarifa
+                ciudad --> cliente
+                cliente --> envio
+                tipo_servicio --> envio
+                hub --> envio
+                envio --> evento_tracking
+            end
+            PLSQL["<b>PL/SQL</b><br/>PACKAGE pkg_tracking<br/>TRIGGER trg_evento_actualiza_estado<br/>PROCEDURE sp_log_error (autónoma) → log_error"]
+            SEC["<b>Seguridad</b><br/>PROFILE prf_olva_usuarios<br/>ROLE rol_analista_ora → U_ANALISTA_ORA<br/>ROLE rol_operador_ora → U_OPERADOR_ORA"]
+            DPD["DIRECTORY DATA_PUMP_DIR"]
+        end
+    end
+    SQLP --> LSN
+    DBV --> LSN
+    DP --> LSN
+    LSN --> PDB
+    PLSQL -- "INSERT / UPDATE" --> OLVA
+    SEC -- "SELECT / EXECUTE" --> OLVA
+    DP -. "volcado .dmp" .-> DPD

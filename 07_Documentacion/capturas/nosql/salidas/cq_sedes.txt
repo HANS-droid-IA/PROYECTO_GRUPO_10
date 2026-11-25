@@ -1,0 +1,33 @@
+Sede Lima     = nodo olva_cassandra (172.18.0.6, dc_lima)
+Sede Arequipa = nodo olva_cassandra_arequipa (172.18.0.8, dc_arequipa)
+
+olva_admin@sede-lima$ nodetool status
+Datacenter: dc_arequipa
+=======================
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address     Load       Tokens  Owns  Host ID                               Rack 
+UN  172.18.0.8  18.3 MiB   16      ?     49b71810-8e23-4edf-8f95-b989322b1ddd  rack1
+
+Datacenter: dc_lima
+===================
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address     Load       Tokens  Owns  Host ID                               Rack 
+UN  172.18.0.6  18.42 MiB  16      ?     2a5e5ade-bd2d-45dd-80bf-204af0a22dc9  rack1
+
+Note: Non-system keyspaces don't have the same replication settings, effective ownership information is meaningless
+
+olva_admin@cqlsh (Lima)> SELECT keyspace_name, replication FROM system_schema.keyspaces WHERE ...;
+ keyspace_name      | replication
+--------------------+-------------------------------------------------------------------------------------------------------
+ olva_sede_arequipa |                 {'class': 'org.apache.cassandra.locator.NetworkTopologyStrategy', 'dc_arequipa': '1'}
+      olva_tracking | {'class': 'org.apache.cassandra.locator.NetworkTopologyStrategy', 'dc_arequipa': '1', 'dc_lima': '1'}
+        system_auth | {'class': 'org.apache.cassandra.locator.NetworkTopologyStrategy', 'dc_arequipa': '1', 'dc_lima': '1'}
+
+olva_admin@sede-lima$ nodetool getendpoints ...
+nodetool getendpoints olva_tracking eventos_por_envio OLV2600000001:
+172.18.0.8 (sede Arequipa)
+172.18.0.6 (sede Lima)
+nodetool getendpoints olva_sede_arequipa operaciones_locales 'HR-AQP:2026-10-07':
+172.18.0.8 (sede Arequipa)

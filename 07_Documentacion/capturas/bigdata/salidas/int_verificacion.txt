@@ -1,0 +1,6 @@
+================ 4) VERIFICACIÓN: el mismo indicador en los tres motores ================
+PostgreSQL : 102570 estancias, 14.57 h
+MongoDB    : 102570 estancias, 14.57 h
+Cassandra  : 102570 estancias, 14.57 h
+
+Flujo end-to-end completado.

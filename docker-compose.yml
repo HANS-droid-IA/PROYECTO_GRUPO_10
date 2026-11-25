@@ -1,0 +1,273 @@
+# Proyecto Final BD II - Trazabilidad de paquetería (caso Olva Courier)
+# Cada servicio pertenece a un perfil para levantar solo lo necesario:
+#   docker compose --profile relacional up -d    -> PostgreSQL + Oracle      (PC1)
+#   docker compose --profile distribuida up -d   -> nodos Norte y Sur        (PC2)
+#   docker compose --profile nosql up -d         -> MongoDB + Cassandra      (PC2)
+#   docker compose --profile hadoop up -d        -> HDFS (2 DataNodes) + YARN (2 NodeManagers) (PC3)
+
+name: olva
+
+services:
+  # ---------------- Relacional ----------------
+  postgres:
+    image: postgres:16
+    profiles: ["relacional", "distribuida"]
+    container_name: olva_pg_lima
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: olva_courier
+      TZ: America/Lima
+    command: ["postgres", "-c", "max_prepared_transactions=10"]
+    ports: ["5440:5432"]
+    volumes:
+      - pg_lima:/var/lib/postgresql/data
+      - .:/proyecto
+
+  oracle:
+    image: gvenzl/oracle-free:23-slim
+    profiles: ["relacional"]
+    container_name: olva_oracle
+    environment:
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD}
+      APP_USER: olva
+      APP_USER_PASSWORD: ${ORACLE_APP_PASSWORD}
+    ports: ["1521:1521"]
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+      - .:/proyecto
+
+  # ---------------- BD Distribuida (nodos regionales) ----------------
+  pg_norte:
+    image: postgres:16
+    profiles: ["distribuida"]
+    container_name: olva_pg_norte
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: olva_norte
+      TZ: America/Lima
+    command: ["postgres", "-c", "max_prepared_transactions=10"]
+    ports: ["5433:5432"]
+    volumes:
+      - pg_norte:/var/lib/postgresql/data
+      - .:/proyecto
+
+  pg_sur:
+    image: postgres:16
+    profiles: ["distribuida"]
+    container_name: olva_pg_sur
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: olva_sur
+      TZ: America/Lima
+    command: ["postgres", "-c", "max_prepared_transactions=10"]
+    ports: ["5434:5432"]
+    volumes:
+      - pg_sur:/var/lib/postgresql/data
+      - .:/proyecto
+
+  # ---------------- NoSQL ----------------
+  mongo:
+    image: mongo:7
+    profiles: ["nosql"]
+    container_name: olva_mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    ports: ["27017:27017"]
+    volumes:
+      - mongo_data:/data/db
+      - ./04_NoSQL_MongoDB:/scripts
+
+  cassandra:
+    image: cassandra:4.1
+    profiles: ["nosql"]
+    container_name: olva_cassandra
+    environment:
+      MAX_HEAP_SIZE: 768M
+      HEAP_NEWSIZE: 128M
+      CASSANDRA_CLUSTER_NAME: olva_cluster
+      CASSANDRA_DC: dc_lima
+      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+    # activa autenticación por contraseña y autorización por roles (punto 11.4)
+    command: >
+      bash -c "sed -i -e 's/^authenticator:.*/authenticator: PasswordAuthenticator/'
+      -e 's/^authorizer:.*/authorizer: CassandraAuthorizer/' /etc/cassandra/cassandra.yaml
+      && exec docker-entrypoint.sh cassandra -f"
+    healthcheck:
+      test: ["CMD-SHELL", "nodetool status | grep -q '^UN'"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+    ports: ["9042:9042"]
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+      - ./05_NoSQL_Cassandra:/scripts
+
+  # ---------------- Cassandra: 2da sede (centro de datos dc_arequipa) ----------------
+  #   docker compose --profile nosql --profile sedes_cassandra up -d
+  # Se une al mismo clúster (olva_cluster) usando a olva_cassandra (sede Lima) como semilla.
+  cassandra_arequipa:
+    image: cassandra:4.1
+    profiles: ["sedes_cassandra"]
+    container_name: olva_cassandra_arequipa
+    environment:
+      MAX_HEAP_SIZE: 768M
+      HEAP_NEWSIZE: 128M
+      CASSANDRA_CLUSTER_NAME: olva_cluster
+      CASSANDRA_DC: dc_arequipa
+      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+      CASSANDRA_SEEDS: olva_cassandra
+    command: >
+      bash -c "sed -i -e 's/^authenticator:.*/authenticator: PasswordAuthenticator/'
+      -e 's/^authorizer:.*/authorizer: CassandraAuthorizer/' /etc/cassandra/cassandra.yaml
+      && exec docker-entrypoint.sh cassandra -f"
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "nodetool status | grep -c '^UN' | grep -q 2"]
+      interval: 15s
+      timeout: 10s
+      retries: 30
+    ports: ["9043:9042"]
+    volumes:
+      - cassandra_arequipa:/var/lib/cassandra
+      - ./05_NoSQL_Cassandra:/scripts
+
+  # ---------------- MongoDB: 2 sedes con sharding por zonas ----------------
+  #   docker compose --profile sedes_mongo up -d
+  # config server (metadatos) + shard sede Lima + shard sede Arequipa + router mongos.
+  # Autenticación interna entre miembros con keyFile (04_NoSQL_MongoDB/distribuido/mongo-keyfile).
+  mongo_cfg:
+    image: mongo:7
+    profiles: ["sedes_mongo"]
+    container_name: olva_mongo_cfg
+    command: >
+      bash -c "install -m 400 -o mongodb -g mongodb /scripts/mongo-keyfile /tmp/keyfile
+      && exec gosu mongodb mongod --configsvr --replSet rs_config --port 27019 --bind_ip_all --keyFile /tmp/keyfile"
+    volumes:
+      - mongo_cfg:/data/configdb
+      - ./04_NoSQL_MongoDB/distribuido:/scripts:ro
+
+  mongo_lima:
+    image: mongo:7
+    profiles: ["sedes_mongo"]
+    container_name: olva_mongo_lima
+    command: >
+      bash -c "install -m 400 -o mongodb -g mongodb /scripts/mongo-keyfile /tmp/keyfile
+      && exec gosu mongodb mongod --shardsvr --replSet rs_lima --port 27018 --bind_ip_all --keyFile /tmp/keyfile"
+    volumes:
+      - mongo_lima:/data/db
+      - ./04_NoSQL_MongoDB/distribuido:/scripts:ro
+
+  mongo_arequipa:
+    image: mongo:7
+    profiles: ["sedes_mongo"]
+    container_name: olva_mongo_arequipa
+    command: >
+      bash -c "install -m 400 -o mongodb -g mongodb /scripts/mongo-keyfile /tmp/keyfile
+      && exec gosu mongodb mongod --shardsvr --replSet rs_arequipa --port 27018 --bind_ip_all --keyFile /tmp/keyfile"
+    volumes:
+      - mongo_arequipa:/data/db
+      - ./04_NoSQL_MongoDB/distribuido:/scripts:ro
+
+  mongos:
+    image: mongo:7
+    profiles: ["sedes_mongo"]
+    container_name: olva_mongos
+    command: >
+      bash -c "install -m 400 -o mongodb -g mongodb /scripts/mongo-keyfile /tmp/keyfile
+      && exec gosu mongodb mongos --configdb rs_config/olva_mongo_cfg:27019 --port 27017 --bind_ip_all --keyFile /tmp/keyfile"
+    depends_on: [mongo_cfg, mongo_lima, mongo_arequipa]
+    ports: ["27020:27017"]
+    volumes:
+      - ./04_NoSQL_MongoDB/distribuido:/scripts:ro
+      - ./04_NoSQL_MongoDB/datos:/datos:ro
+
+  # ---------------- Hadoop: 1 NameNode, 2 DataNodes, 1 ResourceManager, 2 NodeManagers, JobHistory ----------------
+  # Maestros: namenode (HDFS) y resourcemanager (YARN). Trabajadores: datanode1/2 (bloques HDFS, replicación 2)
+  # y nodemanager1/2 (contenedores de map/reduce). historyserver guarda el historial de los jobs.
+  namenode:
+    image: apache/hadoop:3.3.6
+    profiles: ["hadoop"]
+    container_name: olva_namenode
+    hostname: namenode
+    command: ["hdfs", "namenode"]
+    env_file: ./06_BigData_Hadoop/hadoop.env
+    environment:
+      ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name"
+    ports: ["9870:9870"]
+    volumes:
+      - ./06_BigData_Hadoop:/proyecto
+
+  datanode1:
+    image: apache/hadoop:3.3.6
+    profiles: ["hadoop"]
+    container_name: olva_datanode1
+    hostname: datanode1
+    command: ["hdfs", "datanode"]
+    env_file: ./06_BigData_Hadoop/hadoop.env
+    depends_on: [namenode]
+
+  datanode2:
+    image: apache/hadoop:3.3.6
+    profiles: ["hadoop"]
+    container_name: olva_datanode2
+    hostname: datanode2
+    command: ["hdfs", "datanode"]
+    env_file: ./06_BigData_Hadoop/hadoop.env
+    depends_on: [namenode]
+
+  resourcemanager:
+    image: apache/hadoop:3.3.6
+    profiles: ["hadoop"]
+    container_name: olva_resourcemanager
+    hostname: resourcemanager
+    command: ["yarn", "resourcemanager"]
+    env_file: ./06_BigData_Hadoop/hadoop.env
+    ports: ["8088:8088"]
+    volumes:
+      - ./06_BigData_Hadoop:/proyecto
+
+  nodemanager1:
+    image: apache/hadoop:3.3.6
+    profiles: ["hadoop"]
+    container_name: olva_nodemanager1
+    hostname: nodemanager1
+    command: ["yarn", "nodemanager"]
+    env_file: ./06_BigData_Hadoop/hadoop.env
+    depends_on: [resourcemanager]
+
+  nodemanager2:
+    image: apache/hadoop:3.3.6
+    profiles: ["hadoop"]
+    container_name: olva_nodemanager2
+    hostname: nodemanager2
+    command: ["yarn", "nodemanager"]
+    env_file: ./06_BigData_Hadoop/hadoop.env
+    depends_on: [resourcemanager]
+
+  historyserver:
+    image: apache/hadoop:3.3.6
+    profiles: ["hadoop"]
+    container_name: olva_historyserver
+    hostname: historyserver
+    command: ["mapred", "historyserver"]
+    env_file: ./06_BigData_Hadoop/hadoop.env
+    ports: ["19888:19888"]
+    depends_on: [namenode]
+
+volumes:
+  pg_lima:
+  pg_norte:
+  pg_sur:
+  oracle_data:
+  mongo_data:
+  cassandra_data:
+  cassandra_arequipa:
+  mongo_cfg:
+  mongo_lima:
+  mongo_arequipa:

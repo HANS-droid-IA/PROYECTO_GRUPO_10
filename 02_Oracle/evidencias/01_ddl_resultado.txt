@@ -1,0 +1,123 @@
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Index created.
+
+
+Index created.
+
+
+Index created.
+
+
+Index created.
+
+
+Index created.
+
+
+Index created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+TABLE_NAME
+--------------------------------------------------------------------------------
+  NUM_ROWS
+----------
+CIUDAD
+
+
+CLIENTE
+
+
+ENVIO
+
+
+
+TABLE_NAME
+--------------------------------------------------------------------------------
+  NUM_ROWS
+----------
+EVENTO_TRACKING
+
+
+HUB
+
+
+LOG_ERROR
+
+
+
+TABLE_NAME
+--------------------------------------------------------------------------------
+  NUM_ROWS
+----------
+REGION
+
+
+TARIFA
+
+
+TIPO_SERVICIO
+
+
+
+9 rows selected.
+

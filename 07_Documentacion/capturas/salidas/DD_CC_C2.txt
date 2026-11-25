@@ -1,0 +1,54 @@
+coordinador-lima:~$ ./07_concurrencia.sh C2
+
+Preparación: envíos de demostración 990002 (NORTE), 990003 y 990004 (SUR) con valor_declarado = 100
+
+==================================================================
+C2) INTERBLOQUEO DISTRIBUIDO: dos transacciones globales desde el coordinador
+    T1: bloquea envío 990002 en NORTE y luego pide 990003 en SUR
+    T2: bloquea envío 990003 en SUR   y luego pide 990002 en NORTE
+==================================================================
+----- Monitor (t≈2.5 s): cada nodo ve UNA espera, pero no el ciclo global -----
+[NORTE] sesiones esperando bloqueo:
+ pid | wait_event_type |  wait_event   | bloqueado_por |                                 consulta_remota                                  
+-----+-----------------+---------------+---------------+----------------------------------------------------------------------------------
+  48 | Lock            | transactionid | {47}          | UPDATE operacion.envio SET valor_declarado = (valor_declarado + 1::numeric) WHER
+(1 row)
+
+[SUR] sesiones esperando bloqueo:
+ pid | wait_event_type |  wait_event   | bloqueado_por |                                 consulta_remota                                  
+-----+-----------------+---------------+---------------+----------------------------------------------------------------------------------
+  62 | Lock            | transactionid | {61}          | UPDATE operacion.envio SET valor_declarado = (valor_declarado + 1::numeric) WHER
+(1 row)
+
+[NORTE y SUR] ¿algún nodo detectó interbloqueo? (contador deadlocks de pg_stat_database)
+    NORTE deadlocks = 0
+
+    SUR   deadlocks = 1
+
+
+----- T1 -----
+[12:33:49.984] T1 inicia
+ pg_sleep 
+----------
+ 
+(1 row)
+
+Time: 5036.068 ms (00:05.036)
+[12:33:55.071] T1 terminó
+
+----- T2 (víctima por timeout) -----
+[12:33:49.984] T2 inicia
+ pg_sleep 
+----------
+ 
+(1 row)
+
+ERROR:  canceling statement due to statement timeout
+Time: 5030.115 ms (00:05.030)
+[12:33:55.065] T2 terminó
+
+    SUR: deadlocks detectados localmente = 1 (incluye C1)
+
+Conclusión: el detector de interbloqueos de PostgreSQL es LOCAL a cada nodo. El ciclo
+T1 -> T2 (en SUR) y T2 -> T1 (en NORTE) solo existe en el grafo de espera GLOBAL, por lo que
+se resuelve por tiempo de espera (statement_timeout/lock_timeout) en el coordinador.

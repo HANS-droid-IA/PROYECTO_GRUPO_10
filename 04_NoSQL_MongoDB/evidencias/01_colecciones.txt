@@ -1,0 +1,12 @@
+
+=== Colección envios con validación $jsonSchema ===
+
+=== Colección hubs ===
+
+=== Colección clientes ===
+coleccion | validacion | con_jsonSchema
+----------+------------+---------------
+clientes  | strict     | true          
+envios    | strict     | true          
+hubs      | strict     | true          
+(3 documentos)

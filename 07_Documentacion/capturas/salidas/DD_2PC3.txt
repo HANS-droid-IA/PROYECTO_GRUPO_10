@@ -1,0 +1,38 @@
+olva_lima (coordinador)> \i dd_2pc_3.sql
+
+================ CASO 3: falla del coordinador -> transacción EN DUDA ================
+NORTE prepara la salida del envío 2 hacia la agencia, pero el coordinador cae antes de la fase 2.
+>>> (el coordinador se desconecta aquí: no envía COMMIT ni ROLLBACK)
+--- La transacción sigue preparada aunque la sesión que la creó ya no existe:
+         gid          |      preparada      |   owner    |  database  
+----------------------+---------------------+------------+------------
+ gtx_salida_003_norte | 2026-10-11 12:34:58 | olva_admin | olva_norte
+
+--- Y retiene sus bloqueos: otra transacción que toca el envío queda bloqueada (lock_timeout 3 s)
+psql:/proyecto/07_Documentacion/capturas/scripts_captura/dd_2pc_3.sql:24: ERROR:  canceling statement due to lock timeout
+CONTEXT:  while updating tuple (60,43) in relation "envio"
+--- RECUPERACIÓN: el coordinador reinicia, lee su bitácora y resuelve las transacciones en duda
+      gid       |  fase  |               detalle                
+----------------+--------+--------------------------------------
+ gtx_salida_003 | INICIO | Salida a reparto; participante NORTE
+
+No hay registro DECISION -> regla de recuperación: abortar (presumed abort)
+ transacciones_en_duda 
+-----------------------
+                     0
+
+ nro_tracking  | estado_actual |                 direccion_entrega                  
+---------------+---------------+----------------------------------------------------
+ OLV2699990002 | EN_HUB        | Calle Mercaderes 220, Arequipa (ref. puerta verde)
+
+
+=== Bitácora del coordinador (global.log_2pc) ===
+ id |      gid       |   fase   |                           detalle                            
+----+----------------+----------+--------------------------------------------------------------
+  1 | gtx_arribo_001 | INICIO   | Arribo MF-DEMO-2PC a HR-AQP; participantes: SUR, LIMA, NORTE
+  2 | gtx_arribo_001 | DECISION | COMMIT (3/3 votos SÍ)
+  3 | gtx_arribo_001 | FIN      | Confirmado en SUR, LIMA, NORTE
+  4 | gtx_arribo_002 | INICIO   | Reintento duplicado del arribo MF-DEMO-2PC
+  5 | gtx_arribo_002 | DECISION | ROLLBACK (LIMA votó NO)
+  6 | gtx_salida_003 | INICIO   | Salida a reparto; participante NORTE
+  7 | gtx_salida_003 | DECISION | ROLLBACK por recuperación (sin decisión registrada)

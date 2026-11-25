@@ -1,0 +1,19 @@
+olva_admin@mongos:olva_sedes> load('02_consultas_sedes.js')   // transacciones distribuidas
+=== T1. Transacción distribuida: un envío en cada sede, confirmada (COMMIT) ===
+tracking      | nodo | sede         
+--------------+------+--------------
+OLV2690000002 | SUR  | sede_arequipa
+OLV2690000001 | LIMA | sede_lima    
+(2 filas)
+
+=== T2. Transacción distribuida cancelada (ABORT): no queda nada en ninguna sede ===
+Dentro de la transacción se ven: 2
+Después del ABORT existen: 0
+
+=== T3. Traslado entre sedes: cambiar la clave de fragmentación mueve el documento de shard ===
+tracking      | etapa        | sedes_consultadas | devueltos_por_sede | total
+--------------+--------------+-------------------+--------------------+------
+OLV2690000001 | SINGLE_SHARD | sede_arequipa     | sede_arequipa=1    | 1    
+(1 fila)
+
+Limpieza de los documentos de prueba: 2 eliminados

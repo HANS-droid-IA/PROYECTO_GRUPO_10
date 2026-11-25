@@ -1,0 +1,16 @@
+SQL> -- sqlplus olva@//localhost:1521/FREEPDB1 @ora08_o8_o9.sql
+
+=== O8. [ORACLE] La cadena vacía es NULL (en PostgreSQL '' y NULL son distintos) ===
+
+RESULTADO
+----------------------------------------
+En Oracle: '' IS NULL = TRUE
+
+NVL COALESCE
+--- --------
+NVL COALESCE
+=== O9. [ORACLE] MERGE: upsert de tarifa (PG: INSERT ... ON CONFLICT DO UPDATE) ===
+
+TARIFA_OCTUBRE TARIFA_NOVIEMBRE
+-------------- ----------------
+	    45		     48

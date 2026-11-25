@@ -1,0 +1,206 @@
+== 12) Generación del conjunto masivo (300000 envíos) ==
+data/masivo ya existe (bórrelo para regenerar)
+== 13) Compilación del código MapReduce ==
+mapreduce/olva-bigdata.jar compilado
+== 13) Carga en HDFS ==
+== Contenido de /olva/raw ==
+10.0 K   20.0 K   /olva/raw/catalogos
+23.4 M   46.7 M   /olva/raw/comprobante
+28.7 M   57.5 M   /olva/raw/despacho_envio
+12.8 M   25.6 M   /olva/raw/destinatario
+43.7 M   87.3 M   /olva/raw/envio
+180.9 M  361.9 M  /olva/raw/evento_tracking
+2.4 M    4.7 M    /olva/raw/incidencia
+25.4 M   50.7 M   /olva/raw/intento_entrega
+19.4 M   38.9 M   /olva/raw/paquete
+== Bloques y réplicas de evento_tracking (dfs.blocksize = 64 MB, replicación = 2) ==
+/olva/raw/evento_tracking/evento_tracking.csv 189725133 bytes, replicated: replication=2, 3 block(s):  OK
+0. BP-256069525-127.0.1.1-1795483175648:blk_1073741825_1001 len=67108864 Live_repl=2  [DatanodeInfoWithStorage[127.0.0.1:9876,DS-037cc9b1-a717-455e-87e3-b271b38c5915,DISK], DatanodeInfoWithStorage[127.0.0.1:9866,DS-99fb7e90-aad6-45a5-8735-1b0129e450b3,DISK]]
+1. BP-256069525-127.0.1.1-1795483175648:blk_1073741826_1002 len=67108864 Live_repl=2  [DatanodeInfoWithStorage[127.0.0.1:9876,DS-037cc9b1-a717-455e-87e3-b271b38c5915,DISK], DatanodeInfoWithStorage[127.0.0.1:9866,DS-99fb7e90-aad6-45a5-8735-1b0129e450b3,DISK]]
+2. BP-256069525-127.0.1.1-1795483175648:blk_1073741827_1003 len=55507405 Live_repl=2  [DatanodeInfoWithStorage[127.0.0.1:9876,DS-037cc9b1-a717-455e-87e3-b271b38c5915,DISK], DatanodeInfoWithStorage[127.0.0.1:9866,DS-99fb7e90-aad6-45a5-8735-1b0129e450b3,DISK]]
+Status: HEALTHY
+ Total blocks (validated):	3 (avg. block size 63241711 B)
+ Average block replication:	2.0
+== 13) Ejecución MapReduce en YARN ==
+2026-11-23 20:27:47,854 INFO mapreduce.Job: Running job: job_1795483319183_0001
+2026-11-23 20:28:23,276 INFO mapreduce.Job: Job job_1795483319183_0001 completed successfully
+		Map input records=3152418
+		Map output records=1648464
+		Reduce input groups=298686
+		Reduce output records=1577253
+	OLVA
+		ESTANCIAS_EN_HUB=525751
+		EVENTOS_HUB_LEIDOS=1648464
+2026-11-23 20:28:23,732 INFO mapreduce.Job: Running job: job_1795483319183_0002
+2026-11-23 20:28:51,079 INFO mapreduce.Job: Job job_1795483319183_0002 completed successfully
+		Map input records=1577253
+		Map output records=1577253
+		Reduce input groups=318
+		Reduce output records=318
+2026-11-23 20:28:51,390 INFO mapreduce.Job: Running job: job_1795483319183_0003
+2026-11-23 20:29:21,662 INFO mapreduce.Job: Job job_1795483319183_0003 completed successfully
+		Map input records=299668
+		Map output records=1198668
+		Reduce input groups=140
+		Reduce output records=140
+	OLVA
+		ENVIOS_LEIDOS=299667
+Resultados en: /olva/resultados
+Tiempo total: 99 s
+  319 outputs/permanencia_hub.csv
+  141 outputs/cumplimiento_sla.csv
+  460 total
+== 14) Integración end-to-end ==
+
+================ 1) EXTRACCIÓN: PostgreSQL (olva_courier) -> HDFS /olva/operacional/20261123 ================
+  maestro.hub -> /olva/operacional/20261123/catalogos/hub.csv (39 líneas)
+  maestro.ciudad -> /olva/operacional/20261123/catalogos/ciudad.csv (18 líneas)
+  maestro.region -> /olva/operacional/20261123/catalogos/region.csv (6 líneas)
+  maestro.tipo_servicio -> /olva/operacional/20261123/catalogos/tipo_servicio.csv (5 líneas)
+  operacion.envio -> /olva/operacional/20261123/envio/envio.csv (29967 líneas)
+  operacion.evento_tracking -> /olva/operacional/20261123/evento_tracking/evento_tracking.csv (315102 líneas)
+
+================ 2) PROCESAMIENTO: MapReduce sobre los datos operacionales extraídos ================
+2026-11-23 20:30:34,811 INFO mapreduce.Job: Job job_1795483319183_0004 completed successfully
+		ESTANCIAS_EN_HUB=52501
+2026-11-23 20:31:00,420 INFO mapreduce.Job: Job job_1795483319183_0005 completed successfully
+2026-11-23 20:31:25,941 INFO mapreduce.Job: Job job_1795483319183_0006 completed successfully
+		ENVIOS_LEIDOS=29966
+  SLA por servicio (base operativa, 30 mil envíos):
+    SERVICIO,ECONOMICO_TERRESTRE,TOTAL,5831,5592,98.86,21.18,98622.40
+    SERVICIO,ESTANDAR_TERRESTRE,TOTAL,13214,12739,91.88,24.12,305683.50
+    SERVICIO,EXPRESS_AEREO,TOTAL,7860,7580,86.94,24.52,354907.50
+    SERVICIO,SOBRE_AEREO,TOTAL,3061,2947,86.63,23.18,53079.00
+
+================ 3) CARGA DE INDICADORES (conjunto masivo, /olva/resultados) en los motores de consumo ================
+-- 3a) PostgreSQL: esquema analitica
+psql:<stdin>:7: NOTICE:  schema "analitica" already exists, skipping
+psql:<stdin>:9: NOTICE:  drop cascades to view analitica.vw_franjas_criticas
+COPY 318
+COPY 140
+ codigo | hora_llegada | estancias | permanencia_promedio_h | pct_mayor_12h | pct_llegadas_del_hub 
+--------+--------------+-----------+------------------------+---------------+----------------------
+ HC-LIM | 20           |    102570 |                  14.57 |         35.66 |                35.79
+ HC-LIM | 14           |     62827 |                  10.82 |         40.98 |                21.92
+ HC-LIM | 13           |     20114 |                  11.19 |         41.44 |                 7.02
+(3 rows)
+
+-- 3b) MongoDB: colección olva_tracking.kpi_bigdata
+kpi_bigdata: 0 insertados, 458 actualizados, total 458
+Franjas del Hub Central con más llegadas (leídas desde MongoDB):
+{
+  valor: '20',
+  estancias: 102570,
+  permanencia_promedio_h: 14.57,
+  pct_mayor_12h: 35.66
+}
+{
+  valor: '14',
+  estancias: 62827,
+  permanencia_promedio_h: 10.82,
+  pct_mayor_12h: 40.98
+}
+{
+  valor: '13',
+  estancias: 20114,
+  permanencia_promedio_h: 11.19,
+  pct_mayor_12h: 41.44
+}
+-- 3c) Cassandra: tablas kpi_permanencia_hub y kpi_cumplimiento_sla
+Using 15 child processes
+Starting copy of olva_tracking.kpi_permanencia_hub with columns [dimension, hub, valor, estancias, permanencia_promedio_h, pct_mayor_12h].
+Processed: 318 rows; Rate:     603 rows/s; Avg. rate:     603 rows/sProcessed: 318 rows; Rate:     301 rows/s; Avg. rate:     493 rows/s
+318 rows imported from 1 files in 0.645 seconds (0 skipped).
+Using 15 child processes
+Starting copy of olva_tracking.kpi_cumplimiento_sla with columns [dimension, clave, detalle, envios, entregados, pct_cumplimiento_sla, retraso_promedio_h, ingresos_soles].
+Processed: 140 rows; Rate:     331 rows/s; Avg. rate:     331 rows/sProcessed: 140 rows; Rate:     166 rows/s; Avg. rate:     267 rows/s
+140 rows imported from 1 files in 0.524 seconds (0 skipped).
+ hora | estancias | permanencia_promedio_h | pct_mayor_12h
+------+-----------+------------------------+---------------
+   00 |      2066 |                  13.38 |         45.26
+   01 |      3799 |                  12.41 |         47.25
+   02 |      1500 |                  10.52 |         34.47
+   03 |       487 |                  11.59 |         43.74
+   04 |       254 |                  10.99 |         38.58
+   05 |       193 |                     14 |         52.85
+   06 |      3808 |                  13.25 |         53.89
+   07 |      4608 |                  12.21 |         53.67
+   08 |      2869 |                  10.97 |         49.67
+   09 |      1506 |                   9.47 |         41.83
+   10 |      8172 |                   6.93 |          8.77
+   11 |     13273 |                   6.16 |          6.89
+   12 |      3729 |                    7.9 |         19.52
+   13 |     20114 |                  11.19 |         41.44
+   14 |     62827 |                  10.82 |         40.98
+   15 |      6449 |                  11.11 |         50.85
+   16 |      6297 |                  11.49 |         59.35
+   17 |      2988 |                  10.49 |          58.6
+   18 |      1818 |                  12.66 |          40.1
+   19 |      2376 |                  12.76 |          46.3
+   20 |    102570 |                  14.57 |         35.66
+   21 |     19439 |                  14.62 |         33.72
+   22 |      8408 |                  14.67 |         37.96
+   23 |      7054 |                  14.22 |          40.8
+(24 rows)
+ servicio            | envios | pct_cumplimiento_sla | retraso_promedio_h
+---------------------+--------+----------------------+--------------------
+ ECONOMICO_TERRESTRE |  58874 |                98.84 |              20.58
+  ESTANDAR_TERRESTRE | 133389 |                91.88 |              24.53
+       EXPRESS_AEREO |  77381 |                86.88 |              24.18
+         SOBRE_AEREO |  30023 |                86.68 |              24.57
+(4 rows)
+
+================ 4) VERIFICACIÓN: el mismo indicador en los tres motores ================
+PostgreSQL : 102570 estancias, 14.57 h
+MongoDB    : 102570 estancias, 14.57 h
+Cassandra  : 102570 estancias, 14.57 h
+
+Flujo end-to-end completado.
+== 12.4 / 15) Volumen y hallazgos ==
+VOLUMEN DE DATOS GENERADO (12.3)
+============================================================
+evento_tracking      3,152,417
+despacho_envio         829,869
+paquete                407,806
+intento_entrega        334,847
+comprobante            299,667
+envio                  299,667
+destinatario           263,513
+despacho                30,185
+incidencia              18,852
+cliente                  3,000
+empleado                   285
+vehiculo                   141
+tarifa                     100
+ruta                        98
+hub                         38
+ciudad                      17
+region                       5
+tipo_servicio                4
+------------------------------
+TOTAL REGISTROS      5,640,511
+Tamaño en disco: 340.2 MB   (en HDFS x2 por replicación = 680.3 MB)
+
+JUSTIFICACIÓN MATEMÁTICA DEL VOLUMEN (12.4)
+============================================================
+Periodo simulado: 2026-04-01 a 2026-10-07 = 190 días de operación
+Red simulada: 29 agencias de admisión/entrega + hubs de clasificación
+Tasa de admisión  λ = envíos / días = 299,667 / 190 = 1,577 envíos/día (pico diario observado: 3,013)
+Por agencia: 1,577 / 29 = 54.4 envíos/agencia/día ≈ 4.5 por hora en un turno de 12 h
+Eventos de tracking por envío  e = 3,152,417 / 299,667 = 10.52
+   (admisión + salida/llegada en cada tramo + clasificación en cada hub + reparto/entrega)
+Eventos esperados  E = λ · días · e = 1,577 · 190 · 10.52 = 3,152,417
+Registros totales por envío (paquetes, comprobante, despachos, intentos, incidencias, ...): 18.82
+Registros totales  R = 299,667 · 18.82 = 5,640,511
+Proyección a 1 año con la misma tasa: 575,676 envíos -> 6,055,959 eventos -> 10,835,718 registros
+Rango exigido: mínimo 500 000; esperado 1 a 5 millones -> evento_tracking = 3,152,417 (cumple)
+
+HALLAZGOS DEL ANÁLISIS MAPREDUCE (13.5 / 15.3)
+============================================================
+1) Hub Central Lima (HC-LIM): 286,604 estancias. La franja de las 20:00 concentra 102,570 llegadas (35.8 %) con 14.57 h de permanencia promedio.
+   Llegadas 18:00-02:00: 147,530 estancias, 14.44 h promedio; llegadas 08:00-18:00: 128,224 estancias, 10.09 h -> +43 % de permanencia nocturna.
+2) Hub Regional Arequipa: abr-jun 10.35 h promedio vs ago-sep 12.44 h (+20 %); % estancias > 12 h sube de 32.31 % a 46.10 %.
+3) Lunes en HC-LIM: 13.65 h promedio frente a 12.15 h el martes (acumulado del fin de semana).
+4) Cumplimiento del SLA por servicio: SOBRE_AEREO 86.68 % (retraso medio 24.57 h); EXPRESS_AEREO 86.88 % (retraso medio 24.18 h); ESTANDAR_TERRESTRE 91.88 % (retraso medio 24.53 h); ECONOMICO_TERRESTRE 98.84 % (retraso medio 20.58 h)
+5) Rutas con menor cumplimiento (>= 500 entregas): ESTANDAR_TERRESTRE Sur -> Oriente 39.80 %; ESTANDAR_TERRESTRE Sur -> Norte 41.29 %; ESTANDAR_TERRESTRE Sur -> Centro 41.78 %; ESTANDAR_TERRESTRE Norte -> Sur 66.09 %; EXPRESS_AEREO Sur -> Oriente 67.94 %
+6) Ingresos procesados: S/ 8,109,554.40; julio (Fiestas Patrias) 60,694 envíos, el mes de mayor volumen, con cumplimiento 91.28 %.

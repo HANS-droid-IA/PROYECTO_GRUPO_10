@@ -1,0 +1,30 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_c05.sql
+
+SET search_path = operacion, maestro, public;
+SELECT ho.codigo || ' -> ' || hd.codigo                                                AS ruta,
+       r.modalidad,
+       COUNT(*)                                                                         AS despachos,
+       ROUND(AVG(EXTRACT(EPOCH FROM d.fecha_salida_real - d.fecha_salida_prog) / 60)::NUMERIC, 1) AS demora_salida_min,
+       ROUND(100.0 * AVG((d.fecha_salida_real - d.fecha_salida_prog > INTERVAL '60 minutes')::INT), 1) AS pct_demora_mayor_1h,
+       ROUND(AVG(EXTRACT(EPOCH FROM d.fecha_llegada_real - d.fecha_salida_real) / 3600 - r.tiempo_estimado_horas)::NUMERIC, 2) AS desvio_viaje_h
+  FROM despacho d
+  JOIN ruta r ON r.id_ruta = d.id_ruta
+  JOIN hub ho ON ho.id_hub = r.id_hub_origen
+  JOIN hub hd ON hd.id_hub = r.id_hub_destino
+ WHERE d.estado = 'ARRIBADO' AND ho.tipo <> 'AGENCIA' AND hd.tipo <> 'AGENCIA'
+ GROUP BY 1, 2
+HAVING COUNT(*) >= 30
+ ORDER BY desvio_viaje_h DESC
+ LIMIT 10;
+       ruta       | modalidad | despachos | demora_salida_min | pct_demora_mayor_1h | desvio_viaje_h 
+------------------+-----------+-----------+-------------------+---------------------+----------------
+ HR-CUZ -> HC-LIM | TERRESTRE |       171 |              31.6 |                 8.2 |           1.49
+ HC-LIM -> HR-CUZ | TERRESTRE |       185 |              32.7 |                 8.6 |           1.42
+ HC-LIM -> HR-JUL | TERRESTRE |       177 |              38.1 |                12.4 |           1.22
+ HR-JUL -> HC-LIM | TERRESTRE |       120 |              32.2 |                 7.5 |           1.21
+ HC-LIM -> HR-AQP | TERRESTRE |       188 |              35.9 |                 9.0 |           1.11
+ HR-AQP -> HC-LIM | TERRESTRE |       174 |              34.8 |                 8.6 |           1.00
+ HR-PIU -> HC-LIM | TERRESTRE |       139 |              33.2 |                10.1 |           0.97
+ HC-LIM -> HR-PIU | TERRESTRE |       180 |              28.9 |                 6.1 |           0.92
+ HR-CUZ -> HR-AQP | TERRESTRE |        73 |              32.4 |                 5.5 |           0.89
+ HC-LIM -> HR-CIX | TERRESTRE |       187 |              36.1 |                10.2 |           0.87

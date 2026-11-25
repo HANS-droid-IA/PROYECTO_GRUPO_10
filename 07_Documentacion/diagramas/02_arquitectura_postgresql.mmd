@@ -1,0 +1,29 @@
+%% Diagrama 2. Arquitectura de PostgreSQL - BD olva_courier
+%% Fuente editable (Mermaid). Renderizar con renderizar_diagramas.py o en https://mermaid.live
+flowchart TB
+    subgraph CLI["Clientes de conexión"]
+        direction LR
+        DBV["<b>DBeaver 26.2</b><br/>administración y consultas"]
+        PSQL["<b>psql</b><br/>ejecución de scripts SQL"]
+    end
+
+    subgraph SRV["Servidor PostgreSQL 16.15 · host local · puerto 5440"]
+        direction TB
+        ROLES["<b>Roles y usuarios (RBAC)</b><br/>rol_admin_olva · rol_operador_hub · rol_atencion_cliente<br/>rol_facturacion · rol_analista"]
+        subgraph DB["Base de datos olva_courier · UTF8 · zona horaria America/Lima"]
+            direction TB
+            MAE["<b>schema maestro</b> (catálogos)<br/>region · ciudad · hub · tipo_servicio · tarifa<br/>ruta · vehiculo · empleado · cliente"]
+            OPE["<b>schema operacion</b> (transacciones)<br/>destinatario · envio · paquete · comprobante<br/>despacho · despacho_envio · evento_tracking<br/>intento_entrega · incidencia"]
+            PROG["<b>Programación PL/pgSQL</b><br/>4 funciones · 4 procedimientos · 3 triggers<br/>vw_tracking_publico · vw_envio_analitico<br/>mv_permanencia_hub (vista materializada)"]
+            AUD["<b>schema auditoria</b><br/>log_estado_envio"]
+            SEG["<b>schema seguridad</b><br/>usuario_nodo · fn_nodo_hub · fn_mi_nodo"]
+        end
+    end
+
+    DBV -- "conexión TCP 5440" --> SRV
+    PSQL -- "conexión TCP 5440" --> SRV
+    MAE -- "FK: id_cliente, id_hub_origen, id_hub_destino,<br/>id_servicio, id_ruta, id_vehiculo, id_empleado" --> OPE
+    PROG -- "CALL / SELECT sobre" --> OPE
+    OPE -- "trigger trg_log_estado_envio" --> AUD
+    SEG -- "políticas RLS en envio y evento_tracking" --> OPE
+    ROLES -- "GRANT / REVOKE" --> DB

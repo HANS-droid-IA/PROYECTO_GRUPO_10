@@ -1,0 +1,95 @@
+>> 4. ¿Qué nodos guardan un envío? (una réplica por sede)
+nodetool getendpoints olva_tracking eventos_por_envio OLV2600000001:
+172.18.0.8 (sede Arequipa)
+172.18.0.6 (sede Lima)
+nodetool getendpoints olva_sede_arequipa operaciones_locales 'HR-AQP:2026-10-07':
+172.18.0.8 (sede Arequipa)
+>> 5. La misma consulta respondida por cada sede (cada una tiene la copia completa)
+--- coordinador: olva_cassandra (CONSISTENCY LOCAL_ONE)
+
+
+Consistency level set to LOCAL_ONE.
+
+ hora | llegadas | salidas
+------+----------+---------
+   20 |       84 |       0
+   21 |       16 |      13
+   22 |        0 |       0
+   23 |        0 |      41
+
+(4 rows)
+
+ eventos_del_envio
+-------------------
+                11
+
+(1 rows)
+--- coordinador: olva_cassandra_arequipa (CONSISTENCY LOCAL_ONE)
+
+
+Consistency level set to LOCAL_ONE.
+
+ hora | llegadas | salidas
+------+----------+---------
+   20 |       84 |       0
+   21 |       16 |      13
+   22 |        0 |       0
+   23 |        0 |      41
+
+(4 rows)
+
+ eventos_del_envio
+-------------------
+                11
+
+(1 rows)
+>> 6. Escritura en Arequipa, lectura en Lima (replicación entre sedes)
+
+
+Consistency level set to LOCAL_ONE.
+
+
+Consistency level set to LOCAL_ONE.
+
+ hub    | nro_tracking  | nivel | mensaje
+--------+---------------+-------+--------------------------------
+ HR-AQP | OLV2600029839 | AVISO | Escrita con la sede Lima caída
+ HR-AQP | OLV2600029836 | AVISO | Registrada en la sede Arequipa
+
+(2 rows)
+>> 7. Dato local: se escribe en Arequipa y NO existe réplica en Lima
+
+
+Consistency level set to LOCAL_ONE.
+
+ hub    | dia        | fecha_hora                      | detalle                            | operacion
+--------+------------+---------------------------------+------------------------------------+-----------
+ HR-AQP | 2026-10-07 | 2026-10-07 22:00:00.000000+0000 | Cierre de turno noche, 3 operarios |     TURNO
+
+(1 rows)
+--- leído desde Lima con LOCAL_ONE (Lima no tiene réplica de este keyspace):
+
+
+<stdin>:1:NoHostAvailable: ('Unable to complete the operation against any hosts', {<Host: 127.0.0.1:9042 dc_lima>: Unavailable('Error from server: code=1000 [Unavailable exception] message="Cannot achieve consistency level LOCAL_ONE" info={\'consistency\': \'LOCAL_ONE\', \'required_replicas\': 1, \'alive_replicas\': 0}')})
+Consistency level set to LOCAL_ONE.
+--- leído desde Lima con ONE (el coordinador de Lima lo pide a la sede Arequipa):
+
+
+Consistency level set to ONE.
+
+ hub    | dia        | fecha_hora                      | detalle                            | operacion
+--------+------------+---------------------------------+------------------------------------+-----------
+ HR-AQP | 2026-10-07 | 2026-10-07 22:00:00.000000+0000 | Cierre de turno noche, 3 operarios |     TURNO
+
+(1 rows)
+>> 8. Niveles de consistencia entre sedes
+
+
+Consistency level set to EACH_QUORUM.
+Consistency level set to ALL.
+
+ nro_tracking  | nivel   | mensaje
+---------------+---------+-------------------------------------------
+ OLV2600029865 | CRITICO | Confirmada en las dos sedes (EACH_QUORUM)
+
+(1 rows)

@@ -1,0 +1,7 @@
+olva_admin@localhost:5440/olva_lima> psql -h localhost -p 5440 -U olva_admin -d olva_lima -f dd04_predicado.sql
+
+=== Integridad del predicado: un nodo rechaza filas que no le pertenecen ===
+--- error esperado: insertar en el fragmento SUR un envío cuyo origen es Lima
+psql:G:/PROYECTO_GRUPO_10/07_Documentacion/capturas/scripts_captura/dd04_predicado.sql:8: ERROR:  new row for relation "envio" violates check constraint "ck_predicado_fragmento"
+DETAIL:  Failing row contains (9000217, OLV9600000217, 460, 199, 3, 10, 34, Calle Ríos 2680, 2026-04-02 18:35:42+00, 2026-04-07 01:00:00+00, ENTREGADO, 4.51, 0.00, 28.00, 2026-04-06 19:09:00+00, SUR).
+CONTEXT:  remote SQL command: INSERT INTO operacion.envio(id_envio, nro_tracking, id_cliente, id_destinatario, id_servicio, id_hub_origen, id_hub_destino, direccion_entrega, fecha_registro, fecha_compromiso, estado_actual, peso_total_kg, valor_declarado, monto_total, fecha_entrega, nodo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)

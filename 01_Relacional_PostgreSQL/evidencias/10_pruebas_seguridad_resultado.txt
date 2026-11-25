@@ -1,0 +1,95 @@
+=== Usuarios, roles heredados y atributos ===
+    usuario    |        roles         | limite_conexiones |  vigencia  | bypass_rls 
+---------------+----------------------+-------------------+------------+------------
+ u_admin_bd    | rol_admin_olva       |                -1 |            | f
+ u_analista    | rol_analista         |                 3 | 2026-12-31 | f
+ u_atencion    | rol_atencion_cliente |                -1 |            | f
+ u_facturacion | rol_facturacion      |                -1 |            | f
+ u_op_lima     | rol_operador_hub     |                10 |            | f
+ u_op_norte    | rol_operador_hub     |                10 |            | f
+ u_op_sur      | rol_operador_hub     |                10 |            | f
+
+=== RLS: cada operador ve solo los envíos de su nodo ===
+SET
+  usuario  | nodo | envios_visibles 
+-----------+------+-----------------
+ u_op_lima | LIMA |           27023
+
+RESET
+SET
+  usuario   | nodo  | envios_visibles 
+------------+-------+-----------------
+ u_op_norte | NORTE |           11347
+
+RESET
+SET
+ usuario  | nodo | envios_visibles 
+----------+------+-----------------
+ u_op_sur | SUR  |            8658
+
+ nodo_del_evento | eventos_visibles 
+-----------------+------------------
+ SUR             |            52993
+
+RESET
+      usuario       | envios_visibles 
+--------------------+-----------------
+ olva_admin (dueño) |           29966
+
+=== Privilegios por columna: el operador no puede ver montos ===
+SET
+ nro_tracking  | estado_actual | peso_total_kg 
+---------------+---------------+---------------
+ OLV2600000001 | ENTREGADO     |          2.01
+ OLV2600000010 | ENTREGADO     |          3.24
+ OLV2600000011 | ENTREGADO     |          1.21
+
+--- error esperado: permission denied (columna monto_total)
+psql:/proyecto/01_Relacional_PostgreSQL/10_pruebas_seguridad.sql:37: ERROR:  permission denied for table envio
+=== Escritura solo vía procedimientos ===
+--- error esperado: INSERT directo en evento_tracking
+psql:/proyecto/01_Relacional_PostgreSQL/10_pruebas_seguridad.sql:41: ERROR:  permission denied for table evento_tracking
+--- error esperado: UPDATE directo del estado de un envío
+psql:/proyecto/01_Relacional_PostgreSQL/10_pruebas_seguridad.sql:43: ERROR:  permission denied for table envio
+RESET
+=== Analista: lee vistas analíticas, no datos personales ===
+SET
+ modalidad | envios | ticket_prom 
+-----------+--------+-------------
+ AEREO     |  10921 |       37.36
+ TERRESTRE |  19045 |       21.23
+
+--- error esperado: permission denied (tabla cliente)
+--- error esperado: permission denied (procedimiento de escritura)
+psql:/proyecto/01_Relacional_PostgreSQL/10_pruebas_seguridad.sql:51: ERROR:  permission denied for table cliente
+psql:/proyecto/01_Relacional_PostgreSQL/10_pruebas_seguridad.sql:53: ERROR:  permission denied for procedure sp_registrar_escaneo
+RESET
+=== Atención al cliente: tracking público y registro de envíos ===
+SET
+ nro_tracking  |      servicio       | ciudad_origen | ciudad_destino | estado_actual | ultimo_evento |    ultimo_lugar    
+---------------+---------------------+---------------+----------------+---------------+---------------+--------------------
+ OLV2600001112 | Económico Terrestre | Arequipa      | Lima           | ENTREGADO     | ENTREGA       | Agencia Miraflores
+
+--- error esperado: atención no puede ver comprobantes
+psql:/proyecto/01_Relacional_PostgreSQL/10_pruebas_seguridad.sql:61: ERROR:  permission denied for table comprobante
+RESET
+=== REVOKE: se retira temporalmente el acceso del analista a la vista y se restituye ===
+REVOKE
+SET
+psql:/proyecto/01_Relacional_PostgreSQL/10_pruebas_seguridad.sql:67: ERROR:  permission denied for view vw_envio_analitico
+RESET
+GRANT
+SET
+ filas_tras_regrant 
+--------------------
+              29966
+
+RESET
+=== Políticas RLS definidas ===
+ schemaname |    tablename    |       policyname        |                 roles                  |  cmd   
+------------+-----------------+-------------------------+----------------------------------------+--------
+ operacion  | envio           | p_envio_lectura_global  | {rol_atencion_cliente,rol_facturacion} | SELECT
+ operacion  | envio           | p_envio_operador_nodo   | {rol_operador_hub}                     | SELECT
+ operacion  | evento_tracking | p_evento_lectura_global | {rol_analista,rol_atencion_cliente}    | SELECT
+ operacion  | evento_tracking | p_evento_operador_nodo  | {rol_operador_hub}                     | SELECT
+

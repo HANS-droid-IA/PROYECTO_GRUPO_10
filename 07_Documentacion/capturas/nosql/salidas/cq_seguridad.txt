@@ -1,0 +1,25 @@
+olva_admin@cqlsh:olva_tracking (Lima)> LIST ROLES;
+ role               | super | login | options | datacenters
+--------------------+-------+-------+---------+-------------
+          cassandra |  True | False |        {} |         ALL
+         olva_admin |  True |  True |        {} |         ALL
+       rol_analista | False | False |        {} |         ALL
+   rol_operador_hub | False | False |        {} |         ALL
+ rol_portal_cliente | False | False |        {} |         ALL
+    u_analista_cass | False |  True |        {} |         ALL
+    u_operador_cass | False |  True |        {} |         ALL
+       u_portal_web | False |  True |        {} |         ALL
+
+(8 rows)
+
+
+olva_admin@cqlsh:olva_tracking (Lima)> LIST ALL PERMISSIONS OF rol_operador_hub;
+ role             | username         | resource                                  | permission
+------------------+------------------+-------------------------------------------+------------
+ rol_operador_hub | rol_operador_hub |                  <keyspace olva_tracking> |     SELECT
+ rol_operador_hub | rol_operador_hub |   <table olva_tracking.contador_escaneos> |     MODIFY
+ rol_operador_hub | rol_operador_hub |        <table olva_tracking.estado_envio> |     MODIFY
+ rol_operador_hub | rol_operador_hub |   <table olva_tracking.eventos_por_envio> |     MODIFY
+ rol_operador_hub | rol_operador_hub | <table olva_tracking.eventos_por_hub_dia> |     MODIFY
+
+(5 rows)

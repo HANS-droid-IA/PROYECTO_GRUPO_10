@@ -1,0 +1,20 @@
+kpi_bigdata: 0 insertados, 458 actualizados, total 458
+Franjas del Hub Central con más llegadas (leídas desde MongoDB):
+{
+  valor: '20',
+  estancias: 102570,
+  permanencia_promedio_h: 14.57,
+  pct_mayor_12h: 35.66
+}
+{
+  valor: '14',
+  estancias: 62827,
+  permanencia_promedio_h: 10.82,
+  pct_mayor_12h: 40.98
+}
+{
+  valor: '13',
+  estancias: 20114,
+  permanencia_promedio_h: 11.19,
+  pct_mayor_12h: 41.44
+}

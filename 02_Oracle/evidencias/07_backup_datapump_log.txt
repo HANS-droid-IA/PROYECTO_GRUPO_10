@@ -1,0 +1,35 @@
+== Directorio de Data Pump y permisos ==
+DATA_PUMP_DIR = /opt/oracle/admin/FREE/dpdump/5A4CD42EF8C011A1E0639A00010A3724
+
+== [1] Exportación del esquema OLVA (expdp) ==
+. . exported "OLVA"."CIUDAD"                               9.7 KB      17 rows
+. . exported "OLVA"."CLIENTE"                             60.8 KB     483 rows
+. . exported "OLVA"."ENVIO"                              102.4 KB    1000 rows
+. . exported "OLVA"."EVENTO_TRACKING"                    428.3 KB   10627 rows
+. . exported "OLVA"."HUB"                                 10.5 KB      38 rows
+. . exported "OLVA"."LOG_ERROR"                            7.3 KB       3 rows
+. . exported "OLVA"."REGION"                               6.6 KB       5 rows
+. . exported "OLVA"."TARIFA"                              11.5 KB     100 rows
+. . exported "OLVA"."TIPO_SERVICIO"                        7.7 KB       4 rows
+Job "OLVA"."SYS_EXPORT_SCHEMA_01" successfully completed at Fri Oct 9 02:47:12 2026 elapsed 0 00:01:03
+Copia en el proyecto: /proyecto/02_Oracle/backups/olva_20261009_0246.dmp 1.6M
+
+== Conteo ANTES del incidente ==
+evento_tracking = 10627
+
+== [2] INCIDENTE simulado: DROP TABLE evento_tracking ==
+tablas restantes: 8
+
+== [3] Restauración de la tabla (impdp TABLES=) ==
+. . imported "OLVA"."EVENTO_TRACKING"                    428.3 KB   10627 rows
+Job "OLVA"."SYS_IMPORT_TABLE_01" successfully completed at Fri Oct 9 02:48:01 2026 elapsed 0 00:00:41
+
+== Verificación después de la restauración ==
+evento_tracking = 10627
+constraints = 9
+trigger TRG_EVENTO_ACTUALIZA_ESTADO = ENABLED
+índices = 3
+
+== Recompilación de dependientes (el DROP invalidó el paquete que usa la tabla) ==
+PKG_TRACKING PACKAGE = VALID
+PKG_TRACKING PACKAGE BODY = VALID

@@ -1,0 +1,18 @@
+olva_admin@localhost:5440/olva_lima> psql -h localhost -p 5440 -U olva_admin -d olva_lima -f dd03_reconstruccion.sql
+
+=== 2) DISYUNCIÓN: ninguna clave aparece en más de un fragmento ===
+      tabla       | claves_duplicadas 
+------------------+-------------------
+ envio            |                 0
+ evento_tracking  |                 0
+ cliente_contacto |                 0
+
+=== 3) RECONSTRUCCIÓN horizontal: (frag_LIMA ∪ frag_NORTE ∪ frag_SUR) = envio original ===
+ filas_diferentes 
+------------------
+                4
+
+=== 3) RECONSTRUCCIÓN vertical: cliente_fiscal ⋈ cliente_contacto = cliente original ===
+ filas_diferentes 
+------------------
+                0

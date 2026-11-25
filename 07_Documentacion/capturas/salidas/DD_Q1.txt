@@ -1,0 +1,14 @@
+olva_admin@localhost:5440/olva_lima> psql -h localhost -p 5440 -U olva_admin -d olva_lima -f dd_q1.sql
+
+Q1. LOCALIZACIÓN (poda de fragmentos): envíos del Sur retrasados en setiembre
+    σ(nodo=SUR ∧ mes=09 ∧ entrega>compromiso)(envio) -> solo envio_sur
+                                                                                                        QUERY PLAN                                                                                                         
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate
+   Output: count(*)
+   ->  Foreign Scan on global.envio_sur envio
+         Remote SQL: SELECT NULL FROM operacion.envio WHERE ((fecha_registro >= '2026-09-01 00:00:00-05')) AND ((fecha_registro < '2026-10-01 00:00:00-05')) AND ((fecha_entrega > fecha_compromiso)) AND ((nodo = 'SUR'))
+
+ envios_sur_retrasados_setiembre 
+---------------------------------
+                             107

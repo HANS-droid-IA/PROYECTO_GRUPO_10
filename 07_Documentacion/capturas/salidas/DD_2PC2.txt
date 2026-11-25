@@ -1,0 +1,17 @@
+olva_lima (coordinador)> \i dd_2pc_2.sql
+
+================ CASO 2: un participante vota NO -> ROLLBACK global ================
+Se reintenta por error el mismo arribo (manifiesto duplicado).
+--- FASE 1 en SUR: inserta eventos y PREPARE (vota SÍ)
+--- FASE 1 en LIMA: el envío ya está EN_HUB -> error -> vota NO
+psql:/proyecto/07_Documentacion/capturas/scripts_captura/dd_2pc_2.sql:29: ERROR:  LIMA vota NO: el envío 990001 no está EN_TRANSITO
+CONTEXT:  PL/pgSQL function inline_code_block line 3 at RAISE
+Votos -> SUR= 1  LIMA= 0  (NORTE ya no se consulta)
+--- FASE 2: decisión ROLLBACK -> ROLLBACK PREPARED en los nodos que votaron SÍ
+--- Verificación: no quedaron eventos duplicados en SUR
+ id_envio | tipo_evento |      observacion       | nodo 
+----------+-------------+------------------------+------
+   990001 | SALIDA_HUB  | Manifiesto MF-DEMO-2PC | LIMA
+   990002 | SALIDA_HUB  | Manifiesto MF-DEMO-2PC | LIMA
+   990001 | LLEGADA_HUB | Arribo MF-DEMO-2PC     | SUR
+   990002 | LLEGADA_HUB | Arribo MF-DEMO-2PC     | SUR

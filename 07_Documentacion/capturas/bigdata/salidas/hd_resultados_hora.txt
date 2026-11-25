@@ -1,0 +1,24 @@
+hadoop@Hans:~$ hdfs dfs -ls /olva/resultados/permanencia_hub
+Found 2 items
+-rw-r--r--   2 hadoop supergroup          0 2026-11-23 20:28 /olva/resultados/permanencia_hub/_SUCCESS
+-rw-r--r--   2 hadoop supergroup      10422 2026-11-23 20:28 /olva/resultados/permanencia_hub/part-r-00000
+
+hadoop@Hans:~$ hdfs dfs -cat /olva/resultados/permanencia_hub/part-r-00000 | grep '^HORA,HC-LIM' | sort -t, -k4 -nr | head -8
+HORA,HC-LIM,20,102570,14.57,35.66
+HORA,HC-LIM,14,62827,10.82,40.98
+HORA,HC-LIM,13,20114,11.19,41.44
+HORA,HC-LIM,21,19439,14.62,33.72
+HORA,HC-LIM,11,13273,6.16,6.89
+HORA,HC-LIM,22,8408,14.67,37.96
+HORA,HC-LIM,10,8172,6.93,8.77
+HORA,HC-LIM,23,7054,14.22,40.80
+
+hadoop@Hans:~$ hdfs dfs -cat /olva/resultados/permanencia_hub/part-r-00000 | grep '^DIA,HC-LIM'
+DIA,HC-LIM,1-Lunes,44029,13.65,42.22
+DIA,HC-LIM,2-Martes,49134,12.15,35.12
+DIA,HC-LIM,3-Miercoles,47298,12.23,36.18
+DIA,HC-LIM,4-Jueves,45380,12.32,36.76
+DIA,HC-LIM,5-Viernes,47219,12.43,36.93
+DIA,HC-LIM,6-Sabado,35795,12.00,36.11
+DIA,HC-LIM,7-Domingo,17749,11.61,36.46
+

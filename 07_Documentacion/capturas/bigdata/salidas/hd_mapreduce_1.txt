@@ -1,0 +1,23 @@
+hadoop@Hans:~$ hadoop jar /mnt/g/PROYECTO_GRUPO_10/06_BigData_Hadoop/mapreduce/olva-bigdata.jar /olva/raw /olva/resultados
+Connecting to ResourceManager at localhost/127.0.0.1:8032
+Total input files to process : 1
+number of splits:3
+Submitting tokens for job: job_1795483319183_0001
+Submitted application application_1795483319183_0001
+Running job: job_1795483319183_0001
+ map 0% reduce 0%
+ map 100% reduce 0%
+ map 100% reduce 25%
+ map 100% reduce 50%
+ map 100% reduce 75%
+ map 100% reduce 100%
+Job job_1795483319183_0001 completed successfully
+        Launched map tasks=3
+        Launched reduce tasks=5
+        Map input records=3152418
+        Map output records=1648464
+        Reduce input groups=298686
+        Reduce output records=1577253
+    OLVA
+        ESTANCIAS_EN_HUB=525751
+        EVENTOS_HUB_LEIDOS=1648464

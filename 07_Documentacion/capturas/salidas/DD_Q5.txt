@@ -1,0 +1,39 @@
+olva_admin@localhost:5440/olva_lima> psql -h localhost -p 5440 -U olva_admin -d olva_lima -f dd_q5.sql
+
+Q5. Reconstrucción vertical: cliente = cliente_fiscal (Lima) ⋈ cliente_contacto (nodo del cliente)
+                                                                                QUERY PLAN                                                                                 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Hash Join
+   Output: f.id_cliente, f.tipo_cliente, f.tipo_documento, f.nro_documento, c.nombre_razon_social, c.email, c.telefono, c.direccion, c.id_ciudad, f.fecha_registro, c.nodo
+   Inner Unique: true
+   Hash Cond: (c.id_cliente = f.id_cliente)
+   ->  Foreign Scan on global.cliente_contacto_sur c
+         Output: c.nombre_razon_social, c.email, c.telefono, c.direccion, c.id_ciudad, c.nodo, c.id_cliente
+         Remote SQL: SELECT id_cliente, nombre_razon_social, email, telefono, direccion, id_ciudad, nodo FROM operacion.cliente_contacto WHERE ((nodo = 'SUR'))
+   ->  Hash
+         Output: f.id_cliente, f.tipo_cliente, f.tipo_documento, f.nro_documento, f.fecha_registro
+         ->  Seq Scan on operacion.cliente_fiscal f
+               Output: f.id_cliente, f.tipo_cliente, f.tipo_documento, f.nro_documento, f.fecha_registro
+               Filter: ((f.tipo_cliente)::text = 'EMPRESA'::text)
+
+ id_cliente | tipo_documento | nro_documento |       nombre_razon_social        | telefono  | nodo 
+------------+----------------+---------------+----------------------------------+-----------+------
+          3 | RUC            | 20523189692   | Tecnología Sureña S.A.           | 933121583 | SUR
+         13 | RUC            | 20864719315   | Corporación Los Andes S.A.       | 960847826 | SUR
+         15 | RUC            | 20755312700   | Distribuidora Selva Verde S.A.C. | 983831393 | SUR
+         27 | RUC            | 20113660431   | Distribuidora Inti S.A.          | 983539296 | SUR
+         41 | RUC            | 20320518952   | Inversiones Mistiana E.I.R.L.    | 936421875 | SUR
+
+Q6. Costo de la distribución: misma consulta global vs. local
+Timing is on.
+ eventos_globales 
+------------------
+            82329
+
+Time: 64.278 ms
+ eventos_solo_lima 
+-------------------
+             47452
+
+Time: 25.793 ms
+Timing is off.

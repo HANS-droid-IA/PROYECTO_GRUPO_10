@@ -1,0 +1,34 @@
+
+-- Q1. Historial de un envío: una sola partición, ya ordenada por fecha
+olva_admin@cqlsh:olva_tracking (Lima)> SELECT fecha_hora, tipo_evento, hub, ciudad FROM eventos_por_envio WHERE nro_tracking = 'OLV2600000001';
+ fecha_hora                      | tipo_evento   | hub        | ciudad
+---------------------------------+---------------+------------+--------
+ 2026-04-01 13:05:45.000000+0000 |      ADMISION | AG-LIM-SUR |   Lima
+ 2026-04-01 18:44:24.000000+0000 |    SALIDA_HUB | AG-LIM-SUR |   Lima
+ 2026-04-01 19:37:53.000000+0000 |   LLEGADA_HUB |     HC-LIM | Callao
+ 2026-04-01 21:34:20.000000+0000 | CLASIFICACION |     HC-LIM | Callao
+ 2026-04-02 04:31:27.000000+0000 |    SALIDA_HUB |     HC-LIM | Callao
+ 2026-04-03 01:34:47.000000+0000 |   LLEGADA_HUB |     HR-CUZ |  Cusco
+ 2026-04-03 04:48:38.000000+0000 | CLASIFICACION |     HR-CUZ |  Cusco
+ 2026-04-03 11:28:44.000000+0000 |    SALIDA_HUB |     HR-CUZ |  Cusco
+ 2026-04-03 12:25:36.000000+0000 |   LLEGADA_HUB |  AG-CUZ-02 |  Cusco
+ 2026-04-03 13:30:00.000000+0000 |    EN_REPARTO |  AG-CUZ-02 |  Cusco
+ 2026-04-03 16:43:00.000000+0000 |       ENTREGA |  AG-CUZ-02 |  Cusco
+
+(11 rows)
+
+
+
+-- Q2. Escaneos del Hub Central el 06/10 entre 20:00 y 21:00 (rango sobre la clave de clustering)
+olva_admin@cqlsh:olva_tracking (Lima)> SELECT fecha_hora, tipo_evento, nro_tracking, servicio FROM eventos_por_hub_dia
+                                       WHERE hub = 'HC-LIM' AND dia = '2026-10-06'
+                                       AND fecha_hora >= '2026-10-07 01:00:00+0000' AND fecha_hora < '2026-10-07 02:00:00+0000' LIMIT 5;
+ fecha_hora                      | tipo_evento | nro_tracking  | servicio
+---------------------------------+-------------+---------------+---------------------
+ 2026-10-07 01:55:39.000000+0000 | LLEGADA_HUB | OLV2600029696 |  ESTANDAR_TERRESTRE
+ 2026-10-07 01:55:39.000000+0000 | LLEGADA_HUB | OLV2600029770 |  ESTANDAR_TERRESTRE
+ 2026-10-07 01:50:56.000000+0000 | LLEGADA_HUB | OLV2600029592 |         SOBRE_AEREO
+ 2026-10-07 01:50:56.000000+0000 | LLEGADA_HUB | OLV2600029613 |       EXPRESS_AEREO
+ 2026-10-07 01:37:57.000000+0000 | LLEGADA_HUB | OLV2600029668 | ECONOMICO_TERRESTRE
+
+(5 rows)

@@ -1,0 +1,45 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_c13.sql
+
+SET search_path = operacion, maestro, public;
+WITH llegadas AS (
+    SELECT EXTRACT(HOUR FROM fecha_hora)::INT AS hora, COUNT(*) AS n,
+           COUNT(DISTINCT fecha_hora::DATE)  AS dias
+      FROM evento_tracking
+     WHERE tipo_evento = 'LLEGADA_HUB' AND id_hub = (SELECT id_hub FROM hub WHERE codigo = 'HC-LIM')
+     GROUP BY 1
+)
+SELECT g.hora,
+       COALESCE(ROUND(l.n::NUMERIC / NULLIF(l.dias, 0), 1), 0)                          AS llegadas_prom_por_dia,
+       h.capacidad_hora,
+       COALESCE(ROUND(100.0 * l.n / NULLIF(l.dias, 0) / h.capacidad_hora, 1), 0)         AS pct_capacidad,
+       repeat('#', COALESCE((l.n / NULLIF(l.dias, 0) / 10)::INT, 0))                     AS grafico
+  FROM generate_series(0, 23) AS g(hora)
+  LEFT JOIN llegadas l ON l.hora = g.hora
+  CROSS JOIN (SELECT capacidad_hora FROM hub WHERE codigo = 'HC-LIM') h
+ ORDER BY g.hora;
+ hora | llegadas_prom_por_dia | capacidad_hora | pct_capacidad | grafico 
+------+-----------------------+----------------+---------------+---------
+    0 |                   3.1 |             50 |           6.2 | 
+    1 |                   3.4 |             50 |           6.8 | 
+    2 |                   3.4 |             50 |           6.9 | 
+    3 |                   2.8 |             50 |           5.5 | 
+    4 |                   2.8 |             50 |           5.5 | 
+    5 |                   4.2 |             50 |           8.3 | 
+    6 |                   6.6 |             50 |          13.2 | 
+    7 |                   6.1 |             50 |          12.3 | 
+    8 |                   3.4 |             50 |           6.8 | 
+    9 |                   2.7 |             50 |           5.5 | 
+   10 |                   4.9 |             50 |           9.8 | 
+   11 |                   7.3 |             50 |          14.7 | 
+   12 |                   3.2 |             50 |           6.4 | 
+   13 |                  11.5 |             50 |          22.9 | #
+   14 |                  33.4 |             50 |          66.9 | ###
+   15 |                   5.2 |             50 |          10.4 | 
+   16 |                   5.8 |             50 |          11.7 | 
+   17 |                   4.5 |             50 |           8.9 | 
+   18 |                   3.1 |             50 |           6.3 | 
+   19 |                   3.1 |             50 |           6.3 | 
+   20 |                  54.8 |             50 |         109.6 | #####
+   21 |                  11.6 |             50 |          23.1 | #
+   22 |                   7.4 |             50 |          14.9 | 
+   23 |                   7.1 |             50 |          14.2 | 

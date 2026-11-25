@@ -1,0 +1,50 @@
+SQL> -- sqlplus olva@//localhost:1521/FREEPDB1 @ora03_desc_envio.sql
+
+=== DESCRIBE envio ===
+ Name											      Null?    Type
+ -------------------------------------------------------------------------------------------- -------- --------------------------------------------------------------
+ ID_ENVIO										      NOT NULL NUMBER(12)
+ NRO_TRACKING										      NOT NULL CHAR(13)
+ ID_CLIENTE										      NOT NULL NUMBER(10)
+ ID_SERVICIO										      NOT NULL NUMBER(3)
+ ID_HUB_ORIGEN										      NOT NULL NUMBER(6)
+ ID_HUB_DESTINO 									      NOT NULL NUMBER(6)
+ FECHA_REGISTRO 									      NOT NULL TIMESTAMP(6) WITH TIME ZONE
+ FECHA_COMPROMISO									      NOT NULL TIMESTAMP(6) WITH TIME ZONE
+ ESTADO_ACTUAL										      NOT NULL VARCHAR2(15)
+ PESO_TOTAL_KG										      NOT NULL NUMBER(7,2)
+ MONTO_TOTAL										      NOT NULL NUMBER(10,2)
+ FECHA_ENTREGA											       TIMESTAMP(6) WITH TIME ZONE
+
+=== Restricciones de ENVIO ===
+
+CONSTRAINT_NAME        T  CONDICION
+---------------------- -- --------------------------------------------------------------------------------------------------------------
+UQ_ENVIO_TRACKING      U
+FK_ENVIO_CLIENTE       R
+FK_ENVIO_HUB_DESTINO   R
+FK_ENVIO_HUB_ORIGEN    R
+FK_ENVIO_SERVICIO      R
+PK_ENVIO	       P
+CK_ENVIO_COMPROMISO    C  fecha_compromiso > fecha_registro
+CK_ENVIO_ENTREGADO     C  (estado_actual = 'ENTREGADO' AND fecha_entrega IS NOT NULL) OR
+								    (esta
+
+CK_ENVIO_ESTADO        C  estado_actual IN ('REGISTRADO', 'ADMITIDO', 'EN_HUB', 'EN_TRANSITO',
+
+
+CK_ENVIO_HUBS	       C  id_hub_origen <> id_hub_destino
+CK_ENVIO_MONTO	       C  monto_total >= 0
+CK_ENVIO_PESO	       C  peso_total_kg > 0
+CK_ENVIO_TRACKING      C  REGEXP_LIKE(nro_tracking, '^OLV[0-9]{10}$')
+SYS_C009130	       C  "ID_ENVIO" IS NOT NULL
+SYS_C009131	       C  "NRO_TRACKING" IS NOT NULL
+SYS_C009132	       C  "ID_CLIENTE" IS NOT NULL
+SYS_C009133	       C  "ID_SERVICIO" IS NOT NULL
+SYS_C009134	       C  "ID_HUB_ORIGEN" IS NOT NULL
+SYS_C009135	       C  "ID_HUB_DESTINO" IS NOT NULL
+SYS_C009136	       C  "FECHA_REGISTRO" IS NOT NULL
+SYS_C009137	       C  "FECHA_COMPROMISO" IS NOT NULL
+SYS_C009138	       C  "ESTADO_ACTUAL" IS NOT NULL
+SYS_C009139	       C  "PESO_TOTAL_KG" IS NOT NULL
+SYS_C009140	       C  "MONTO_TOTAL" IS NOT NULL

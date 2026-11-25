@@ -1,0 +1,14 @@
+$ python 06_BigData_Hadoop/04_volumen_y_hallazgos.py
+JUSTIFICACIÓN MATEMÁTICA DEL VOLUMEN (12.4)
+============================================================
+Periodo simulado: 2026-04-01 a 2026-10-07 = 190 días de operación
+Red simulada: 29 agencias de admisión/entrega + hubs de clasificación
+Tasa de admisión  λ = envíos / días = 299,667 / 190 = 1,577 envíos/día (pico diario observado: 3,013)
+Por agencia: 1,577 / 29 = 54.4 envíos/agencia/día ≈ 4.5 por hora en un turno de 12 h
+Eventos de tracking por envío  e = 3,152,417 / 299,667 = 10.52
+   (admisión + salida/llegada en cada tramo + clasificación en cada hub + reparto/entrega)
+Eventos esperados  E = λ · días · e = 1,577 · 190 · 10.52 = 3,152,417
+Registros totales por envío (paquetes, comprobante, despachos, intentos, incidencias, ...): 18.82
+Registros totales  R = 299,667 · 18.82 = 5,640,511
+Proyección a 1 año con la misma tasa: 575,676 envíos -> 6,055,959 eventos -> 10,835,718 registros
+Rango exigido: mínimo 500 000; esperado 1 a 5 millones -> evento_tracking = 3,152,417 (cumple)

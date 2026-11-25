@@ -1,0 +1,143 @@
+
+=== R1. Consulta de tracking: un solo documento trae todo el expediente (sin JOIN) ===
+Envío OLV2600000001 | Estándar Terrestre | Lima -> Cusco | estado ENTREGADO
+fecha_hora_utc      | evento        | hub        | ciudad
+--------------------+---------------+------------+-------
+2026-04-01 13:05:45 | ADMISION      | AG-LIM-SUR | Lima  
+2026-04-01 18:44:24 | SALIDA_HUB    | AG-LIM-SUR | Lima  
+2026-04-01 19:37:53 | LLEGADA_HUB   | HC-LIM     | Callao
+2026-04-01 21:34:20 | CLASIFICACION | HC-LIM     | Callao
+2026-04-02 04:31:27 | SALIDA_HUB    | HC-LIM     | Callao
+2026-04-03 01:34:47 | LLEGADA_HUB   | HR-CUZ     | Cusco 
+2026-04-03 04:48:38 | CLASIFICACION | HR-CUZ     | Cusco 
+2026-04-03 11:28:44 | SALIDA_HUB    | HR-CUZ     | Cusco 
+2026-04-03 12:25:36 | LLEGADA_HUB   | AG-CUZ-02  | Cusco 
+2026-04-03 13:30:00 | EN_REPARTO    | AG-CUZ-02  | Cusco 
+2026-04-03 16:43:00 | ENTREGA       | AG-CUZ-02  | Cusco 
+(11 documentos)
+Prueba de entrega: {"nombre":"Flor Ramírez Silva","documento":"21504928"} en -71.99, -13.53
+
+=== R2. Envíos vivos con compromiso vencido al corte (usa ix_estado_compromiso) ===
+tracking      | estado | servicio            | destino  | compromiso         
+--------------+--------+---------------------+----------+--------------------
+OLV2600001327 | EN_HUB | EXPRESS_AEREO       | Lima     | 2026-04-14 01:00:00
+OLV2600001462 | EN_HUB | ECONOMICO_TERRESTRE | Lima     | 2026-04-18 01:00:00
+OLV2600001744 | EN_HUB | ESTANDAR_TERRESTRE  | Trujillo | 2026-04-18 01:00:00
+OLV2600002836 | EN_HUB | ESTANDAR_TERRESTRE  | Lima     | 2026-04-25 01:00:00
+OLV2600003433 | EN_HUB | SOBRE_AEREO         | Ica      | 2026-04-30 01:00:00
+OLV2600004079 | EN_HUB | ESTANDAR_TERRESTRE  | Lima     | 2026-05-05 01:00:00
+OLV2600004139 | EN_HUB | EXPRESS_AEREO       | Huancayo | 2026-05-05 01:00:00
+OLV2600005140 | EN_HUB | EXPRESS_AEREO       | Iquitos  | 2026-05-12 01:00:00
+OLV2600005155 | EN_HUB | ECONOMICO_TERRESTRE | Lima     | 2026-05-15 01:00:00
+OLV2600006987 | EN_HUB | ESTANDAR_TERRESTRE  | Lima     | 2026-05-26 01:00:00
+(10 documentos)
+Total vencidos: 50
+Plan de ejecución: IXSCAN | documentos examinados: 50 | devueltos: 50
+
+=== R3. Consulta sobre arreglo embebido: envíos con incidencia de PERDIDA o DANO aún abierta ($elemMatch) ===
+tracking      | cliente                           | incidencia | estado     | reportada          
+--------------+-----------------------------------+------------+------------+--------------------
+OLV2600029249 | Textil Los Andes S.R.L.           | DANO       | ABIERTA    | 2026-10-05 08:46:29
+OLV2600029215 | Comercial Norteña S.A.            | PERDIDA    | ABIERTA    | 2026-10-07 20:29:34
+OLV2600027520 | Corporación Mistiana E.I.R.L.     | PERDIDA    | EN_PROCESO | 2026-09-29 01:42:10
+OLV2600027999 | Agroexportadora Mistiana E.I.R.L. | PERDIDA    | EN_PROCESO | 2026-09-30 12:08:29
+OLV2600028788 | Negociaciones Moche S.A.C.        | PERDIDA    | ABIERTA    | 2026-10-05 01:12:31
+(5 documentos)
+
+=== R4. Consulta geoespacial: entregas a menos de 2 km del Hub Regional Arequipa ($geoNear / $geoWithin) ===
+tracking      | agencia   | receptor                   | lon_lat              | distancia_m
+--------------+-----------+----------------------------+----------------------+------------
+OLV2600022137 | AG-AQP-03 | Valeria Quispe             | -71.53633, -16.40893 | 125        
+OLV2600020908 | AG-AQP-03 | Fernando Castillo Rojas    | -71.53608, -16.41007 | 193        
+OLV2600016528 | AG-AQP-02 | Jorge Vargas Ccama         | -71.53921, -16.40971 | 199        
+OLV2600026983 | AG-AQP-01 | Yesenia Espinoza Ticona    | -71.53891, -16.41017 | 199        
+OLV2600019583 | AG-AQP-02 | Milagros Alvarado Espinoza | -71.53884, -16.40771 | 203        
+(5 documentos)
+Entregas dentro del radio: 613
+
+=== R5. Búsqueda de texto en clientes ($text) ===
+id  | nombre                             | email                              | relevancia
+----+------------------------------------+------------------------------------+-----------
+569 | Agroexportadora Los Andes S.A.     | ventas@agroexportadoralosan.com.pe | 1.33      
+254 | Agroexportadora Los Andes S.A.C.   | ventas@agroexportadoralosan.com.pe | 1.25      
+1   | Agroexportadora Los Andes E.I.R.L. | ventas@agroexportadoralosan.com.pe | 1.20      
+183 | Textil Los Andes S.A.              | ventas@textillosandes.com.pe       | 0.67      
+13  | Corporación Los Andes S.A.         | ventas@corporacionlosandes.com.pe  | 0.67      
+(5 documentos)
+
+=== C1. insertOne: registro de un envío nuevo desde la web ===
+{
+  acknowledged: true,
+  insertedId: 'OLV2699999999'
+}
+
+=== C2. Validación $jsonSchema: se rechaza un documento con estado inválido ===
+Rechazado: Document failed validation
+
+=== U1. updateOne con $push + $set: un escaneo agrega un evento y cambia el estado en una sola operación atómica ===
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+Estado: EN_TRANSITO | eventos: ADMISION -> SALIDA_HUB
+
+=== U2. updateMany: marca con alerta todos los envíos vivos vencidos ===
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 50,
+  modifiedCount: 50,
+  upsertedCount: 0
+}
+
+=== U3. Actualización con arrayFilters: marca solo las incidencias de RETRASO no cerradas dentro de cada arreglo ===
+Envíos con incidencia de retraso no cerrada: 7
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 7,
+  modifiedCount: 7,
+  upsertedCount: 0
+}
+
+=== B1. Inserción masiva con insertMany (5000 envíos sintéticos en una colección de prueba) ===
+Insertados: 5000 documentos en 117 ms
+
+=== B2. bulkWrite: operaciones mixtas en un solo viaje al servidor ===
+{
+  acknowledged: true,
+  insertedCount: 1,
+  insertedIds: {
+    '2': 'OLV2799999999'
+  },
+  matchedCount: 2500,
+  modifiedCount: 2500,
+  deletedCount: 830,
+  upsertedCount: 0,
+  upsertedIds: {}
+}
+Quedan en la colección de prueba: 4171
+
+=== D1. Limpieza: se revierten los cambios de prueba (deleteOne, $unset, drop) ===
+{
+  acknowledged: true,
+  deletedCount: 1
+}
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 50,
+  modifiedCount: 50,
+  upsertedCount: 0
+}
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 7,
+  modifiedCount: 7,
+  upsertedCount: 0
+}
+Documentos en envios: 29966

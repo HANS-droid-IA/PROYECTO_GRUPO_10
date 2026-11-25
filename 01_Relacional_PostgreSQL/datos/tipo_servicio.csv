@@ -1,0 +1,5 @@
+id_servicio,codigo,nombre,modalidad,sla_horas,peso_max_kg
+1,EXPRESS_AEREO,Express Aéreo,AEREO,48,30
+2,SOBRE_AEREO,Sobre / Documentos Aéreo,AEREO,48,0.5
+3,ESTANDAR_TERRESTRE,Estándar Terrestre,TERRESTRE,72,50
+4,ECONOMICO_TERRESTRE,Económico Terrestre,TERRESTRE,120,100

@@ -1,0 +1,22 @@
+olva_admin@cqlsh:olva_tracking> SELECT valor AS hora, estancias, permanencia_promedio_h, pct_mayor_12h
+                            ...   FROM kpi_permanencia_hub
+                            ...  WHERE hub = 'HC-LIM' AND dimension = 'HORA' AND valor >= '18';
+ hora | estancias | permanencia_promedio_h | pct_mayor_12h
+------+-----------+------------------------+---------------
+   18 |      1818 |                  12.66 |          40.1
+   19 |      2376 |                  12.76 |          46.3
+   20 |    102570 |                  14.57 |         35.66
+   21 |     19439 |                  14.62 |         33.72
+   22 |      8408 |                  14.67 |         37.96
+   23 |      7054 |                  14.22 |          40.8
+(6 rows)
+
+olva_admin@cqlsh:olva_tracking> SELECT clave AS servicio, envios, pct_cumplimiento_sla, retraso_promedio_h
+                            ...   FROM kpi_cumplimiento_sla WHERE dimension = 'SERVICIO';
+ servicio            | envios | pct_cumplimiento_sla | retraso_promedio_h
+---------------------+--------+----------------------+--------------------
+ ECONOMICO_TERRESTRE |  58874 |                98.84 |              20.58
+  ESTANDAR_TERRESTRE | 133389 |                91.88 |              24.53
+       EXPRESS_AEREO |  77381 |                86.88 |              24.18
+         SOBRE_AEREO |  30023 |                86.68 |              24.57
+(4 rows)

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Olva Courier · Envíos y seguimiento</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%23f2b705%22/%3E%3Ctext x=%2216%22 y=%2222%22 font-size=%2214%22 font-weight=%22bold%22 text-anchor=%22middle%22 fill=%22%230f2b4c%22 font-family=%22Arial%22%3EOC%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body>
+<header class="cabecera">
+  <a class="marca" href="#/inicio">
+    <div class="logo">OC</div>
+    <div><h1>Olva Courier</h1><p>Envíos aéreos y terrestres a todo el Perú</p></div>
+  </a>
+  <button class="menu-btn" id="menu-btn" aria-label="Abrir menú">☰</button>
+  <nav class="menu" id="menu">
+    <a href="#/inicio" data-v="inicio">Inicio</a>
+    <a href="#/rastrear" data-v="rastrear">Rastrear</a>
+    <a href="#/enviar" data-v="enviar">Enviar</a>
+    <a href="#/cotizar" data-v="cotizar">Cotizar</a>
+    <a href="#/cuenta" data-v="cuenta">Mi cuenta</a>
+    <a href="#/agencias" data-v="agencias">Agencias</a>
+    <a href="#/operaciones" data-v="operaciones">Operaciones</a>
+    <a href="#/bases" data-v="bases">Bases de datos</a>
+  </nav>
+</header>
+
+<main>
+<!-- ============================== INICIO ============================== -->
+<section class="vista" id="v-inicio">
+  <div class="hero">
+    <div class="hero-texto">
+      <h2>¿Dónde está tu envío?</h2>
+      <p>Ingresa tu número de tracking y míralo en el mapa, paso a paso, desde la agencia de origen hasta la entrega.</p>
+      <form class="busqueda grande" data-rastreo autocomplete="off">
+        <input placeholder="Ej. OLV2600000004" maxlength="13" aria-label="Número de tracking">
+        <button type="submit">Rastrear</button>
+      </form>
+    </div>
+    <div class="hero-cifras" id="cifras"></div>
+  </div>
+
+  <h2 class="titulo-seccion">Nuestros servicios</h2>
+  <div class="servicios" id="servicios-inicio"></div>
+
+  <h2 class="titulo-seccion">¿Qué quieres hacer?</h2>
+  <div class="accesos">
+    <a href="#/rastrear" class="acceso"><span>📍</span><b>Rastrear un envío</b><small>Estado, ubicación y recorrido en el mapa</small></a>
+    <a href="#/enviar" class="acceso"><span>📦</span><b>Hacer un envío</b><small>Regístralo y síguelo hasta la entrega</small></a>
+    <a href="#/cotizar" class="acceso"><span>🧮</span><b>Cotizar</b><small>Compara precio y plazo de cada servicio</small></a>
+    <a href="#/cuenta" class="acceso"><span>👤</span><b>Mis envíos</b><small>Historial de envíos con tu DNI o RUC</small></a>
+    <a href="#/agencias" class="acceso"><span>🏢</span><b>Agencias</b><small>Encuentra la agencia más cercana</small></a>
+    <a href="#/operaciones" class="acceso"><span>📊</span><b>Operaciones</b><small>Indicadores de la red en tiempo real</small></a>
+  </div>
+</section>
+
+<!-- ============================== RASTREAR ============================== -->
+<section class="vista" id="v-rastrear" hidden>
+  <div class="panel">
+    <div class="panel-cab"><h2>Rastrear envío</h2>
+      <p>Datos del envío en PostgreSQL, ubicación de los hubs en MongoDB (GeoJSON) y estado en línea en Cassandra.</p></div>
+    <form class="busqueda" data-rastreo autocomplete="off">
+      <input id="trk-rastrear" placeholder="OLV2600000004" maxlength="13" aria-label="Número de tracking">
+      <button type="submit">Rastrear</button>
+    </form>
+  </div>
+  <div id="seguimiento"></div>
+</section>
+
+<!-- ============================== ENVIAR ============================== -->
+<section class="vista" id="v-enviar" hidden>
+  <section class="operacion">
+    <form id="form-envio" class="panel" autocomplete="off">
+      <div class="panel-cab">
+        <h2>Hacer un envío</h2>
+        <p>Se registra en PostgreSQL con <code>sp_registrar_envio</code> (tarifa, plazo, comprobante y admisión) y se
+          replica al instante en Oracle, MongoDB, Cassandra y HDFS.</p>
+      </div>
+      <div class="campos">
+        <label class="ancho">Cliente remitente <select name="cliente" required></select></label>
+        <label>Servicio <select name="servicio" required></select></label>
+        <label>Peso (kg) <input name="peso" type="number" min="0.1" max="50" step="0.1" value="2.5" required></label>
+        <label>Agencia de origen <select name="origen" required></select></label>
+        <label>Agencia de destino <select name="destino" required></select></label>
+        <label>Destinatario <input name="dest_nombre" required value="María Quispe Huamán"></label>
+        <label>DNI destinatario <input name="dest_documento" pattern="\d{8}" value="71234567"></label>
+        <label>Teléfono <input name="dest_telefono" pattern="9\d{8}" value="987654321"></label>
+        <label>Contenido <input name="descripcion" value="Ropa"></label>
+        <label class="ancho">Dirección de entrega <input name="direccion" required value="Av. Ejército 1020"></label>
+        <label>Pago <select name="metodo_pago"><option>EFECTIVO</option><option>TARJETA</option>
+          <option>BILLETERA_DIGITAL</option><option>CREDITO</option></select></label>
+        <label class="check"><input name="fragil" type="checkbox"> Frágil</label>
+      </div>
+      <div class="precio-vivo" id="precio-vivo"></div>
+      <div class="acciones">
+        <button type="submit" id="btn-registrar">Registrar envío</button>
+        <span id="msg-envio" class="msg"></span>
+      </div>
+    </form>
+    <div class="panel" id="panel-curso">
+      <div class="panel-cab"><h2>Envío en curso</h2>
+        <p>Cada escaneo se registra en PostgreSQL (<code>sp_registrar_escaneo</code>, despachos y entrega) y se
+          sincroniza en las cinco bases.</p></div>
+      <div id="curso" class="curso vacio">Registra un envío o elige uno reciente para moverlo por la red.</div>
+      <div class="recientes"><h3>Envíos registrados desde el portal</h3><ul id="recientes"></ul></div>
+    </div>
+  </section>
+</section>
+
+<!-- ============================== COTIZAR ============================== -->
+<section class="vista" id="v-cotizar" hidden>
+  <div class="panel">
+    <div class="panel-cab"><h2>Cotizar un envío</h2>
+      <p>Precio calculado con la función <code>maestro.fn_calcular_tarifa</code> de PostgreSQL y plazo según el SLA de cada servicio.</p></div>
+    <form id="form-cotizar" class="campos fila" autocomplete="off">
+      <label>Desde <select name="origen"></select></label>
+      <label>Hasta <select name="destino"></select></label>
+      <label>Peso (kg) <input name="peso" type="number" min="0.05" max="50" step="0.05" value="1"></label>
+      <label class="boton"><button type="submit">Cotizar</button></label>
+    </form>
+    <div id="cotizacion"></div>
+  </div>
+</section>
+
+<!-- ============================== MI CUENTA ============================== -->
+<section class="vista" id="v-cuenta" hidden>
+  <div class="panel">
+    <div class="panel-cab"><h2>Mis envíos</h2>
+      <p>Tu perfil se busca en MongoDB (colección <code>clientes</code>) y tu historial en Cassandra
+        (tabla <code>envios_por_cliente</code>, una partición por cliente).</p></div>
+    <form id="form-cuenta" class="busqueda" autocomplete="off">
+      <input id="doc-cuenta" placeholder="DNI o RUC" maxlength="12" aria-label="Documento">
+      <button type="submit">Ver mis envíos</button>
+    </form>
+    <p class="nota" id="ejemplos-cuenta"></p>
+  </div>
+  <div id="cuenta"></div>
+</section>
+
+<!-- ============================== AGENCIAS ============================== -->
+<section class="vista" id="v-agencias" hidden>
+  <div class="panel">
+    <div class="panel-cab"><h2>Agencias y hubs</h2>
+      <p>Red logística guardada en MongoDB con ubicación GeoJSON; la agencia más cercana se calcula con
+        <code>$geoNear</code> sobre el índice <code>2dsphere</code>.</p></div>
+    <div class="busqueda">
+      <select id="ciudad-ref" aria-label="Ciudad de referencia"></select>
+      <button id="btn-cercana">Agencias más cercanas</button>
+      <button id="btn-ubicacion" class="sec">📍 Usar mi ubicación</button>
+    </div>
+    <div class="mapa-agencias">
+      <div id="mapa-agencias" class="mapa"></div>
+      <ul id="lista-agencias" class="lista-agencias"></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== OPERACIONES ============================== -->
+<section class="vista" id="v-operaciones" hidden>
+  <div class="kpis" id="kpis"></div>
+  <div class="dos-col">
+    <div class="panel"><h2 class="h2p">Envíos por estado <small>PostgreSQL</small></h2><div id="g-estados"></div></div>
+    <div class="panel"><h2 class="h2p">Cumplimiento del plazo por servicio <small>Hadoop · 300 000 envíos</small></h2><div id="g-sla"></div></div>
+    <div class="panel"><h2 class="h2p">Principales destinos <small>PostgreSQL</small></h2><div id="g-destinos"></div></div>
+    <div class="panel"><h2 class="h2p">Llegadas al Hub Central por hora <small>Hadoop · MapReduce</small></h2><div id="g-hc"></div></div>
+  </div>
+  <div class="panel">
+    <h2 class="h2p">Actividad de un hub en un día <small>Cassandra · escaneos_hub_hora y eventos_por_hub_dia</small></h2>
+    <form id="form-hub" class="campos fila">
+      <label>Hub <select name="hub"></select></label>
+      <label>Día <input name="dia" type="date" value="2026-06-27" min="2026-04-01" max="2026-10-07"></label>
+      <label class="boton"><button type="submit">Consultar</button></label>
+    </form>
+    <div id="actividad"></div>
+  </div>
+</section>
+
+<!-- ============================== BASES DE DATOS ============================== -->
+<section class="vista" id="v-bases" hidden>
+  <section class="estado" id="estado">
+    {% for m in motores %}
+    <article class="tarjeta cargando" data-motor="{{ m }}">
+      <div class="tarjeta-cab"><span class="punto"></span><span class="nombre"></span></div>
+      <div class="tarjeta-dato"><span class="filas">—</span> registros</div>
+      <div class="tarjeta-pie"><span class="ms">conectando…</span></div>
+    </article>
+    {% endfor %}
+  </section>
+  <section class="panel">
+    <div class="panel-cab"><h2>Rastrear un envío en todas las bases</h2>
+      <p>El número de tracking es la clave común: se busca a la vez en PostgreSQL, Oracle, MongoDB, Cassandra y HDFS.</p></div>
+    <form id="form-rastreo" class="busqueda" autocomplete="off">
+      <input id="tracking" placeholder="OLV2600000004" maxlength="13" value="OLV2600000004" aria-label="Número de tracking">
+      <button type="submit">Rastrear</button>
+    </form>
+    <div id="rastreo" class="rastreo vacio">Escribe un número de tracking o haz clic en uno de las tablas.</div>
+  </section>
+  <section class="panel">
+    <div class="info"><b>Los 20 registros más recientes de cada base</b>
+      <button id="btn-recargar" class="btn-mini">↻ Actualizar</button></div>
+    <nav class="pestanas" id="pestanas" role="tablist">
+      {% for m in motores %}<button role="tab" data-motor="{{ m }}" class="{{ 'activa' if loop.first }}"></button>{% endfor %}
+    </nav>
+    <div id="contenido"></div>
+  </section>
+</section>
+</main>
+
+<footer>
+  <div>Olva Courier · Proyecto Base de Datos II · datos sintéticos</div>
+  <div>PostgreSQL · Oracle · MongoDB · Apache Cassandra · Apache Hadoop</div>
+</footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+<script src="{{ url_for('static', filename='sitio.js') }}"></script>
+</body>
+</html>

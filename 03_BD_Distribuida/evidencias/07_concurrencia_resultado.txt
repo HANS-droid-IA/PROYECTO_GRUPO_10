@@ -1,0 +1,144 @@
+Preparación: envíos de demostración 990002 (NORTE), 990003 y 990004 (SUR) con valor_declarado = 100
+
+==================================================================
+A) BLOQUEO DE FILA en el nodo SUR: dos operadores escanean el mismo envío
+==================================================================
+----- Sesión A -----
+[21:56:06.068] A: BEGIN; SELECT ... FOR UPDATE (toma bloqueo exclusivo de fila)
+ nro_tracking  | estado_actual 
+---------------+---------------
+ OLV2699990003 | EN_HUB
+(1 row)
+
+ pg_sleep 
+----------
+ 
+(1 row)
+
+[21:56:10.169] A: COMMIT (libera el bloqueo)
+
+----- Sesión B -----
+[21:56:07.072] B: UPDATE del mismo envío (debe ESPERAR a que A libere)
+Time: 3043.340 ms (00:03.043)
+[21:56:10.170] B: terminó
+
+----- Monitor (t≈2.5 s): B espera un bloqueo de A -----
+ pid |  usename   | state  | wait_event_type |  wait_event   | bloqueado_por |                                consulta                                
+-----+------------+--------+-----------------+---------------+---------------+------------------------------------------------------------------------
+  96 | olva_admin | active | Timeout         | PgSleep       | {}            | BEGIN; SELECT nro_tracking, estado_actual FROM operacion.envio WHERE i
+  97 | olva_admin | active | Lock            | transactionid | {96}          | UPDATE operacion.envio SET estado_actual = 'EN_HUB' WHERE id_envio = 9
+(2 rows)
+
+ pid |   locktype    |       mode       | granted | relname 
+-----+---------------+------------------+---------+---------
+  96 | relation      | RowShareLock     | t       | envio
+  96 | transactionid | ExclusiveLock    | t       | 
+  97 | relation      | RowExclusiveLock | t       | envio
+  97 | transactionid | ExclusiveLock    | t       | 
+  97 | tuple         | ExclusiveLock    | t       | envio
+  97 | transactionid | ShareLock        | f       | 
+(6 rows)
+
+
+==================================================================
+B) ACTUALIZACIÓN PERDIDA: dos supervisores ajustan el valor declarado
+   A suma 100, B suma 50, ambos calculando a partir de lo que leyeron
+==================================================================
+### Nivel de aislamiento: READ COMMITTED
+[A] leyó 100.00
+ 
+[A] escribió 100.00 + 100
+[A] COMMIT
+[B] leyó 100.00
+ 
+[B] intentó escribir 100.00 + 50
+    valor final = 150.00   (esperado si no se pierde nada: 250)
+
+### Nivel de aislamiento: REPEATABLE READ
+[A] leyó 100.00
+ 
+[A] escribió 100.00 + 100
+[A] COMMIT
+[B] leyó 100.00
+ 
+ERROR:  could not serialize access due to concurrent update
+[B] intentó escribir 100.00 + 50
+    valor final = 200.00   (esperado si no se pierde nada: 250)
+
+Conclusión: en READ COMMITTED la escritura de A se PIERDE; en REPEATABLE READ PostgreSQL
+aborta a B (could not serialize access) y la aplicación debe reintentar.
+
+==================================================================
+C1) INTERBLOQUEO LOCAL en un solo nodo (SUR): se detecta automáticamente
+==================================================================
+----- Sesión A (bloquea 990003 y luego pide 990004) -----
+ pg_sleep 
+----------
+ 
+(1 row)
+
+ERROR:  deadlock detected
+DETAIL:  Process 109 waits for ShareLock on transaction 844; blocked by process 108.
+Process 108 waits for ShareLock on transaction 845; blocked by process 109.
+HINT:  See server log for query details.
+CONTEXT:  while updating tuple (60,44) in relation "envio"
+[21:56:17.282] A terminó
+
+----- Sesión B (bloquea 990004 y luego pide 990003) -----
+ pg_sleep 
+----------
+ 
+(1 row)
+
+[21:56:17.285] B terminó
+
+==================================================================
+C2) INTERBLOQUEO DISTRIBUIDO: dos transacciones globales desde el coordinador
+    T1: bloquea envío 990002 en NORTE y luego pide 990003 en SUR
+    T2: bloquea envío 990003 en SUR   y luego pide 990002 en NORTE
+==================================================================
+----- Monitor (t≈2.5 s): cada nodo ve UNA espera, pero no el ciclo global -----
+[NORTE] sesiones esperando bloqueo:
+ pid | wait_event_type |  wait_event   | bloqueado_por |                                 consulta_remota                                  
+-----+-----------------+---------------+---------------+----------------------------------------------------------------------------------
+  88 | Lock            | transactionid | {87}          | UPDATE operacion.envio SET valor_declarado = (valor_declarado + 1::numeric) WHER
+(1 row)
+
+[SUR] sesiones esperando bloqueo:
+ pid | wait_event_type |  wait_event   | bloqueado_por |                                 consulta_remota                                  
+-----+-----------------+---------------+---------------+----------------------------------------------------------------------------------
+ 111 | Lock            | transactionid | {110}         | UPDATE operacion.envio SET valor_declarado = (valor_declarado + 1::numeric) WHER
+(1 row)
+
+[NORTE y SUR] ¿algún nodo detectó interbloqueo? (contador deadlocks de pg_stat_database)
+    NORTE deadlocks = 0
+
+    SUR   deadlocks = 2
+
+
+----- T1 -----
+[21:56:17.302] T1 inicia
+ pg_sleep 
+----------
+ 
+(1 row)
+
+Time: 5028.056 ms (00:05.028)
+[21:56:22.379] T1 terminó
+
+----- T2 (víctima por timeout) -----
+[21:56:17.303] T2 inicia
+ pg_sleep 
+----------
+ 
+(1 row)
+
+ERROR:  canceling statement due to statement timeout
+Time: 5026.798 ms (00:05.027)
+[21:56:22.379] T2 terminó
+
+    SUR: deadlocks detectados localmente = 2 (incluye C1)
+
+Conclusión: el detector de interbloqueos de PostgreSQL es LOCAL a cada nodo. El ciclo
+T1 -> T2 (en SUR) y T2 -> T1 (en NORTE) solo existe en el grafo de espera GLOBAL, por lo que
+se resuelve por tiempo de espera (statement_timeout/lock_timeout) en el coordinador.

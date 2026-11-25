@@ -1,0 +1,37 @@
+VOLUMEN DE DATOS GENERADO (12.3)
+============================================================
+evento_tracking      3,152,417
+despacho_envio         829,869
+paquete                407,806
+intento_entrega        334,847
+comprobante            299,667
+envio                  299,667
+destinatario           263,513
+despacho                30,185
+incidencia              18,852
+cliente                  3,000
+empleado                   285
+vehiculo                   141
+tarifa                     100
+ruta                        98
+hub                         38
+ciudad                      17
+region                       5
+tipo_servicio                4
+------------------------------
+TOTAL REGISTROS      5,640,511
+Tamaño en disco: 340.2 MB   (en HDFS x2 por replicación = 680.3 MB)
+
+JUSTIFICACIÓN MATEMÁTICA DEL VOLUMEN (12.4)
+============================================================
+Periodo simulado: 2026-04-01 a 2026-10-07 = 190 días de operación
+Red simulada: 29 agencias de admisión/entrega + hubs de clasificación
+Tasa de admisión  λ = envíos / días = 299,667 / 190 = 1,577 envíos/día (pico diario observado: 3,013)
+Por agencia: 1,577 / 29 = 54.4 envíos/agencia/día ≈ 4.5 por hora en un turno de 12 h
+Eventos de tracking por envío  e = 3,152,417 / 299,667 = 10.52
+   (admisión + salida/llegada en cada tramo + clasificación en cada hub + reparto/entrega)
+Eventos esperados  E = λ · días · e = 1,577 · 190 · 10.52 = 3,152,417
+Registros totales por envío (paquetes, comprobante, despachos, intentos, incidencias, ...): 18.82
+Registros totales  R = 299,667 · 18.82 = 5,640,511
+Proyección a 1 año con la misma tasa: 575,676 envíos -> 6,055,959 eventos -> 10,835,718 registros
+Rango exigido: mínimo 500 000; esperado 1 a 5 millones -> evento_tracking = 3,152,417 (cumple)

@@ -1,0 +1,15 @@
+  nodo_bd   | nodo  | tablas 
+------------+-------+--------
+ olva_norte | NORTE |     10
+(1 row)
+
+ nodo_bd  | nodo | tablas 
+----------+------+--------
+ olva_sur | SUR  |     10
+(1 row)
+
+  nodo_bd  | nodo | tablas 
+-----------+------+--------
+ olva_lima | LIMA |     10
+(1 row)
+

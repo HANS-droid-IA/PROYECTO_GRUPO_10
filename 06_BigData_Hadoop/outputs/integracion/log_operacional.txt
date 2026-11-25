@@ -1,0 +1,5 @@
+2026-11-23 20:30:34,811 INFO mapreduce.Job: Job job_1795483319183_0004 completed successfully
+		ESTANCIAS_EN_HUB=52501
+2026-11-23 20:31:00,420 INFO mapreduce.Job: Job job_1795483319183_0005 completed successfully
+2026-11-23 20:31:25,941 INFO mapreduce.Job: Job job_1795483319183_0006 completed successfully
+		ENVIOS_LEIDOS=29966

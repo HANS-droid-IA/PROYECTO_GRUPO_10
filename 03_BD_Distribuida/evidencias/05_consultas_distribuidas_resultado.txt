@@ -1,0 +1,175 @@
+SET
+SET
+=================================================================
+Q1. LOCALIZACIÓN (poda de fragmentos): envíos del Sur retrasados en setiembre
+    σ(nodo=SUR ∧ mes=09 ∧ entrega>compromiso)(envio) -> solo envio_sur
+=================================================================
+                                                                                                        QUERY PLAN                                                                                                         
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate
+   Output: count(*)
+   ->  Foreign Scan on global.envio_sur envio
+         Remote SQL: SELECT NULL FROM operacion.envio WHERE ((fecha_registro >= '2026-09-01 00:00:00-05')) AND ((fecha_registro < '2026-10-01 00:00:00-05')) AND ((fecha_entrega > fecha_compromiso)) AND ((nodo = 'SUR'))
+
+ envios_sur_retrasados_setiembre 
+---------------------------------
+                             107
+
+=================================================================
+Q2. OPTIMIZACIÓN - agregación distribuida (partitionwise aggregate):
+    cada nodo calcula su GROUP BY y solo viaja el resumen
+=================================================================
+                                                  QUERY PLAN                                                   
+---------------------------------------------------------------------------------------------------------------
+ Append
+   ->  HashAggregate
+         Output: envio.nodo, envio.estado_actual, count(*), sum(envio.monto_total)
+         Group Key: envio.nodo, envio.estado_actual
+         ->  Seq Scan on operacion.envio
+               Output: envio.nodo, envio.estado_actual, envio.monto_total
+   ->  Async Foreign Scan
+         Output: envio_1.nodo, envio_1.estado_actual, (count(*)), (sum(envio_1.monto_total))
+         Relations: Aggregate on (global.envio_norte envio_1)
+         Remote SQL: SELECT nodo, estado_actual, count(*), sum(monto_total) FROM operacion.envio GROUP BY 1, 2
+   ->  Async Foreign Scan
+         Output: envio_2.nodo, envio_2.estado_actual, (count(*)), (sum(envio_2.monto_total))
+         Relations: Aggregate on (global.envio_sur envio_2)
+         Remote SQL: SELECT nodo, estado_actual, count(*), sum(monto_total) FROM operacion.envio GROUP BY 1, 2
+
+ nodo  |  estado_actual  | envios | ingresos  
+-------+-----------------+--------+-----------
+ LIMA  | ENTREGADO       |  22774 | 602492.50
+ LIMA  | DEVUELTO        |    542 |  14180.00
+ LIMA  | EN_HUB          |    196 |   5426.50
+ LIMA  | ADMITIDO        |     84 |   2068.30
+ LIMA  | EN_TRANSITO     |     23 |    748.00
+ LIMA  | INTENTO_FALLIDO |     16 |    327.20
+ LIMA  | EN_REPARTO      |      3 |     52.00
+ NORTE | ENTREGADO       |   3064 |  92454.40
+ NORTE | DEVUELTO        |     57 |   1639.10
+ NORTE | EN_HUB          |     30 |    904.00
+ NORTE | ADMITIDO        |     10 |    319.20
+ NORTE | INTENTO_FALLIDO |      3 |    109.50
+ NORTE | EN_TRANSITO     |      2 |    117.00
+ SUR   | ENTREGADO       |   3020 |  87412.40
+ SUR   | DEVUELTO        |     83 |   2297.00
+ SUR   | EN_HUB          |     34 |   1066.20
+ SUR   | EN_TRANSITO     |     11 |    249.00
+ SUR   | ADMITIDO        |     10 |    259.60
+ SUR   | INTENTO_FALLIDO |      3 |     87.50
+ SUR   | EN_REPARTO      |      1 |     83.00
+
+=================================================================
+Q3. JOIN co-localizado (fragmentación derivada): envio ⋈ paquete se ejecuta
+    DENTRO de cada nodo (partitionwise join + join pushdown)
+=================================================================
+                                                                                                                           QUERY PLAN                                                                                                                           
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ GroupAggregate
+   Output: e.nodo, count(p.id_paquete), round(avg(p.peso_kg), 2)
+   Group Key: e.nodo
+   ->  Sort
+         Output: e.nodo, p.id_paquete, p.peso_kg
+         Sort Key: e.nodo
+         ->  Append
+               ->  Async Foreign Scan
+                     Output: e_1.nodo, p_1.id_paquete, p_1.peso_kg
+                     Relations: (global.envio_norte e_1) INNER JOIN (global.paquete_norte p_1)
+                     Remote SQL: SELECT r4.nodo, r7.id_paquete, r7.peso_kg FROM (operacion.envio r4 INNER JOIN operacion.paquete r7 ON (((r4.id_envio = r7.id_envio)) AND ((r7.nodo = r4.nodo)) AND (r7.fragil) AND ((r4.nodo = ANY ('{NORTE,SUR}'::text[])))))
+               ->  Async Foreign Scan
+                     Output: e_2.nodo, p_2.id_paquete, p_2.peso_kg
+                     Relations: (global.envio_sur e_2) INNER JOIN (global.paquete_sur p_2)
+                     Remote SQL: SELECT r5.nodo, r8.id_paquete, r8.peso_kg FROM (operacion.envio r5 INNER JOIN operacion.paquete r8 ON (((r5.id_envio = r8.id_envio)) AND ((r8.nodo = r5.nodo)) AND (r8.fragil) AND ((r5.nodo = ANY ('{NORTE,SUR}'::text[])))))
+
+ nodo  | bultos_fragiles | peso_prom 
+-------+-----------------+-----------
+ NORTE |             666 |      2.25
+ SUR   |             638 |      2.29
+
+=================================================================
+Q4. JOIN NO co-localizado: tracking de un envío (envío en un nodo, eventos
+    repartidos en los 3). Se ejecuta en paralelo asíncrono en los nodos.
+=================================================================
+                                                                   QUERY PLAN                                                                    
+-------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop
+   Output: ev.fecha_hora, ev.tipo_evento, ev.id_hub, ev.nodo
+   ->  Append
+         ->  Index Scan using envio_nro_tracking_key on operacion.envio e_1
+               Output: e_1.id_envio
+               Index Cond: (e_1.nro_tracking = 'OLV2600000078'::bpchar)
+         ->  Async Foreign Scan on global.envio_norte e_2
+               Output: e_2.id_envio
+               Remote SQL: SELECT id_envio FROM operacion.envio WHERE ((nro_tracking = 'OLV2600000078'))
+         ->  Async Foreign Scan on global.envio_sur e_3
+               Output: e_3.id_envio
+               Remote SQL: SELECT id_envio FROM operacion.envio WHERE ((nro_tracking = 'OLV2600000078'))
+   ->  Append
+         ->  Bitmap Heap Scan on operacion.evento_tracking ev_1
+               Output: ev_1.fecha_hora, ev_1.tipo_evento, ev_1.id_hub, ev_1.nodo, ev_1.id_envio
+               Recheck Cond: (ev_1.id_envio = e.id_envio)
+               ->  Bitmap Index Scan on ix_evento_envio
+                     Index Cond: (ev_1.id_envio = e.id_envio)
+         ->  Async Foreign Scan on global.evento_tracking_norte ev_2
+               Output: ev_2.fecha_hora, ev_2.tipo_evento, ev_2.id_hub, ev_2.nodo, ev_2.id_envio
+               Remote SQL: SELECT id_envio, tipo_evento, id_hub, fecha_hora, nodo FROM operacion.evento_tracking WHERE ((id_envio = $1::bigint))
+         ->  Async Foreign Scan on global.evento_tracking_sur ev_3
+               Output: ev_3.fecha_hora, ev_3.tipo_evento, ev_3.id_hub, ev_3.nodo, ev_3.id_envio
+               Remote SQL: SELECT id_envio, tipo_evento, id_hub, fecha_hora, nodo FROM operacion.evento_tracking WHERE ((id_envio = $1::bigint))
+
+     fecha_hora      |  tipo_evento  |    hub    | nodo_que_almacena_el_evento 
+---------------------+---------------+-----------+-----------------------------
+ 2026-04-01 13:43:07 | ADMISION      | AG-IQT-01 | NORTE
+ 2026-04-01 20:11:08 | SALIDA_HUB    | AG-IQT-01 | NORTE
+ 2026-04-01 21:07:28 | LLEGADA_HUB   | HR-IQT    | NORTE
+ 2026-04-01 21:54:48 | CLASIFICACION | HR-IQT    | NORTE
+ 2026-04-02 08:14:41 | SALIDA_HUB    | HR-IQT    | NORTE
+ 2026-04-02 11:48:30 | LLEGADA_HUB   | HC-LIM    | LIMA
+ 2026-04-02 13:16:38 | CLASIFICACION | HC-LIM    | LIMA
+ 2026-04-02 17:33:41 | SALIDA_HUB    | HC-LIM    | LIMA
+ 2026-04-02 20:46:11 | LLEGADA_HUB   | HR-AQP    | SUR
+ 2026-04-02 23:01:41 | CLASIFICACION | HR-AQP    | SUR
+ 2026-04-03 06:33:13 | SALIDA_HUB    | HR-AQP    | SUR
+ 2026-04-03 07:21:04 | LLEGADA_HUB   | AG-AQP-03 | SUR
+ 2026-04-03 08:30:00 | EN_REPARTO    | AG-AQP-03 | SUR
+ 2026-04-03 09:37:00 | ENTREGA       | AG-AQP-03 | SUR
+
+=================================================================
+Q5. Reconstrucción vertical: cliente = cliente_fiscal (Lima) ⋈ cliente_contacto (nodo del cliente)
+=================================================================
+                                                                                QUERY PLAN                                                                                 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop
+   Output: f.id_cliente, f.tipo_cliente, f.tipo_documento, f.nro_documento, c.nombre_razon_social, c.email, c.telefono, c.direccion, c.id_ciudad, f.fecha_registro, c.nodo
+   Inner Unique: true
+   ->  Foreign Scan on global.cliente_contacto_sur c
+         Output: c.nombre_razon_social, c.email, c.telefono, c.direccion, c.id_ciudad, c.nodo, c.id_cliente
+         Remote SQL: SELECT id_cliente, nombre_razon_social, email, telefono, direccion, id_ciudad, nodo FROM operacion.cliente_contacto WHERE ((nodo = 'SUR'))
+   ->  Index Scan using cliente_fiscal_pkey on operacion.cliente_fiscal f
+         Output: f.id_cliente, f.tipo_cliente, f.tipo_documento, f.nro_documento, f.fecha_registro
+         Index Cond: (f.id_cliente = c.id_cliente)
+         Filter: ((f.tipo_cliente)::text = 'EMPRESA'::text)
+
+ id_cliente | tipo_documento | nro_documento |       nombre_razon_social        | telefono  | nodo 
+------------+----------------+---------------+----------------------------------+-----------+------
+          3 | RUC            | 20523189692   | Tecnología Sureña S.A.           | 933121583 | SUR
+         13 | RUC            | 20864719315   | Corporación Los Andes S.A.       | 960847826 | SUR
+         15 | RUC            | 20755312700   | Distribuidora Selva Verde S.A.C. | 983831393 | SUR
+         27 | RUC            | 20113660431   | Distribuidora Inti S.A.          | 983539296 | SUR
+         41 | RUC            | 20320518952   | Inversiones Mistiana E.I.R.L.    | 936421875 | SUR
+
+=================================================================
+Q6. Costo de la distribución: misma consulta global vs. local
+=================================================================
+Timing is on.
+ eventos_globales 
+------------------
+            82327
+
+Time: 66.435 ms
+ eventos_solo_lima 
+-------------------
+             47452
+
+Time: 30.697 ms
+Timing is off.

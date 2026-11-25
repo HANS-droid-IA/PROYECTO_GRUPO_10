@@ -1,0 +1,24 @@
+SQL> -- sqlplus olva@//localhost:1521/FREEPDB1 @ora02_tablas.sql
+
+=== Tablas del esquema OLVA, registros y restricciones por tipo ===
+
+TABLA			FILAS RESTRICCIONES
+------------------ ---------- ------------------------------------------------------------
+CIUDAD			   17 CHECK:2 FK:1 PK:1 UK:2
+CLIENTE 		  483 CHECK:4 FK:1 PK:1 UK:1
+ENVIO			 1000 CHECK:7 FK:4 PK:1 UK:1
+EVENTO_TRACKING 	10627 CHECK:1 FK:2 PK:1
+HUB			   38 CHECK:3 FK:2 PK:1 UK:1
+LOG_ERROR		    6 PK:1
+REGION			    5 CHECK:1 PK:1 UK:2
+TARIFA			  100 CHECK:3 FK:3 PK:1 UK:1
+TIPO_SERVICIO		    4 CHECK:3 PK:1 UK:1
+
+=== Objetos PL/SQL ===
+
+OBJECT_NAME		       OBJECT_TYPE	       STATUS
+------------------------------ ----------------------- -------
+PKG_TRACKING		       PACKAGE		       VALID
+PKG_TRACKING		       PACKAGE BODY	       VALID
+SP_LOG_ERROR		       PROCEDURE	       VALID
+TRG_EVENTO_ACTUALIZA_ESTADO    TRIGGER		       VALID

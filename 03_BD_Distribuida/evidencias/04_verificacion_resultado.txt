@@ -1,0 +1,63 @@
+=== Catálogo de fragmentos (esquema de asignación) ===
+   tabla_global   |       fragmento        |        predicado        |     ubicacion     
+------------------+------------------------+-------------------------+-------------------
+ cliente_contacto | cliente_contacto       | FOR VALUES IN ('LIMA')  | local (olva_lima)
+ cliente_contacto | cliente_contacto_norte | FOR VALUES IN ('NORTE') | srv_norte
+ cliente_contacto | cliente_contacto_sur   | FOR VALUES IN ('SUR')   | srv_sur
+ envio            | envio                  | FOR VALUES IN ('LIMA')  | local (olva_lima)
+ envio            | envio_norte            | FOR VALUES IN ('NORTE') | srv_norte
+ envio            | envio_sur              | FOR VALUES IN ('SUR')   | srv_sur
+ evento_tracking  | evento_tracking        | FOR VALUES IN ('LIMA')  | local (olva_lima)
+ evento_tracking  | evento_tracking_norte  | FOR VALUES IN ('NORTE') | srv_norte
+ evento_tracking  | evento_tracking_sur    | FOR VALUES IN ('SUR')   | srv_sur
+ paquete          | paquete                | FOR VALUES IN ('LIMA')  | local (olva_lima)
+ paquete          | paquete_norte          | FOR VALUES IN ('NORTE') | srv_norte
+ paquete          | paquete_sur            | FOR VALUES IN ('SUR')   | srv_sur
+
+=== Distribución de filas por nodo ===
+      tabla       | nodo  | filas  
+------------------+-------+--------
+ cliente_contacto | LIMA  |   1749
+ cliente_contacto | NORTE |    742
+ cliente_contacto | SUR   |    509
+ envio            | LIMA  |  23638
+ envio            | NORTE |   3166
+ envio            | SUR   |   3162
+ evento_tracking  | LIMA  | 193666
+ evento_tracking  | NORTE |  68442
+ evento_tracking  | SUR   |  52993
+ paquete          | LIMA  |  32216
+ paquete          | NORTE |   4235
+ paquete          | SUR   |   4263
+
+=== 1) COMPLETITUD: cada fila del origen está en algún fragmento ===
+         tabla          | origen | fragmentos 
+------------------------+--------+------------
+ envio                  |  29966 |      29966
+ paquete                |  40714 |      40714
+ evento_tracking        | 315101 |     315101
+ cliente (VF1 fiscal)   |   3000 |       3000
+ cliente (VF2 contacto) |   3000 |       3000
+
+=== 2) DISYUNCIÓN: ninguna clave aparece en más de un fragmento ===
+      tabla       | claves_duplicadas 
+------------------+-------------------
+ envio            |                 0
+ evento_tracking  |                 0
+ cliente_contacto |                 0
+
+=== 3) RECONSTRUCCIÓN horizontal: (frag_LIMA ∪ frag_NORTE ∪ frag_SUR) = envio original ===
+ filas_diferentes 
+------------------
+                0
+
+=== 3) RECONSTRUCCIÓN vertical: cliente_fiscal ⋈ cliente_contacto = cliente original ===
+ filas_diferentes 
+------------------
+                0
+
+=== Integridad del predicado: un nodo rechaza filas que no le pertenecen ===
+--- error esperado: insertar en el fragmento SUR un envío cuyo origen es Lima
+psql:04_verificacion_fragmentacion.sql:63: ERROR:  new row for relation "envio" violates check constraint "ck_predicado_fragmento"
+DETAIL:  Failing row contains (9000217, OLV9600000217, 460, 199, 3, 10, 34, Calle Ríos 2680, 2026-04-02 18:35:42+00, 2026-04-07 01:00:00+00, ENTREGADO, 4.51, 0.00, 28.00, 2026-04-06 19:09:00+00, SUR).
+CONTEXT:  remote SQL command: INSERT INTO operacion.envio(id_envio, nro_tracking, id_cliente, id_destinatario, id_servicio, id_hub_origen, id_hub_destino, direccion_entrega, fecha_registro, fecha_compromiso, estado_actual, peso_total_kg, valor_declarado, monto_total, fecha_entrega, nodo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)

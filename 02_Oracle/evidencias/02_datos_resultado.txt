@@ -1,0 +1,14 @@
+
+TABLA		     FILAS
+--------------- ----------
+region			 5
+ciudad			17
+hub			38
+tipo_servicio		 4
+tarifa		       100
+cliente 	       483
+envio		      1000
+evento_tracking      10627
+
+8 rows selected.
+

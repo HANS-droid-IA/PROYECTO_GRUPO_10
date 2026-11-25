@@ -1,0 +1,34 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg02_schemas_tablas.sql
+
+  schema   | tablas | vistas |                                              descripcion                                              
+-----------+--------+--------+-------------------------------------------------------------------------------------------------------
+ auditoria |      1 |      0 | Bitácora de cambios de estado de envíos
+ maestro   |      9 |      0 | Catálogos: regiones, ciudades, hubs, servicios, tarifas, rutas, vehículos, empleados y clientes
+ operacion |      9 |      3 | Transacciones: envíos, paquetes, despachos, eventos de tracking, entregas, incidencias y comprobantes
+ seguridad |      1 |      0 | Asignación de usuarios a nodos para Row Level Security
+
+                List of tables
+ Schema  |     Name      | Type  |   Owner    
+---------+---------------+-------+------------
+ maestro | ciudad        | table | olva_admin
+ maestro | cliente       | table | olva_admin
+ maestro | empleado      | table | olva_admin
+ maestro | hub           | table | olva_admin
+ maestro | region        | table | olva_admin
+ maestro | ruta          | table | olva_admin
+ maestro | tarifa        | table | olva_admin
+ maestro | tipo_servicio | table | olva_admin
+ maestro | vehiculo      | table | olva_admin
+
+                  List of tables
+  Schema   |      Name       | Type  |   Owner    
+-----------+-----------------+-------+------------
+ operacion | comprobante     | table | olva_admin
+ operacion | despacho        | table | olva_admin
+ operacion | despacho_envio  | table | olva_admin
+ operacion | destinatario    | table | olva_admin
+ operacion | envio           | table | olva_admin
+ operacion | evento_tracking | table | olva_admin
+ operacion | incidencia      | table | olva_admin
+ operacion | intento_entrega | table | olva_admin
+ operacion | paquete         | table | olva_admin

@@ -1,0 +1,25 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_s3_denegados.sql
+
+--- u_op_sur: lectura de columnas permitidas
+ nro_tracking  | estado_actual | peso_total_kg 
+---------------+---------------+---------------
+ OLV2600000001 | ENTREGADO     |          2.01
+ OLV2600000010 | ENTREGADO     |          3.24
+ OLV2600000011 | ENTREGADO     |          1.21
+
+--- u_op_sur: columna monto_total (sin privilegio de columna)
+psql:G:/PROYECTO_GRUPO_10/07_Documentacion/capturas/scripts_captura/pg_s3_denegados.sql:5: ERROR:  permission denied for table envio
+--- u_op_sur: INSERT directo en evento_tracking (solo se permite vía procedimiento)
+psql:G:/PROYECTO_GRUPO_10/07_Documentacion/capturas/scripts_captura/pg_s3_denegados.sql:7: ERROR:  permission denied for table evento_tracking
+--- u_op_sur: UPDATE directo del estado de un envío
+psql:G:/PROYECTO_GRUPO_10/07_Documentacion/capturas/scripts_captura/pg_s3_denegados.sql:9: ERROR:  permission denied for table envio
+--- u_analista: vista analítica permitida
+ modalidad | envios | ticket_prom 
+-----------+--------+-------------
+ AEREO     |  10921 |       37.36
+ TERRESTRE |  19045 |       21.23
+
+--- u_analista: datos personales de clientes (denegado)
+psql:G:/PROYECTO_GRUPO_10/07_Documentacion/capturas/scripts_captura/pg_s3_denegados.sql:15: ERROR:  permission denied for table cliente
+--- u_analista: procedimiento de escritura (denegado)
+psql:G:/PROYECTO_GRUPO_10/07_Documentacion/capturas/scripts_captura/pg_s3_denegados.sql:17: ERROR:  permission denied for procedure sp_registrar_escaneo

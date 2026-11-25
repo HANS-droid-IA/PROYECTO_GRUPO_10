@@ -1,0 +1,58 @@
+== [1] Respaldo lógico: pg_dump -Fc ==
+
+real	0m4.105s
+user	0m2.304s
+sys	0m0.231s
+Archivo: /proyecto/01_Relacional_PostgreSQL/backups/olva_courier_20261008_2135.dump Tamaño: 7.7M
+Tablas con datos en el respaldo: 20
+
+== [2] Respaldo de roles y usuarios: pg_dumpall --globals-only ==
+Roles respaldados: 13
+
+== [3] Respaldo físico en caliente: pg_basebackup ==
+   backup_manifest 193K
+   base.tar.gz 28M
+
+== Conteos ANTES del incidente ==
+despacho_envio=82894
+envio=29966
+evento_tracking=315101
+incidencia=1904
+
+== [4] INCIDENTE simulado: un operador borra por error todas las incidencias ==
+DELETE ejecutado
+incidencia (después del DELETE) = 0
+
+== [5] Restauración selectiva de operacion.incidencia desde el respaldo ==
+incidencia (restaurada) = 1904
+
+== [6] Restauración completa en una BD nueva: olva_courier_restore ==
+NOTICE:  database "olva_courier_restore" does not exist, skipping
+
+real	0m2.131s
+user	0m0.295s
+sys	0m0.219s
+
+== Verificación de integridad (conteo por tabla: original vs restaurada) ==
+  ciudad                     17         17  OK
+  cliente                  3000       3000  OK
+  comprobante             29966      29966  OK
+  despacho                22729      22729  OK
+  despacho_envio          82894      82894  OK
+  destinatario            26413      26413  OK
+  empleado                  285        285  OK
+  envio                   29966      29966  OK
+  evento_tracking        315101     315101  OK
+  hub                        38         38  OK
+  incidencia               1904       1904  OK
+  intento_entrega         33557      33557  OK
+  paquete                 40714      40714  OK
+  region                      5          5  OK
+  ruta                       98         98  OK
+  tarifa                    100        100  OK
+  tipo_servicio               4          4  OK
+  vehiculo                  141        141  OK
+RESULTADO: restauración exitosa, todas las tablas coinciden
+Objetos restaurados -> funciones/procedimientos: 13
+Objetos restaurados -> triggers: 3
+Objetos restaurados -> políticas RLS: 4

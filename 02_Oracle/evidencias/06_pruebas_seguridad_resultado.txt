@@ -1,0 +1,98 @@
+=== Analista: lectura permitida ===
+
+USUARIO
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ENVIOS_VISIBLES
+---------------
+U_ANALISTA_ORA
+	   1000
+
+
+--- error esperado: el analista no tiene acceso a CLIENTE (ORA-00942)
+SELECT COUNT(*) FROM olva.cliente
+                          *
+ERROR at line 1:
+ORA-00942: table or view "OLVA"."CLIENTE" does not exist
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+
+
+--- error esperado: el analista no puede modificar (ORA-01031)
+UPDATE olva.envio SET estado_actual = 'ENTREGADO' WHERE ROWNUM = 1
+            *
+ERROR at line 1:
+ORA-41900: missing UPDATE privilege on "OLVA"."ENVIO"
+Help: https://docs.oracle.com/error-help/db/ora-41900/
+
+
+--- error esperado: sin cuota en USERS no puede crear tablas (ORA-01031 / ORA-01950)
+CREATE TABLE prueba (x NUMBER)
+*
+ERROR at line 1:
+ORA-01031: insufficient privileges
+Help: https://docs.oracle.com/error-help/db/ora-01031/
+
+
+=== Operador: escribe solo vía paquete ===
+--- error esperado: INSERT directo en evento_tracking (ORA-01031 / ORA-00942)
+INSERT INTO olva.evento_tracking (id_envio, tipo_evento, id_hub, fecha_hora) VALUES (1, 'CLASIFICACION', 1, SYSTIMESTAMP)
+                 *
+ERROR at line 1:
+ORA-00942: table or view "OLVA"."EVENTO_TRACKING" does not exist
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+
+
+--- error esperado: la regla de negocio del paquete rechaza la transición (ORA-20010)
+BEGIN olva.pkg_tracking.sp_registrar_escaneo('OLV2600000001', 'CLASIFICACION', 1); END;
+
+*
+ERROR at line 1:
+ORA-20010: Transición inválida: envío OLV2600000001 en estado ENTREGADO no admite evento CLASIFICACION
+ORA-06512: at "OLVA.PKG_TRACKING", line 94
+ORA-06512: at "OLVA.PKG_TRACKING", line 82
+ORA-06512: at line 1
+
+
+=== Perfil: 3 intentos fallidos bloquean la cuenta ===
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+Warning: You are no longer connected to ORACLE.
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+ERROR:
+ORA-28000: The account is locked; login denied.
+Help: https://docs.oracle.com/error-help/db/ora-28000/
+
+
+=== Estado de la cuenta tras 3 intentos fallidos (consultado como SYSTEM) ===
+
+USERNAME
+--------------------------------------------------------------------------------
+ACCOUNT_STATUS
+--------------------------------
+U_ANALISTA_ORA
+LOCKED(TIMED)
+
+
+
+User altered.
+
+
+USERNAME
+--------------------------------------------------------------------------------
+ESTADO_TRAS_UNLOCK
+--------------------------------
+U_ANALISTA_ORA
+OPEN
+
+

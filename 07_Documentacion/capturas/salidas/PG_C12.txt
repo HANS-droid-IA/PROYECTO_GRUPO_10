@@ -1,0 +1,33 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_c12.sql
+
+SET search_path = operacion, maestro, public;
+SELECT e.nro_tracking, e.estado_actual, ult.hub, ult.fecha_hora::TIMESTAMP(0) AS ultimo_escaneo,
+       date_trunc('hour', TIMESTAMPTZ '2026-10-07 18:00-05' - ult.fecha_hora) AS sin_movimiento,
+       EXISTS (SELECT 1 FROM incidencia i WHERE i.id_envio = e.id_envio AND i.tipo = 'PERDIDA') AS tiene_incidencia_perdida
+  FROM envio e
+  CROSS JOIN LATERAL (
+        SELECT h.codigo AS hub, x.fecha_hora
+          FROM evento_tracking x JOIN hub h USING (id_hub)
+         WHERE x.id_envio = e.id_envio
+         ORDER BY x.fecha_hora DESC LIMIT 1) ult
+ WHERE e.estado_actual NOT IN ('ENTREGADO', 'DEVUELTO')
+   AND ult.fecha_hora < TIMESTAMPTZ '2026-10-07 18:00-05' - INTERVAL '48 hours'
+ ORDER BY ult.fecha_hora
+ LIMIT 15;
+ nro_tracking  | estado_actual |    hub     |   ultimo_escaneo    |  sin_movimiento   | tiene_incidencia_perdida 
+---------------+---------------+------------+---------------------+-------------------+--------------------------
+ OLV2600001327 | EN_HUB        | HC-LIM     | 2026-04-11 10:34:33 | 179 days 07:00:00 | t
+ OLV2600001462 | EN_HUB        | AG-LIM-MIR | 2026-04-14 06:59:41 | 176 days 11:00:00 | t
+ OLV2600001744 | EN_HUB        | HR-TRU     | 2026-04-16 11:16:44 | 174 days 06:00:00 | t
+ OLV2600002836 | EN_HUB        | AG-LIM-ATE | 2026-04-23 07:05:27 | 167 days 10:00:00 | t
+ OLV2600003433 | EN_HUB        | AG-ICA-01  | 2026-04-29 01:50:50 | 161 days 16:00:00 | t
+ OLV2600004079 | EN_HUB        | AG-LIM-SUR | 2026-05-02 16:01:38 | 158 days 01:00:00 | t
+ OLV2600004139 | EN_HUB        | AG-HYO-02  | 2026-05-03 15:56:11 | 157 days 02:00:00 | t
+ OLV2600005140 | EN_HUB        | AG-IQT-01  | 2026-05-10 15:25:54 | 150 days 02:00:00 | t
+ OLV2600005155 | EN_HUB        | AG-LIM-MIR | 2026-05-11 07:13:35 | 149 days 10:00:00 | t
+ OLV2600006987 | EN_HUB        | AG-LIM-SJL | 2026-05-23 06:59:16 | 137 days 11:00:00 | t
+ OLV2600007093 | EN_HUB        | HR-CUZ     | 2026-05-25 22:32:58 | 134 days 19:00:00 | t
+ OLV2600007696 | EN_HUB        | AG-LIM-OLI | 2026-05-29 07:08:34 | 131 days 10:00:00 | t
+ OLV2600008388 | EN_HUB        | AG-PIU-02  | 2026-06-04 07:20:01 | 125 days 10:00:00 | t
+ OLV2600009220 | EN_HUB        | AG-LIM-MIR | 2026-06-09 16:01:15 | 120 days 01:00:00 | t
+ OLV2600009777 | EN_HUB        | AG-LIM-MIR | 2026-06-12 07:13:51 | 117 days 10:00:00 | t

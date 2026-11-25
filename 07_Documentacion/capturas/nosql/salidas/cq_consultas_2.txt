@@ -1,0 +1,21 @@
+
+-- Q5. Estado actual y transacción ligera (LWT): solo cambia si el estado esperado coincide
+olva_admin@cqlsh:olva_tracking (Lima)> SELECT nro_tracking, estado, ultimo_evento, ultimo_hub FROM estado_envio WHERE nro_tracking = 'OLV2600029865';
+ nro_tracking  | estado | ultimo_evento | ultimo_hub
+---------------+--------+---------------+------------
+ OLV2600029865 | EN_HUB | CLASIFICACION |     HC-LIM
+
+(1 rows)
+
+
+olva_admin@cqlsh:olva_tracking (Lima)> UPDATE estado_envio SET estado = 'ENTREGADO' WHERE nro_tracking = 'OLV2600029865' IF estado = 'EN_REPARTO';
+ [applied] | estado
+-----------+--------
+     False | EN_HUB
+
+
+olva_admin@cqlsh:olva_tracking (Lima)> UPDATE estado_envio SET estado = 'EN_REPARTO', ultimo_evento = 'EN_REPARTO'
+                                       WHERE nro_tracking = 'OLV2600029865' IF estado = 'EN_HUB';
+ [applied]
+-----------
+      True

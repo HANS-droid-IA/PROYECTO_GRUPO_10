@@ -1,0 +1,39 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_p2_ciclo_envio.sql
+
+psql:G:/PROYECTO_GRUPO_10/07_Documentacion/capturas/scripts_captura/pg_p2_ciclo_envio.sql:21: NOTICE:  Envío OLV2600029967 registrado: 2.30 kg, S/ 17.00, compromiso 2026-10-13 20:00:00-05
+=== P2 sp_registrar_escaneo / P4 sp_cerrar_despacho / P3 sp_registrar_intento_entrega ===
+--- Error controlado: transición inválida (ENTREGA de un envío recién admitido)
+psql:G:/PROYECTO_GRUPO_10/07_Documentacion/capturas/scripts_captura/pg_p2_ciclo_envio.sql:29: ERROR:  Transición inválida: envío OLV2600029967 en estado ADMITIDO no admite evento ENTREGA
+HINT:  Eventos permitidos: SALIDA_HUB
+CONTEXT:  PL/pgSQL function sp_registrar_escaneo(character,character varying,integer,integer,bigint,character varying,timestamp with time zone) line 24 at RAISE
+=== Línea de tiempo generada por los procedimientos ===
+   tipo_evento   |    hub     |            observacion             
+-----------------+------------+------------------------------------
+ ADMISION        | AG-LIM-MIR | Admisión en agencia
+ SALIDA_HUB      | AG-LIM-MIR | Carga a furgoneta
+ LLEGADA_HUB     | HC-LIM     | Arribo de manifiesto MF-PRUEBA-001
+ CLASIFICACION   | HC-LIM     | Clasificado a ruta Surco
+ SALIDA_HUB      | HC-LIM     | 
+ LLEGADA_HUB     | AG-LIM-SUR | Arribo de manifiesto MF-PRUEBA-002
+ EN_REPARTO      | AG-LIM-SUR | 
+ INTENTO_FALLIDO | AG-LIM-SUR | Ausente
+ EN_REPARTO      | AG-LIM-SUR | Segunda visita
+ ENTREGA         | AG-LIM-SUR | Recibido por Ana Torres Ríos
+
+ nro_tracking  | estado_actual |     estado_sla     
+---------------+---------------+--------------------
+ OLV2600029967 | ENTREGADO     | ENTREGADO_A_TIEMPO
+
+=== Triggers: bitácora de auditoría (auditoria.log_estado_envio) ===
+ estado_anterior |  estado_nuevo   | usuario_bd 
+-----------------+-----------------+------------
+                 | REGISTRADO      | olva_admin
+ REGISTRADO      | ADMITIDO        | olva_admin
+ ADMITIDO        | EN_TRANSITO     | olva_admin
+ EN_TRANSITO     | EN_HUB          | olva_admin
+ EN_HUB          | EN_TRANSITO     | olva_admin
+ EN_TRANSITO     | EN_HUB          | olva_admin
+ EN_HUB          | EN_REPARTO      | olva_admin
+ EN_REPARTO      | INTENTO_FALLIDO | olva_admin
+ INTENTO_FALLIDO | EN_REPARTO      | olva_admin
+ EN_REPARTO      | ENTREGADO       | olva_admin

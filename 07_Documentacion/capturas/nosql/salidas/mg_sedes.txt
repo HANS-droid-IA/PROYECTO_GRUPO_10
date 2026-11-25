@@ -1,0 +1,31 @@
+olva_admin@mongos:olva_sedes> load('02_consultas_sedes.js')
+=== D1. Documentos por sede (lo que guarda físicamente cada shard) ===
+sede          | documentos | datos_MB
+--------------+------------+---------
+sede_arequipa | 6328       | 16.60   
+sede_lima     | 23638      | 57.80   
+(2 filas)
+Total en el clúster (vista global a través de mongos): 29966
+
+=== Q1. Consulta CON la clave de fragmentación -> va a UNA sola sede ===
+db.envios.find({ 'origen.nodo': 'SUR', estado_actual: 'EN_HUB' })
+etapa        | sedes_consultadas | devueltos_por_sede | total
+-------------+-------------------+--------------------+------
+SINGLE_SHARD | sede_arequipa     | sede_arequipa=34   | 34   
+(1 fila)
+
+=== Q2. Consulta SIN la clave de fragmentación -> mongos pregunta a TODAS las sedes ===
+db.envios.find({ estado_actual: 'EN_HUB' })
+etapa       | sedes_consultadas        | devueltos_por_sede              | total
+------------+--------------------------+---------------------------------+------
+SHARD_MERGE | sede_arequipa, sede_lima | sede_arequipa=64, sede_lima=196 | 260  
+(1 fila)
+
+=== Q4. Agregación global: SLA por sede (cada sede calcula su parte y mongos combina) ===
+nodo_origen | sede          | entregados | pct_sla | ingresos_S
+------------+---------------+------------+---------+-----------
+LIMA        | sede_lima     | 22774      | 93.40   | 602492.50 
+NORTE       | sede_arequipa | 3064       | 83.90   | 92454.40  
+SUR         | sede_arequipa | 3020       | 83.60   | 87412.40  
+(3 filas)
+Plan: pipeline dividido -> shardsPart en sede_arequipa y sede_lima, mergerPart en mongos

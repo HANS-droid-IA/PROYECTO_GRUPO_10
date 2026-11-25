@@ -1,0 +1,26 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_c04.sql
+
+SET search_path = operacion, maestro, public;
+WITH paso_hc AS (
+    SELECT DISTINCT ON (id_envio) id_envio, horas_permanencia
+      FROM mv_permanencia_hub
+     WHERE id_hub = (SELECT id_hub FROM hub WHERE codigo = 'HC-LIM')
+     ORDER BY id_envio, llegada
+)
+SELECT ts.modalidad,
+       CASE WHEN p.horas_permanencia > 12 THEN 'Más de 12 h en HC' ELSE 'Hasta 12 h en HC' END AS permanencia_hc,
+       COUNT(*)                                                                            AS envios,
+       ROUND(AVG(p.horas_permanencia), 1)                                                  AS horas_hc_prom,
+       ROUND(100.0 * AVG((e.fecha_entrega <= e.fecha_compromiso)::INT), 1)                 AS pct_a_tiempo
+  FROM paso_hc p
+  JOIN envio e USING (id_envio)
+  JOIN tipo_servicio ts USING (id_servicio)
+ WHERE e.estado_actual = 'ENTREGADO'
+ GROUP BY 1, 2
+ ORDER BY 1, 2;
+ modalidad |  permanencia_hc   | envios | horas_hc_prom | pct_a_tiempo 
+-----------+-------------------+--------+---------------+--------------
+ AEREO     | Hasta 12 h en HC  |   8141 |           7.6 |         88.7
+ AEREO     | Más de 12 h en HC |   2033 |          16.7 |         81.0
+ TERRESTRE | Hasta 12 h en HC  |   9350 |           8.5 |         96.1
+ TERRESTRE | Más de 12 h en HC |   8241 |          20.5 |         91.3

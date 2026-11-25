@@ -1,0 +1,24 @@
+u_operador_mongo / u_analista_mongo -> mongosh --file 06_pruebas_seguridad.js
+=== Conectado como u_operador_mongo ===
+  DENEGADO   leer vista vw_tracking_publico  -> Unauthorized
+  PERMITIDO  leer colección envios  -> OLV2600000004
+  DENEGADO   leer vista vw_envios_analitica  -> Unauthorized
+  DENEGADO   ver datos personales en la vista analítica  -> Unauthorized
+  PERMITIDO  actualizar estado de un envío  -> 1 doc
+  DENEGADO   insertar un envío  -> Unauthorized
+  DENEGADO   borrar envíos  -> Unauthorized
+  DENEGADO   leer clientes (datos personales)  -> Unauthorized
+  DENEGADO   eliminar la colección envios  -> Unauthorized
+=== Conectado como u_analista_mongo ===
+  DENEGADO   leer vista vw_tracking_publico  -> Unauthorized
+  DENEGADO   leer colección envios  -> Unauthorized
+  PERMITIDO  leer vista vw_envios_analitica  -> 28858 entregados
+  PERMITIDO  ver datos personales en la vista analítica  -> campos ocultos por la vista
+  DENEGADO   actualizar estado de un envío  -> Unauthorized
+  DENEGADO   insertar un envío  -> Unauthorized
+  DENEGADO   borrar envíos  -> Unauthorized
+  DENEGADO   leer clientes (datos personales)  -> Unauthorized
+  DENEGADO   eliminar la colección envios  -> Unauthorized
+
+-- conexión de u_analista_mongo con una contraseña incorrecta:
+MongoServerError: Authentication failed.

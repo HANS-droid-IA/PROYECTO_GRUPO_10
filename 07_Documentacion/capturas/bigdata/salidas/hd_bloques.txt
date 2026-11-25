@@ -1,0 +1,12 @@
+hadoop@Hans:~$ hdfs fsck /olva/raw/evento_tracking -files -blocks -locations 2>/dev/null \
+> | grep -E 'evento_tracking.csv|blk_|Status|Total blocks|Average block replication|Number of data-nodes' \
+> | sed -E 's/DatanodeInfoWithStorage\[([0-9.:]+),DS-[0-9a-f-]+,DISK\]/\1/g; s/BP-[0-9.-]+://'
+/olva/raw/evento_tracking/evento_tracking.csv 189725133 bytes, replicated: replication=2, 3 block(s):  OK
+0. blk_1073741825_1001 len=67108864 Live_repl=2  [127.0.0.1:9876, 127.0.0.1:9866]
+1. blk_1073741826_1002 len=67108864 Live_repl=2  [127.0.0.1:9876, 127.0.0.1:9866]
+2. blk_1073741827_1003 len=55507405 Live_repl=2  [127.0.0.1:9876, 127.0.0.1:9866]
+Status: HEALTHY
+ Number of data-nodes:    2
+ Total blocks (validated):    3 (avg. block size 63241711 B)
+ Average block replication:    2.0
+

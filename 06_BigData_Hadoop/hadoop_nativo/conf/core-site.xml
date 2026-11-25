@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Apache Hadoop 3.3.6 instalado en la laptop (Ubuntu 22.04 en WSL). Sistema de archivos por defecto: HDFS. -->
+<configuration>
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://localhost:9000</value>
+  </property>
+  <property>
+    <name>hadoop.tmp.dir</name>
+    <value>/home/hadoop/hadoop_data/tmp</value>
+  </property>
+  <property>
+    <name>hadoop.http.staticuser.user</name>
+    <value>hadoop</value>
+  </property>
+</configuration>

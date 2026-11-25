@@ -1,0 +1,26 @@
+olva_admin@localhost:5440/olva_lima> psql -h localhost -p 5440 -U olva_admin -d olva_lima -f dd02_distribucion.sql
+
+=== Distribución de filas por nodo ===
+      tabla       | nodo  | filas  
+------------------+-------+--------
+ cliente_contacto | LIMA  |   1749
+ cliente_contacto | NORTE |    742
+ cliente_contacto | SUR   |    509
+ envio            | LIMA  |  23639
+ envio            | NORTE |   3167
+ envio            | SUR   |   3164
+ evento_tracking  | LIMA  | 193668
+ evento_tracking  | NORTE |  68442
+ evento_tracking  | SUR   |  52995
+ paquete          | LIMA  |  32216
+ paquete          | NORTE |   4235
+ paquete          | SUR   |   4263
+
+=== 1) COMPLETITUD: cada fila del origen está en algún fragmento ===
+         tabla          | origen | fragmentos 
+------------------------+--------+------------
+ envio                  |  29966 |      29970
+ paquete                |  40714 |      40714
+ evento_tracking        | 315101 |     315105
+ cliente (VF1 fiscal)   |   3000 |       3000
+ cliente (VF2 contacto) |   3000 |       3000

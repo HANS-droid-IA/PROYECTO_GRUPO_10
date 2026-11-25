@@ -1,0 +1,18 @@
+id_ciudad,nombre,departamento,id_region,ubigeo,tiene_aeropuerto,acceso_terrestre,latitud,longitud
+1,Lima,Lima,1,150101,t,t,-12.0464,-77.0428
+2,Callao,Callao,1,070101,t,t,-12.0566,-77.1181
+3,Ica,Ica,1,110101,f,t,-14.0678,-75.7286
+4,Huancayo,Junín,2,120101,t,t,-12.0651,-75.2049
+5,Ayacucho,Ayacucho,2,050101,t,t,-13.1631,-74.2236
+6,Trujillo,La Libertad,3,130101,t,t,-8.1116,-79.0288
+7,Chiclayo,Lambayeque,3,140101,t,t,-6.7714,-79.8409
+8,Piura,Piura,3,200101,t,t,-5.1945,-80.6328
+9,Cajamarca,Cajamarca,3,060101,t,t,-7.1638,-78.5003
+10,Iquitos,Loreto,4,160101,t,f,-3.7437,-73.2516
+11,Pucallpa,Ucayali,4,250101,t,t,-8.3791,-74.5539
+12,Tarapoto,San Martín,4,220901,t,t,-6.4825,-76.3653
+13,Arequipa,Arequipa,5,040101,t,t,-16.409,-71.5375
+14,Cusco,Cusco,5,080101,t,t,-13.532,-71.9675
+15,Tacna,Tacna,5,230101,t,t,-18.0146,-70.2536
+16,Puno,Puno,5,210101,f,t,-15.8402,-70.0219
+17,Juliaca,Puno,5,211101,t,t,-15.4997,-70.1333

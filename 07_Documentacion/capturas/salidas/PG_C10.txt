@@ -1,0 +1,46 @@
+olva_admin@localhost:5440/olva_courier> psql -h localhost -p 5440 -U olva_admin -d olva_courier -f pg_c10.sql
+
+SET search_path = operacion, maestro, public;
+SELECT i.tipo,
+       COALESCE(h.codigo, '(reclamo cliente)')                                  AS hub,
+       COUNT(*)                                                                 AS incidencias,
+       COUNT(*) FILTER (WHERE i.estado <> 'CERRADA')                            AS pendientes,
+       ROUND(AVG(EXTRACT(EPOCH FROM i.fecha_cierre - i.fecha_reporte) / 86400)::NUMERIC, 1) AS dias_resolucion_prom
+  FROM incidencia i
+  LEFT JOIN hub h ON h.id_hub = i.id_hub
+ WHERE i.tipo IN ('DANO', 'PERDIDA', 'RETRASO')
+ GROUP BY 1, 2
+ ORDER BY 1, 3 DESC;
+  tipo   |        hub        | incidencias | pendientes | dias_resolucion_prom 
+---------+-------------------+-------------+------------+----------------------
+ DANO    | HC-LIM            |          52 |          1 |                  4.4
+ DANO    | HR-AQP            |          17 |          0 |                  4.0
+ DANO    | HR-CUZ            |          12 |          0 |                  4.8
+ DANO    | HR-CIX            |          11 |          0 |                  5.0
+ DANO    | HR-HYO            |           9 |          0 |                  4.4
+ DANO    | HR-JUL            |           8 |          0 |                  6.0
+ DANO    | HR-TRU            |           7 |          0 |                  4.0
+ DANO    | HR-IQT            |           6 |          0 |                  4.3
+ DANO    | HR-PIU            |           4 |          0 |                  3.5
+ PERDIDA | AG-LIM-SIS        |           5 |          1 |                 12.0
+ PERDIDA | AG-CAL-01         |           4 |          0 |                 12.0
+ PERDIDA | HC-LIM            |           4 |          0 |                 12.0
+ PERDIDA | AG-LIM-MIR        |           4 |          0 |                 12.0
+ PERDIDA | HR-TRU            |           4 |          1 |                 12.0
+ PERDIDA | HR-CUZ            |           3 |          1 |                 12.0
+ PERDIDA | AG-IQT-01         |           2 |          0 |                 12.0
+ PERDIDA | HR-AQP            |           2 |          0 |                 12.0
+ PERDIDA | AG-PIU-02         |           2 |          1 |                 12.0
+ PERDIDA | AG-TCQ-01         |           2 |          0 |                 12.0
+ PERDIDA | AG-LIM-SUR        |           2 |          0 |                 12.0
+ PERDIDA | AG-ICA-01         |           2 |          0 |                 12.0
+ PERDIDA | AG-LIM-ATE        |           2 |          0 |                 12.0
+ PERDIDA | AG-AQP-03         |           2 |          0 |                 12.0
+ PERDIDA | AG-CIX-01         |           2 |          0 |                 12.0
+ PERDIDA | AG-HYO-02         |           1 |          0 |                 12.0
+ PERDIDA | HR-PIU            |           1 |          0 |                 12.0
+ PERDIDA | AG-LIM-OLI        |           1 |          0 |                 12.0
+ PERDIDA | AG-LIM-SJL        |           1 |          0 |                 12.0
+ PERDIDA | AG-CAJ-01         |           1 |          0 |                 12.0
+ PERDIDA | AG-HYO-01         |           1 |          0 |                 12.0
+ RETRASO | (reclamo cliente) |         742 |          7 |                  2.4

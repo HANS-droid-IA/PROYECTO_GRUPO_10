@@ -1,0 +1,27 @@
+olva_admin@mongosh:olva_tracking> load('03_operaciones_crud.js')   // lecturas con índice
+=== R2. Envíos vivos con compromiso vencido al corte (usa ix_estado_compromiso) ===
+tracking      | estado | servicio            | destino  | compromiso         
+--------------+--------+---------------------+----------+--------------------
+OLV2600001327 | EN_HUB | EXPRESS_AEREO       | Lima     | 2026-04-14 01:00:00
+OLV2600001462 | EN_HUB | ECONOMICO_TERRESTRE | Lima     | 2026-04-18 01:00:00
+OLV2600001744 | EN_HUB | ESTANDAR_TERRESTRE  | Trujillo | 2026-04-18 01:00:00
+OLV2600002836 | EN_HUB | ESTANDAR_TERRESTRE  | Lima     | 2026-04-25 01:00:00
+OLV2600003433 | EN_HUB | SOBRE_AEREO         | Ica      | 2026-04-30 01:00:00
+OLV2600004079 | EN_HUB | ESTANDAR_TERRESTRE  | Lima     | 2026-05-05 01:00:00
+OLV2600004139 | EN_HUB | EXPRESS_AEREO       | Huancayo | 2026-05-05 01:00:00
+OLV2600005140 | EN_HUB | EXPRESS_AEREO       | Iquitos  | 2026-05-12 01:00:00
+OLV2600005155 | EN_HUB | ECONOMICO_TERRESTRE | Lima     | 2026-05-15 01:00:00
+OLV2600006987 | EN_HUB | ESTANDAR_TERRESTRE  | Lima     | 2026-05-26 01:00:00
+(10 documentos)
+Total vencidos: 50
+Plan de ejecución: IXSCAN | documentos examinados: 50 | devueltos: 50
+
+=== R3. Consulta sobre arreglo embebido: envíos con incidencia de PERDIDA o DANO aún abierta ($elemMatch) ===
+tracking      | cliente                           | incidencia | estado     | reportada          
+--------------+-----------------------------------+------------+------------+--------------------
+OLV2600029249 | Textil Los Andes S.R.L.           | DANO       | ABIERTA    | 2026-10-05 08:46:29
+OLV2600029215 | Comercial Norteña S.A.            | PERDIDA    | ABIERTA    | 2026-10-07 20:29:34
+OLV2600027520 | Corporación Mistiana E.I.R.L.     | PERDIDA    | EN_PROCESO | 2026-09-29 01:42:10
+OLV2600027999 | Agroexportadora Mistiana E.I.R.L. | PERDIDA    | EN_PROCESO | 2026-09-30 12:08:29
+OLV2600028788 | Negociaciones Moche S.A.C.        | PERDIDA    | ABIERTA    | 2026-10-05 01:12:31
+(5 documentos)

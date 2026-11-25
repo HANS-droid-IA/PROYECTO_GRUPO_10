@@ -1,0 +1,27 @@
+
+-- Q3. Saturación horaria del Hub Central (capacidad: 50 envíos por hora)
+olva_admin@cqlsh:olva_tracking (Lima)> SELECT hora, llegadas, salidas, escaneos FROM escaneos_hub_hora
+                                       WHERE hub = 'HC-LIM' AND dia = '2026-10-06' AND hora >= 18;
+ hora | llegadas | salidas | escaneos
+------+----------+---------+----------
+   18 |        1 |       2 |        3
+   20 |       84 |       0 |       85
+   21 |       16 |      13 |       37
+   22 |        0 |       0 |       33
+   23 |        0 |      41 |       71
+
+(5 rows)
+
+
+
+-- Q4. Portal del cliente: sus envíos más recientes (orden DESC almacenado)
+olva_admin@cqlsh:olva_tracking (Lima)> SELECT fecha_registro, nro_tracking, servicio, estado, monto_total FROM envios_por_cliente
+                                       WHERE id_cliente = 141 LIMIT 4;
+ fecha_registro                  | nro_tracking  | servicio            | estado    | monto_total
+---------------------------------+---------------+---------------------+-----------+-------------
+ 2026-10-05 23:46:32.000000+0000 | OLV2600029571 |  ESTANDAR_TERRESTRE | ENTREGADO |       18.00
+ 2026-09-28 18:10:05.000000+0000 | OLV2600028239 |  ESTANDAR_TERRESTRE | ENTREGADO |       14.50
+ 2026-09-21 20:23:00.000000+0000 | OLV2600027085 |       EXPRESS_AEREO | ENTREGADO |       45.50
+ 2026-09-11 18:57:40.000000+0000 | OLV2600025464 | ECONOMICO_TERRESTRE | ENTREGADO |       14.40
+
+(4 rows)

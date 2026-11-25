@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diagrama 4. Arquitectura de la base de datos distribuida (implementada y verificada).
+     Fuente editable: SVG (Inkscape, draw.io o editor de texto). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 870" width="1400" height="870" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#4a4f57"/>
+    </marker>
+    <marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#2f5d9e"/>
+    </marker>
+    <style>
+      .box{fill:#eef3fb;stroke:#3d5a8a;stroke-width:1.4}
+      .clu{fill:#f8f9fb;stroke:#8c9bb5;stroke-width:1.4}
+      .cluA{fill:#f3f7fd;stroke:#2f5d9e;stroke-width:2.2}
+      .t{font-size:15px;fill:#1b2433}
+      .b{font-size:15px;font-weight:bold;fill:#1b2433}
+      .c{font-size:16px;font-weight:bold;fill:#1b2433}
+      .s{font-size:13.5px;fill:#4a4f57}
+      .ln{fill:none;stroke:#4a4f57;stroke-width:1.5}
+      .fdw{fill:none;stroke:#2f5d9e;stroke-width:3}
+      .dash{fill:none;stroke:#4a4f57;stroke-width:1.5;stroke-dasharray:6 5}
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1400" height="870" fill="#ffffff"/>
+  <text x="30" y="34" style="font-size:20px;font-weight:bold;fill:#1b2433">Arquitectura distribuida: Lima coordina tres nodos PostgreSQL mediante postgres_fdw</text>
+
+  <!-- Aplicación -->
+  <rect class="box" x="540" y="56" width="320" height="58" rx="8"/>
+  <text class="b" x="700" y="80" text-anchor="middle">Aplicación / cliente SQL</text>
+  <text class="t" x="700" y="102" text-anchor="middle">consulta las relaciones global.*</text>
+
+  <!-- NODO LIMA -->
+  <rect class="cluA" x="30" y="150" width="1340" height="330" rx="10"/>
+  <text class="c" x="50" y="176">NODO LIMA (coordinador) · PostgreSQL 16 · puerto 5440 · BD olva_lima</text>
+  <text class="s" x="50" y="196">regiones Lima y Centro</text>
+
+  <rect class="box" x="500" y="196" width="400" height="98" rx="8"/>
+  <text class="b" x="700" y="220" text-anchor="middle">schema global (esquema global)</text>
+  <text class="t" x="700" y="240" text-anchor="middle">tablas PARTITION BY LIST (nodo)</text>
+  <text class="t" x="700" y="260" text-anchor="middle">envio · paquete · evento_tracking</text>
+  <text class="t" x="700" y="280" text-anchor="middle">cliente_contacto · vista global.cliente</text>
+
+  <rect class="box" x="60" y="350" width="260" height="104" rx="8"/>
+  <text class="b" x="190" y="374" text-anchor="middle">Fragmentos LIMA</text>
+  <text class="t" x="190" y="396" text-anchor="middle">HF1 envio · HF2 paquete</text>
+  <text class="t" x="190" y="416" text-anchor="middle">HF3 evento_tracking</text>
+  <text class="t" x="190" y="436" text-anchor="middle">VF2 cliente_contacto</text>
+
+  <rect class="box" x="340" y="350" width="260" height="104" rx="8"/>
+  <text class="b" x="470" y="374" text-anchor="middle">Solo en Lima</text>
+  <text class="t" x="470" y="396" text-anchor="middle">VF1 cliente_fiscal</text>
+  <text class="t" x="470" y="416" text-anchor="middle">global.log_2pc</text>
+  <text class="s" x="470" y="436" text-anchor="middle">(bitácora del coordinador 2PC)</text>
+
+  <rect class="box" x="800" y="350" width="260" height="104" rx="8"/>
+  <text class="b" x="930" y="374" text-anchor="middle">Réplica total (3 nodos)</text>
+  <text class="t" x="930" y="396" text-anchor="middle">region · ciudad · hub</text>
+  <text class="t" x="930" y="416" text-anchor="middle">tipo_servicio · tarifa · ruta</text>
+  <text class="s" x="930" y="436" text-anchor="middle">copia idéntica en cada nodo</text>
+
+  <rect class="box" x="1080" y="350" width="260" height="104" rx="8" style="stroke-dasharray:6 5"/>
+  <text class="b" x="1210" y="380" text-anchor="middle">olva_courier</text>
+  <text class="t" x="1210" y="402" text-anchor="middle">BD centralizada de origen</text>
+  <text class="s" x="1210" y="424" text-anchor="middle">(modelo del Avance 1)</text>
+
+  <!-- conexiones dentro de Lima -->
+  <path class="ln" d="M700 114V194" marker-end="url(#fl)"/>
+  <path class="ln" d="M500 230H190V348" marker-end="url(#fl)"/>
+  <text class="s" x="200" y="222">partición local LIMA</text>
+  <path class="ln" d="M560 294V322H470V348" marker-end="url(#fl)"/>
+  <text class="s" x="364" y="316">VF1 ⋈ VF2 (id_cliente)</text>
+  <path class="dash" d="M1210 350V245H902" marker-end="url(#fl)"/>
+  <text class="s" x="960" y="236">migración inicial (srv_origen)</text>
+
+  <!-- NODO NORTE -->
+  <rect class="clu" x="30" y="580" width="640" height="250" rx="10"/>
+  <text class="c" x="650" y="606" text-anchor="end">NODO NORTE · PostgreSQL 16 · puerto 5433</text>
+  <text class="s" x="650" y="626" text-anchor="end">BD olva_norte · regiones Norte y Oriente</text>
+  <rect class="box" x="60" y="660" width="300" height="130" rx="8"/>
+  <text class="b" x="210" y="688" text-anchor="middle">Fragmentos NORTE</text>
+  <text class="t" x="210" y="712" text-anchor="middle">HF1 envio · HF2 paquete</text>
+  <text class="t" x="210" y="734" text-anchor="middle">HF3 evento_tracking</text>
+  <text class="t" x="210" y="756" text-anchor="middle">VF2 cliente_contacto</text>
+  <text class="s" x="210" y="776" text-anchor="middle">CHECK: predicado del fragmento</text>
+  <rect class="box" x="400" y="690" width="240" height="70" rx="8"/>
+  <text class="b" x="520" y="718" text-anchor="middle">Réplica de catálogos</text>
+  <text class="s" x="520" y="740" text-anchor="middle">copia de Lima</text>
+
+  <!-- NODO SUR -->
+  <rect class="clu" x="730" y="580" width="640" height="250" rx="10"/>
+  <text class="c" x="750" y="606">NODO SUR · PostgreSQL 16 · puerto 5434</text>
+  <text class="s" x="750" y="626">BD olva_sur · región Sur</text>
+  <rect class="box" x="1040" y="660" width="300" height="130" rx="8"/>
+  <text class="b" x="1190" y="688" text-anchor="middle">Fragmentos SUR</text>
+  <text class="t" x="1190" y="712" text-anchor="middle">HF1 envio · HF2 paquete</text>
+  <text class="t" x="1190" y="734" text-anchor="middle">HF3 evento_tracking</text>
+  <text class="t" x="1190" y="756" text-anchor="middle">VF2 cliente_contacto</text>
+  <text class="s" x="1190" y="776" text-anchor="middle">CHECK: predicado del fragmento</text>
+  <rect class="box" x="760" y="690" width="240" height="70" rx="8"/>
+  <text class="b" x="880" y="718" text-anchor="middle">Réplica de catálogos</text>
+  <text class="s" x="880" y="740" text-anchor="middle">copia de Lima</text>
+
+  <!-- conexiones postgres_fdw -->
+  <path class="fdw" d="M660 294V530H210V656" marker-end="url(#flA)"/>
+  <path class="fdw" d="M740 294V530H1190V656" marker-end="url(#flA)"/>
+  <text x="230" y="520" style="font-size:14px;font-weight:bold;fill:#2f5d9e">postgres_fdw · srv_norte · foreign tables · 2PC</text>
+  <text x="1170" y="520" text-anchor="end" style="font-size:14px;font-weight:bold;fill:#2f5d9e">postgres_fdw · srv_sur · foreign tables · 2PC</text>
+
+  <text class="s" x="30" y="856">HF = fragmento horizontal · VF = fragmento vertical · Las particiones NORTE y SUR de global.* son foreign tables; la partición LIMA es local.</text>
+</svg>
